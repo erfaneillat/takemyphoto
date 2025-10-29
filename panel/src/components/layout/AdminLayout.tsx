@@ -76,7 +76,7 @@ const AdminLayout = () => {
           <button
             onClick={() => {
               logout()
-              navigate('/login')
+              navigate('login')
             }}
             className="flex items-center gap-4 px-4 py-3.5 w-full rounded-xl text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
           >

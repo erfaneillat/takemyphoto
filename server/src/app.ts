@@ -40,7 +40,7 @@ export class App {
     this.app.use(hpp());
 
     // CORS
-    const corsEnv = process.env.CORS_ORIGIN || 'http://localhost:5175,http://localhost:5173,http://localhost:5174';
+    const corsEnv = process.env.CORS_ORIGIN || 'http://localhost:2000,http://localhost:5175,http://localhost:5173,http://localhost:5174';
     const allowedOrigins = corsEnv
       .split(',')
       .map(o => o.trim())
@@ -113,6 +113,11 @@ export class App {
     const panelPath = path.join(__dirname, '../../panel/dist');
     this.app.use('/panel', express.static(panelPath));
     
+    // Serve index.html for /panel root
+    this.app.get('/panel', (_req, res) => {
+      res.sendFile(path.join(panelPath, 'index.html'));
+    });
+
     // Handle panel SPA routing - serve index.html for any /panel/* routes
     this.app.get('/panel/*', (_req, res) => {
       res.sendFile(path.join(panelPath, 'index.html'));

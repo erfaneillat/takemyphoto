@@ -11,7 +11,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const token = typeof window !== 'undefined' ? getAccessToken() : null
 
   if (!isAuthenticated || !user || !token) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="login" replace />
   }
 
   return <>{children}</>

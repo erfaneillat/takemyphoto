@@ -2,6 +2,7 @@ import axios from 'axios'
 import { getAccessToken } from './tokenStore'
 
 const API_URL = import.meta.env.VITE_API_URL || '/api/v1'
+const PANEL_BASE = import.meta.env.BASE_URL || '/'
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -29,8 +30,9 @@ apiClient.interceptors.response.use(
           localStorage.removeItem('accessToken')
           localStorage.removeItem('refreshToken')
         } catch {}
-        if (window.location.pathname !== '/login') {
-          window.location.replace('/login')
+        const targetLogin = `${PANEL_BASE}login`
+        if (window.location.pathname !== targetLogin) {
+          window.location.replace(targetLogin)
         }
       }
     }

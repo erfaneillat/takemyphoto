@@ -9,12 +9,12 @@ import { AuthDebugWidget } from './components/AuthDebugWidget'
 
 function App() {
   return (
-    <Router>
+    <Router basename="/panel">
       <AuthDebugWidget />
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="login" element={<Login />} />
         <Route
-          path="/"
+          path=""
           element={
             <ProtectedRoute>
               <AdminLayout />
