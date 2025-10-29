@@ -17,7 +17,8 @@ export class LocalFileUploadService implements IFileUploadService {
   private uploadsDir: string;
 
   constructor() {
-    this.uploadsDir = path.join(process.cwd(), 'uploads');
+    // Resolve to project root /uploads (../../../../ from dist/infrastructure/services)
+    this.uploadsDir = path.resolve(__dirname, '../../../../uploads');
     this.ensureUploadsDir();
   }
 

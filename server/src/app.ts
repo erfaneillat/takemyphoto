@@ -72,21 +72,35 @@ export class App {
     this.app.use('/api', limiter);
 
     // Static files for uploads (set permissive headers for dev)
-    this.app.use(
-      '/uploads',
-      (_req, res, next) => {
+    const uploadsPrimary = path.resolve(__dirname, '../../uploads');
+    const uploadsFallback = path.resolve(process.cwd(), 'uploads');
+    const uploadsProjectRoot = path.resolve(__dirname, '../../../../uploads');
+    const setStaticHeaders = (_req: any, res: any, next: any) => {
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      next();
+    };
+    // Primary location
+    this.app.use('/uploads', setStaticHeaders, express.static(uploadsPrimary, {
+      setHeaders: (res) => {
         res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-        // Allow any origin to fetch images (sufficient for <img> loads)
         res.setHeader('Access-Control-Allow-Origin', '*');
-        next();
       },
-      express.static('uploads', {
-        setHeaders: (res) => {
-          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-          res.setHeader('Access-Control-Allow-Origin', '*');
-        },
-      })
-    );
+    }));
+    // Fallback location for legacy files
+    this.app.use('/uploads', setStaticHeaders, express.static(uploadsFallback, {
+      setHeaders: (res) => {
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+      },
+    }));
+    // Project root uploads (align with LocalFileUploadService)
+    this.app.use('/uploads', setStaticHeaders, express.static(uploadsProjectRoot, {
+      setHeaders: (res) => {
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+      },
+    }));
 
     // Health check
     this.app.get('/health', (_req, res) => {
