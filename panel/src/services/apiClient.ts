@@ -1,7 +1,20 @@
 import axios from 'axios'
 import { getAccessToken } from './tokenStore'
 
-const API_URL = import.meta.env.VITE_API_URL || '/api/v1'
+const getApiUrl = () => {
+  // If VITE_API_URL is set, normalize it to use current page protocol
+  if (import.meta.env.VITE_API_URL) {
+    const url = import.meta.env.VITE_API_URL
+    // Replace http:// or https:// with current protocol to avoid mixed content
+    const protocol = typeof window !== 'undefined' ? window.location.protocol : 'https:'
+    return url.replace(/^https?:/, protocol.slice(0, -1))
+  }
+  
+  // Otherwise use relative URL (will use current page protocol)
+  return '/api/v1'
+}
+
+const API_URL = getApiUrl()
 const PANEL_BASE = import.meta.env.BASE_URL || '/'
 
 export const apiClient = axios.create({
