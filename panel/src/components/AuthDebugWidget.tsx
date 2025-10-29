@@ -91,10 +91,10 @@ export const AuthDebugWidget = () => {
             {user && (
               <>
                 <div>
-                  <span className="text-gray-400">User:</span> <span className="text-blue-400">{user.phoneNumber}</span>
+                  <span className="text-gray-400">Email:</span> <span className="text-blue-400">{user.email}</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Role:</span> <span className="text-purple-400">{user.role}</span>
+                  <span className="text-gray-400">Name:</span> <span className="text-purple-400">{user.name}</span>
                 </div>
                 <div>
                   <span className="text-gray-400">User ID:</span> <span className="text-cyan-400">{user.id}</span>
