@@ -370,12 +370,11 @@ jobs:
         password: ${{ steps.env.outputs.server_password }}
         port: ${{ steps.env.outputs.server_port }}
         script: |
-          # Allow extra time for the server to boot and perform retries
           echo "⏳ Waiting for application to start..."
-          sleep 10
-          ATTEMPTS=8
+          sleep 15
+          ATTEMPTS=10
           for i in $(seq 1 $ATTEMPTS); do
-            if curl -fsS http://127.0.0.1:${{ steps.port.outputs.app_port }}/api/health > /dev/null; then
+            if curl -fsS http://127.0.0.1:${{ steps.port.outputs.app_port }}/health > /dev/null; then
               echo "✅ Application is healthy"
               exit 0
             fi
@@ -383,7 +382,7 @@ jobs:
             sleep 5
           done
           echo "❌ Application health check failed after $ATTEMPTS attempts"
-          pm2 logs ${{ steps.env.outputs.app_name }} --lines 20
+          pm2 logs ${{ steps.env.outputs.app_name }} --lines 50
           exit 1
 
     # ✅ Deployment Summary
