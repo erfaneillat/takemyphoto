@@ -219,10 +219,16 @@ jobs:
           
           # Check if package-lock.json exists, if not use npm install
           if [ -f "package-lock.json" ]; then
-            npm ci
+            npm ci || { echo "❌ npm ci failed"; exit 1; }
           else
             echo "⚠️ No package-lock.json found, using npm install..."
-            npm install
+            npm install || { echo "❌ npm install failed"; exit 1; }
+          fi
+          
+          # Verify node_modules exists
+          if [ ! -d "node_modules" ]; then
+            echo "❌ Error: node_modules directory not created after npm install"
+            exit 1
           fi
           echo "✅ Dependencies installed"
 
@@ -234,11 +240,12 @@ jobs:
             exit 1
           fi
           
-          npm run build
+          npm run build || { echo "❌ npm run build failed"; exit 1; }
           
           # Verify build was successful
           if [ ! -d "dist" ]; then
             echo "❌ Error: Build failed - dist directory not found"
+            ls -la
             exit 1
           fi
           
@@ -250,26 +257,33 @@ jobs:
           
           # Install web dependencies if needed
           if [ -f "package-lock.json" ]; then
-            npm ci
+            npm ci || { echo "❌ npm ci failed for web"; exit 1; }
           else
             echo "⚠️ No package-lock.json found, using npm install..."
-            npm install
+            npm install || { echo "❌ npm install failed for web"; exit 1; }
+          fi
+          
+          # Verify node_modules exists
+          if [ ! -d "node_modules" ]; then
+            echo "❌ Error: node_modules directory not created for web"
+            exit 1
           fi
           
           # Build web app with environment variables
           if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
             VITE_API_URL=${{ steps.env.outputs.api_url }}/api \
             VITE_GOOGLE_CLIENT_ID=${{ secrets.DEV_GOOGLE_CLIENT_ID || secrets.GOOGLE_CLIENT_ID }} \
-            npm run build
+            npm run build || { echo "❌ npm run build failed for web"; exit 1; }
           else
             VITE_API_URL=${{ steps.env.outputs.api_url }}/api \
             VITE_GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            npm run build
+            npm run build || { echo "❌ npm run build failed for web"; exit 1; }
           fi
           
           # Verify web build was successful
           if [ ! -d "dist" ]; then
             echo "❌ Error: Web build failed - dist directory not found"
+            ls -la
             exit 1
           fi
           
@@ -281,22 +295,29 @@ jobs:
           
           # Install panel dependencies if needed
           if [ -f "package-lock.json" ]; then
-            npm ci
+            npm ci || { echo "❌ npm ci failed for panel"; exit 1; }
           else
             echo "⚠️ No package-lock.json found, using npm install..."
-            npm install
+            npm install || { echo "❌ npm install failed for panel"; exit 1; }
+          fi
+          
+          # Verify node_modules exists
+          if [ ! -d "node_modules" ]; then
+            echo "❌ Error: node_modules directory not created for panel"
+            exit 1
           fi
           
           # Build admin panel with environment variables
           if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
-            VITE_API_URL=${{ steps.env.outputs.api_url }}/api npm run build
+            VITE_API_URL=${{ steps.env.outputs.api_url }}/api npm run build || { echo "❌ npm run build failed for panel"; exit 1; }
           else
-            VITE_API_URL=${{ steps.env.outputs.api_url }}/api npm run build
+            VITE_API_URL=${{ steps.env.outputs.api_url }}/api npm run build || { echo "❌ npm run build failed for panel"; exit 1; }
           fi
           
           # Verify panel build was successful
           if [ ! -d "dist" ]; then
             echo "❌ Error: Panel build failed - dist directory not found"
+            ls -la
             exit 1
           fi
           
