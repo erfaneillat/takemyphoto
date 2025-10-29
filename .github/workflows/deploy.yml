@@ -39,17 +39,36 @@ jobs:
     - name: 📦 Install Server Dependencies
       run: |
         echo "📦 Installing server dependencies..."
-        cd server && npm ci && cd ..
+        cd server
+        if [ -f "package-lock.json" ]; then
+          npm ci
+        else
+          echo "⚠️ No package-lock.json found, using npm install..."
+          npm install
+        fi
+        cd ..
 
     - name: 📦 Install Web Dependencies
       run: |
         echo "📦 Installing web dependencies..."
-        npm ci
+        if [ -f "package-lock.json" ]; then
+          npm ci
+        else
+          echo "⚠️ No package-lock.json found, using npm install..."
+          npm install
+        fi
 
     - name: 📦 Install Panel Dependencies
       run: |
         echo "📦 Installing panel dependencies..."
-        cd panel && npm ci && cd ..
+        cd panel
+        if [ -f "package-lock.json" ]; then
+          npm ci
+        else
+          echo "⚠️ No package-lock.json found, using npm install..."
+          npm install
+        fi
+        cd ..
 
     - name: 🔍 Determine Environment
       id: env
