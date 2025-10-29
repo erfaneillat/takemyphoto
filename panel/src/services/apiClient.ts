@@ -1,20 +1,27 @@
 import axios from 'axios'
 import { getAccessToken } from './tokenStore'
 
-const getApiUrl = () => {
-  // If VITE_API_URL is set, normalize it to use current page protocol
-  if (import.meta.env.VITE_API_URL) {
-    const url = import.meta.env.VITE_API_URL
-    // Replace http:// or https:// with current protocol to avoid mixed content
-    const protocol = typeof window !== 'undefined' ? window.location.protocol : 'https:'
-    return url.replace(/^https?:/, protocol.slice(0, -1))
+const resolveApiBase = () => {
+  const raw = import.meta.env.VITE_API_URL as string | undefined
+  // Prefer explicit env if provided
+  if (raw) {
+    // If page is https but env uses http, upgrade to https to avoid mixed content
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && raw.startsWith('http://')) {
+      try {
+        const u = new URL(raw)
+        u.protocol = 'https:'
+        return u.toString()
+      } catch {
+        // fall through to raw
+      }
+    }
+    return raw
   }
-  
-  // Otherwise use relative URL (will use current page protocol)
+  // Default to same-origin relative path
   return '/api/v1'
 }
 
-const API_URL = getApiUrl()
+const API_URL = resolveApiBase()
 const PANEL_BASE = import.meta.env.BASE_URL || '/'
 
 export const apiClient = axios.create({
