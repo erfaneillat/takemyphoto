@@ -1,0 +1,499 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "tryNow": "Try it now"
+  },
+  "app": {
+    "title": "Take My Photo",
+    "description": "AI Photo Editing, Made Simple"
+  },
+  "drawer": {
+    "startedHere": "Started Here",
+    "dashboard": "Dashboard",
+    "community": "Community",
+    "favorites": "Favorites",
+    "aiToolsFeatured": "AI Tools Featured",
+    "imageGenerator": "Image Generator",
+    "voiceClone": "Voice Clone",
+    "videoGenerate": "Video Generate",
+    "codeGenerate": "Code Generate",
+    "upgradePromo": "Save 50% Today",
+    "upgradeCoupon": "Coupon: SAVE50DAL1",
+    "upgradeToPro": "Upgraded to Pro"
+  },
+  "header": {
+    "explore": "Explore",
+    "tools": "Tools",
+    "edit": "Edit",
+    "generate": "Generate",
+    "pricing": "Pricing",
+    "profile": "Profile",
+    "upgrade": "Upgrade",
+    "stars": "Stars",
+    "login": "Login",
+    "selectLanguage": "Select Language"
+  },
+  "bottomNav": {
+    "explore": "Explore",
+    "edit": "Edit",
+    "profile": "Profile"
+  },
+  "footer": {
+    "about": "About",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contact": "Contact",
+    "copyright": "© Take My Photo 2025"
+  },
+  "landing": {
+    "hero": {
+      "badge": "AI-Powered Image Editing",
+      "title": "AI Photo Editing, Made Simple.",
+      "description": "Edit your photos using smart AI tools — style transfer, enhancement, and text-based editing.",
+      "uploadPhoto": "Upload a Photo",
+      "tryDemo": "Try Demo",
+      "noCreditCard": "No credit card required",
+      "instantResults": "Instant results",
+      "premiumQuality": "Premium quality"
+    },
+    "trending": {
+      "title": "See what others are creating",
+      "subtitle": "Explore amazing creations from our community",
+      "tryStyle": "Try this style"
+    },
+    "features": {
+      "title": "Features",
+      "subtitle": "Powerful AI tools at your fingertips",
+      "styleTransfer": {
+        "title": "Smart Style Transfer",
+        "description": "Apply artistic looks in one click."
+      },
+      "textEdit": {
+        "title": "Text-based Editing",
+        "description": "Just describe what you want."
+      },
+      "highQuality": {
+        "title": "High-Quality Output",
+        "description": "Save up to 4K resolution."
+      }
+    }
+  },
+  "tools": {
+    "badge": "AI-Powered Tools",
+    "title": "Choose Your Creative Tool",
+    "subtitle": "Select the perfect AI tool for your creative vision",
+    "comingSoon": "Coming Soon",
+    "imageGenerator": {
+      "title": "Image Generator",
+      "description": "Create stunning images from text descriptions with AI"
+    },
+    "promptEditor": {
+      "title": "Prompt-based Editor",
+      "description": "Edit images using natural language descriptions"
+    },
+    "brushEditor": {
+      "title": "Brush Editor",
+      "description": "Paint and edit specific areas of your images with precision"
+    },
+    "styleExplorer": {
+      "title": "Style Explorer",
+      "description": "Discover and apply creative styles to your images"
+    },
+    "imageUpscaler": {
+      "title": "Image Upscaler",
+      "description": "Upscale your images up to 4x with AI"
+    },
+    "imageToPrompt": {
+      "title": "Image to Prompt",
+      "description": "Generate creative prompts from your images using AI vision"
+    },
+    "moreComingSoon": {
+      "title": "More Tools Coming Soon",
+      "description": "We're constantly adding new AI tools to enhance your creative workflow"
+    }
+  },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Discover creative styles and ideas for your photo edits",
+    "heroTitle": "Discover Your Next Masterpiece",
+    "heroSubtitle": "Explore the Frontiers of AI Art",
+    "search": "Search for a style, e.g. 'Cyberpunk'",
+    "categories": "Categories",
+    "featuredStyles": "Featured Styles",
+    "results": "results",
+    "noResults": "No styles found",
+    "tabs": {
+      "all": "All",
+      "trending": "Trending",
+      "portrait": "Portrait",
+      "landscape": "Landscape",
+      "fantasy": "Fantasy",
+      "cyberpunk": "Cyberpunk"
+    },
+    "newEdit": "+ New Edit",
+    "useStyle": "Use Style",
+    "like": "Like",
+    "save": "Save",
+    "share": "Share",
+    "views": "views"
+  },
+  "generate": {
+    "title": "Generate Image",
+    "description": "Create stunning images from text descriptions",
+    "promptLabel": "Prompt",
+    "promptPlaceholder": "Describe the image you want to create...",
+    "referencesLabel": "References (Optional)",
+    "uploadImage": "Upload Image",
+    "attachCharacter": "Attach Character",
+    "attachReference": "Attach as Reference",
+    "generateButton": "Generate",
+    "generatingImage": "Generating your image...",
+    "preview": {
+      "noImage": "No image yet",
+      "generateToSee": "Generate an image to see it here"
+    },
+    "history": {
+      "title": "History"
+    }
+  },
+  "edit": {
+    "title": "AI Image Studio",
+    "modes": {
+      "generate": "Generate Image",
+      "edit": "Edit Image",
+      "brush": "Brush Edit"
+    },
+    "generate": {
+      "title": "Generate Image",
+      "description": "Create stunning images from text descriptions",
+      "promptPlaceholder": "Describe the image you want to create...",
+      "generateButton": "Generate",
+      "emptyState": "Start by describing your vision",
+      "aspectRatio": "Aspect Ratio",
+      "quality": "Quality",
+      "style": "Style"
+    },
+    "editMode": {
+      "title": "Edit Image",
+      "description": "Upload an image and describe what to change",
+      "promptPlaceholder": "Describe how to edit the uploaded image...",
+      "editButton": "Apply Edit",
+      "removeImage": "Remove image",
+      "editAgain": "Edit again"
+    },
+    
+    "results": {
+      "title": "Generated Results",
+      "editHistory": "Edit History"
+    },
+    "actions": {
+      "download": "Download",
+      "share": "Share",
+      "edit": "Edit",
+      "remove": "Remove",
+      "regenerate": "Regenerate"
+    },
+    "processing": "Processing...",
+    "generatingImage": "Generating your image...",
+    "editingImage": "Editing your images...",
+    "characterSelector": {
+      "title": "Select Character or Upload Image",
+      "selectCharacter": "Select Character",
+      "uploadOrSelect": "Upload or Select Character",
+      "uploadImage": "Upload New Image",
+      "uploadImageDescription": "Choose an image from your device",
+      "orSelectCharacter": "or select from your characters",
+      "noCharacters": "No characters available",
+      "noCharactersDescription": "Create characters in your profile to use them here",
+      "selectButton": "Select"
+    },
+    "brushMode": {
+      "title": "Brush Edit",
+      "description": "Paint over the area to edit and describe your change",
+      "promptPlaceholder": "Describe what to do with the painted area...",
+      "editButton": "Apply Brush Edit",
+      "noImageYet": "No image uploaded yet",
+      "uploadToStart": "Upload an image to start painting"
+    },
+    "brushTool": {
+      "title": "Brush Tool - Paint Selection",
+      "button": "Brush Edit",
+      "tool": "Tool",
+      "brush": "Brush",
+      "eraser": "Eraser",
+      "size": "Brush Size",
+      "clear": "Clear All",
+      "apply": "Apply",
+      "promptTitle": "Edit Selected Area",
+      "promptDescription": "Describe what you want to do with the painted area",
+      "promptPlaceholder": "e.g., Remove this object, Change color to blue, Add flowers here..."
+    },
+    "promptBased": {
+      "title": "Prompt-based Editing",
+      "description": "Describe the changes you want to make.",
+      "promptLabel": "Prompt",
+      "promptPlaceholder": "e.g., Make the sky a vibrant sunset",
+      "referencesLabel": "References",
+      "uploadImage": "Upload Image",
+      "attachCharacter": "Attach Character",
+      "generateButton": "Generate"
+    },
+    "preview": {
+      "noImage": "No image yet",
+      "generateToSee": "Generate an image to see it here"
+    },
+    "history": {
+      "title": "History"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "recentEdits": "Recent Edits",
+    "favoriteTemplates": "Favorite Styles",
+    "viewAll": "View All",
+    "loadMore": "Load More",
+    "noFavorites": "No favorite styles yet",
+    "noFavoritesDescription": "Save styles you like to see them here",
+    "noGeneratedImages": "No generated images yet",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "favoriteAdded": "Added to favorites",
+    "favoriteRemoved": "Removed from favorites",
+    "stats": {
+      "totalEdits": "Total Edits",
+      "thisMonth": "This Month",
+      "favorites": "Favorites"
+    },
+    "accountInfo": "Account Information",
+    "email": "Email",
+    "subscription": "Subscription",
+    "subscriptionStatus": {
+      "free": "Free",
+      "pro": "Pro",
+      "premium": "Premium"
+    },
+    "upgradeToPro": "Upgrade to Pro",
+    "upgradeNow": "Upgrade Now",
+    "upgradeDescription": "Unlock advanced features and enhance your experience",
+    "upgradeFeatures": {
+      "unlimited": "Unlimited edits",
+      "quality": "4K export",
+      "priority": "Priority support"
+    },
+    "settings": "Settings",
+    "theme": "Theme",
+    "themeOptions": {
+      "dark": "Dark",
+      "light": "Light"
+    },
+    "language": "Language",
+    "logout": "Logout",
+    "languages": {
+      "english": "English",
+      "persian": "Persian"
+    },
+    "characters": {
+      "title": "My Characters",
+      "createCharacter": "Create Character",
+      "editCharacter": "Edit Character",
+      "characterName": "Character Name",
+      "characterNamePlaceholder": "Enter character name",
+      "uploadImages": "Upload Images",
+      "minImages": "Minimum 3 images required",
+      "maxImages": "Maximum 5 images allowed",
+      "imageCount": "images",
+      "noCharacters": "No characters yet",
+      "noCharactersDescription": "Create your first character to get started",
+      "deleteCharacter": "Delete Character",
+      "deleteConfirm": "Are you sure you want to delete this character?",
+      "characterCreated": "Character created successfully",
+      "characterUpdated": "Character updated successfully",
+      "characterDeleted": "Character deleted successfully",
+      "uploadImagesHint": "Upload 3-5 images of your character",
+      "dragDropImages": "Drag and drop images or click to browse",
+      "removeImage": "Remove image",
+      "validation": {
+        "nameRequired": "Character name is required",
+        "minImagesRequired": "At least 3 images are required",
+        "maxImagesExceeded": "Maximum 5 images allowed"
+      }
+    }
+  },
+  "upgrade": {
+    "title": "Go Pro with Nero",
+    "upgradeNow": "Upgrade Now",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "$0/month",
+        "features": [
+          "Basic styles",
+          "Limited exports",
+          "Standard processing"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$9/month",
+        "features": [
+          "Unlimited edits",
+          "4K export",
+          "Faster AI processing",
+          "Priority support"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "$19/month",
+        "features": [
+          "Everything in Pro",
+          "Priority access",
+          "New models early",
+          "Commercial license"
+        ]
+      }
+    }
+  },
+  "subscription": {
+    "badge": "Pricing Plans",
+    "title": "Choose the Perfect Plan",
+    "subtitle": "Unlock the full power of AI-driven creativity with our flexible pricing options",
+    "popular": "Most Popular",
+    "month": "month",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save60": "Save 60%",
+    "billedYearly": "Billed yearly",
+    "saveYearly": "Save {{amount}} per year",
+    "currentPlan": "Current Plan",
+    "selectPlan": "Get Started",
+    "processing": "Processing...",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "features": {
+          "limitedGenerations": "10 generations per month",
+          "basicImageGenerator": "Basic Image Generator",
+          "basicPromptEditor": "Basic Prompt-based Editor",
+          "basicImageUpscaler": "Basic Image Upscaler (2x only)",
+          "watermarkOnExports": "Watermark on exports",
+          "standardProcessing": "Standard AI processing",
+          "communitySupport": "Community support"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "features": {
+          "unlimitedGenerations": "Unlimited generations",
+          "allTools": "All AI tools & features access",
+          "hdExport": "HD & 4K export quality",
+          "noWatermark": "No watermark on exports",
+          "fasterProcessing": "3x faster AI processing",
+          "prioritySupport": "Priority customer support"
+        }
+      }
+    },
+    "whyUpgrade": "Why Upgrade?",
+    "whyUpgradeSubtitle": "Take your creativity to the next level with premium features",
+    "benefits": {
+      "faster": {
+        "title": "Lightning Fast",
+        "description": "Get your results in seconds with priority processing"
+      },
+      "priority": {
+        "title": "Priority Support",
+        "description": "Get help when you need it from our dedicated team"
+      },
+      "quality": {
+        "title": "Premium Quality",
+        "description": "Export in the highest quality up to 4K resolution"
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "Round-the-clock assistance for all your creative needs"
+      }
+    },
+    "faq": {
+      "title": "Have Questions?",
+      "description": "We're here to help! Contact our support team for any questions about pricing or features.",
+      "contactButton": "Contact Support"
+    },
+    "moneyBackGuarantee": "30-Day Money Back Guarantee"
+  },
+  "upscale": {
+    "title": "Image Upscaler",
+    "description": "Upscale your images with AI",
+    "uploadImage": "Upload Image",
+    "uploadHint": "Click to browse or drag and drop",
+    "scaleLabel": "Upscale Factor",
+    "scaleHint": "Select how much to upscale your image",
+    "upscaleButton": "Upscale Image",
+    "upscaling": "Upscaling your image...",
+    "downloadButton": "Download",
+    "closeButton": "Close",
+    "preview": {
+      "noImage": "No image uploaded yet",
+      "uploadToStart": "Upload an image to start upscaling"
+    },
+    "result": {
+      "title": "Upscaled Successfully!",
+      "description": "Upscaled {{scale}}x"
+    }
+  },
+  "imageToPrompt": {
+    "title": "Image to Prompt",
+    "description": "Generate creative prompts from your images using AI",
+    "uploadImage": "Upload Image",
+    "uploadHint": "Click to browse or drag and drop",
+    "analyzeButton": "Analyze Image",
+    "analyzing": "Analyzing your image...",
+    "generatedPrompt": "Generated Prompt",
+    "detectedElements": "Detected Elements",
+    "copyPrompt": "Copy Prompt",
+    "preview": {
+      "noImage": "No image uploaded yet",
+      "uploadToStart": "Upload an image to analyze"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue to Nero",
+      "signingIn": "Signing in...",
+      "googleInfo": "By signing in with Google, you agree to our Terms of Service and Privacy Policy",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "continueButton": "Continue",
+      "termsText": "By continuing, you agree to our",
+      "termsLink": "Terms of Service",
+      "and": "and",
+      "privacyLink": "Privacy Policy"
+    },
+    "verification": {
+      "title": "Verify Your Phone",
+      "subtitle": "Enter the 6-digit code sent to",
+      "codePlaceholder": "Enter verification code",
+      "verifyButton": "Verify",
+      "resendCode": "Resend Code",
+      "resendIn": "Resend in",
+      "seconds": "seconds",
+      "changeNumber": "Change Number",
+      "codeResent": "Code resent successfully"
+    },
+    "errors": {
+      "invalidPhone": "Please enter a valid phone number",
+      "invalidCode": "Please enter a valid 6-digit code",
+      "verificationFailed": "Verification failed. Please try again",
+      "networkError": "Network error. Please check your connection",
+      "tooManyAttempts": "Too many attempts. Please try again later"
+    }
+  }
+}

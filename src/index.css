@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white dark:bg-black text-gray-900 dark:text-white transition-colors;
+  }
+
+  /* Apply Persian font when RTL */
+  [dir="rtl"] {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+  }
+
+  /* Apply default font for LTR */
+  [dir="ltr"] {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}

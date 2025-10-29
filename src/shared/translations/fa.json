@@ -1,0 +1,503 @@
+{
+  "common": {
+    "welcome": "خوش آمدید",
+    "loading": "در حال بارگذاری...",
+    "error": "خطایی رخ داده است",
+    "retry": "تلاش مجدد",
+    "cancel": "لغو",
+    "confirm": "تایید",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "tryNow": "اکنون امتحان کنید"
+  },
+  "app": {
+    "title": "Take My Photo",
+    "description": "ویرایش عکس با هوش مصنوعی، ساده و سریع"
+  },
+  "drawer": {
+    "startedHere": "شروع از اینجا",
+    "dashboard": "داشبورد",
+    "community": "انجمن",
+    "favorites": "علاقه‌مندی‌ها",
+    "aiToolsFeatured": "ابزارهای هوش مصنوعی",
+    "imageGenerator": "تولید تصویر",
+    "voiceClone": "شبیه‌سازی صدا",
+    "videoGenerate": "تولید ویدیو",
+    "codeGenerate": "تولید کد",
+    "upgradePromo": "امروز ۵۰٪ تخفیف",
+    "upgradeCoupon": "کد: SAVE50DAL1",
+    "upgradeToPro": "ارتقا به حرفه‌ای"
+  },
+  "header": {
+    "explore": "اکسپلور",
+    "tools": "ابزارها",
+    "edit": "ویرایش",
+    "generate": "تولید",
+    "pricing": "قیمت‌گذاری",
+    "profile": "پروفایل",
+    "upgrade": "ارتقا",
+    "stars": "ستاره",
+    "login": "ورود",
+    "selectLanguage": "انتخاب زبان"
+  },
+  "bottomNav": {
+    "explore": "اکسپلور",
+    "edit": "ویرایش",
+    "profile": "پروفایل"
+  },
+  "footer": {
+    "about": "درباره ما",
+    "terms": "قوانین",
+    "privacy": "حریم خصوصی",
+    "contact": "تماس",
+    "copyright": "© نرو ۲۰۲۵"
+  },
+  "landing": {
+    "hero": {
+      "badge": "ویرایش تصویر با هوش مصنوعی",
+      "title": "ویرایش عکس با هوش مصنوعی، ساده شده.",
+      "description": "عکس‌های خود را با ابزارهای هوشمند AI ویرایش کنید — تبدیل سبک، بهبود کیفیت و ویرایش متنی.",
+      "uploadPhoto": "آپلود عکس",
+      "tryDemo": "امتحان دمو",
+      "noCreditCard": "نیازی به کارت اعتباری نیست",
+      "instantResults": "نتایج فوری",
+      "premiumQuality": "کیفیت ممتاز"
+    },
+    "trending": {
+      "title": "ببینید دیگران چه می‌سازند",
+      "subtitle": "کشف خلاقیت‌های شگفت‌انگیز از جامعه ما",
+      "tryStyle": "امتحان این سبک"
+    },
+    "features": {
+      "title": "ویژگی‌ها",
+      "subtitle": "ابزارهای قدرتمند هوش مصنوعی در دسترس شما",
+      "styleTransfer": {
+        "title": "تبدیل سبک هوشمند",
+        "description": "اعمال سبک‌های هنری در یک کلیک."
+      },
+      "textEdit": {
+        "title": "ویرایش متنی",
+        "description": "فقط توصیف کنید چه می‌خواهید."
+      },
+      "highQuality": {
+        "title": "خروجی با کیفیت بالا",
+        "description": "ذخیره تا رزولوشن 4K."
+      }
+    }
+  },
+  "tools": {
+    "badge": "ابزارهای هوش مصنوعی",
+    "title": "ابزار خلاقانه خود را انتخاب کنید",
+    "subtitle": "ابزار مناسب دید خلاقانه خود را انتخاب کنید",
+    "comingSoon": "به‌زودی",
+    "imageGenerator": {
+      "title": "تولید تصویر",
+      "description": "تصاویر شگفت‌انگیز را از توضیحات متنی با هوش مصنوعی بسازید"
+    },
+    "promptEditor": {
+      "title": "ویرایشگر مبتنی بر پرامپت",
+      "description": "تصاویر را با استفاده از توضیحات زبان طبیعی ویرایش کنید"
+    },
+    "brushEditor": {
+      "title": "ویرایشگر قلم‌مو",
+      "description": "نواحی خاص تصاویر خود را با دقت رنگ‌آمیزی و ویرایش کنید"
+    },
+    "styleExplorer": {
+      "title": "کاوشگر سبک",
+      "description": "سبک‌های خلاقانه را کشف کنید و برای تصاویر خود اعمال کنید"
+    },
+    "imageUpscaler": {
+      "title": "بزرگ‌نمایی تصویر",
+      "description": "تصاویر خود را تا ۴ برابر با هوش مصنوعی بزرگ کنید"
+    },
+    "imageToPrompt": {
+      "title": "تصویر به پرامپت",
+      "description": "پرامپت‌های خلاقانه از تصاویر خود با بینایی هوش مصنوعی تولید کنید"
+    },
+    "moreComingSoon": {
+      "title": "ابزارهای بیشتر به زودی",
+      "description": "ما به طور مداوم ابزارهای جدید هوش مصنوعی اضافه می‌کنیم تا گردش کار خلاقانه شما را بهبود بخشیم"
+    }
+  },
+  "explore": {
+    "title": "اکسپلور",
+    "subtitle": "کشف سبک‌ها و ایده‌های خلاقانه برای ویرایش عکس‌های شما",
+    "heroTitle": "شاهکار بعدی خود را کشف کنید",
+    "heroSubtitle": "مرزهای هنر هوش مصنوعی را کاوش کنید",
+    "search": "جستجو برای سبک، مثلاً 'سایبرپانک'",
+    "categories": "دسته‌بندی‌ها",
+    "featuredStyles": "سبک‌های برجسته",
+    "results": "نتیجه",
+    "noResults": "سبکی یافت نشد",
+    "tabs": {
+      "all": "همه",
+      "trending": "ترند",
+      "portrait": "پرتره",
+      "landscape": "منظره",
+      "fantasy": "فانتزی",
+      "cyberpunk": "سایبرپانک"
+    },
+    "newEdit": "+ ویرایش جدید",
+    "useStyle": "استفاده از سبک",
+    "like": "پسندیدن",
+    "save": "ذخیره",
+    "share": "اشتراک‌گذاری",
+    "views": "بازدید"
+  },
+  "generate": {
+    "title": "تولید تصویر",
+    "description": "تصاویر شگفت‌انگیز را از توضیحات متنی بسازید",
+    "promptLabel": "توضیح",
+    "promptPlaceholder": "تصویر مورد نظر خود را توضیح دهید...",
+    "referencesLabel": "مراجع (اختیاری)",
+    "uploadImage": "آپلود تصویر",
+    "attachCharacter": "اتصال شخصیت",
+    "attachReference": "اتصال به عنوان مرجع",
+    "generateButton": "تولید",
+    "generatingImage": "در حال تولید تصویر...",
+    "preview": {
+      "noImage": "هنوز تصویری نیست",
+      "generateToSee": "برای دیدن تصویر، ابتدا یک تصویر تولید کنید"
+    },
+    "history": {
+      "title": "تاریخچه"
+    }
+  },
+  "edit": {
+    "title": "استودیوی تصویر هوش مصنوعی",
+    "modes": {
+      "generate": "تولید تصویر",
+      "edit": "ویرایش تصویر",
+      "brush": "ویرایش با قلم‌مو"
+    },
+    "generate": {
+      "title": "تولید تصویر",
+      "description": "تصاویر شگفت‌انگیز را از توضیحات متنی بسازید",
+      "promptPlaceholder": "تصویر مورد نظر خود را توضیح دهید...",
+      "generateButton": "تولید",
+      "emptyState": "با توصیف ایده خود شروع کنید",
+      "aspectRatio": "نسبت تصویر",
+      "quality": "کیفیت",
+      "style": "سبک"
+    },
+    "editMode": {
+      "title": "ویرایش تصویر",
+      "description": "تصاویر را آپلود کرده و با هوش مصنوعی تبدیل کنید",
+      "promptPlaceholder": "توضیح دهید چگونه می‌خواهید تصاویر را ویرایش کنید...",
+      "uploadImages": "آپلود تصاویر (حداکثر ۲)",
+      "uploadFirst": "آپلود تصویر اول",
+      "uploadSecond": "آپلود تصویر دوم",
+      "emptyState": "حداکثر ۲ تصویر را آپلود کنید تا شروع کنید",
+      "maxImages": "حداکثر ۲ تصویر مجاز است",
+      "editButton": "ویرایش تصاویر",
+      "removeImage": "حذف تصویر",
+      "editAgain": "ویرایش مجدد"
+    },
+    "results": {
+      "title": "نتایج تولید شده",
+      "editHistory": "تاریخچه ویرایش"
+    },
+    "actions": {
+      "download": "دانلود",
+      "share": "اشتراک‌گذاری",
+      "edit": "ویرایش",
+      "remove": "حذف",
+      "regenerate": "تولید مجدد"
+    },
+    "processing": "در حال پردازش...",
+    "generatingImage": "در حال تولید تصویر شما...",
+    "editingImage": "در حال ویرایش تصاویر شما...",
+    "characterSelector": {
+      "title": "انتخاب کاراکتر یا آپلود تصویر",
+      "selectCharacter": "انتخاب کاراکتر",
+      "uploadOrSelect": "آپلود یا انتخاب کاراکتر",
+      "uploadImage": "آپلود تصویر جدید",
+      "uploadImageDescription": "یک تصویر از دستگاه خود انتخاب کنید",
+      "orSelectCharacter": "یا از کاراکترهای خود انتخاب کنید",
+      "noCharacters": "کاراکتری موجود نیست",
+      "noCharactersDescription": "در پروفایل خود کاراکتر بسازید تا اینجا استفاده کنید",
+      "selectButton": "انتخاب"
+    },
+    "brushMode": {
+      "title": "ویرایش با قلم‌مو",
+      "description": "روی ناحیه موردنظر رنگ کنید و تغییر مورد نظر را توضیح دهید",
+      "promptPlaceholder": "توضیح دهید با ناحیه رنگ‌شده چه کاری انجام شود...",
+      "editButton": "اعمال ویرایش قلم‌مو",
+      "noImageYet": "هنوز تصویری آپلود نشده است",
+      "uploadToStart": "برای شروع رنگ‌آمیزی، تصویری آپلود کنید"
+    },
+    "brushTool": {
+      "title": "ابزار قلم‌مو - انتخاب ناحیه",
+      "button": "ویرایش با قلم‌مو",
+      "tool": "ابزار",
+      "brush": "قلم‌مو",
+      "eraser": "پاک‌کن",
+      "size": "اندازه قلم‌مو",
+      "clear": "پاک کردن همه",
+      "apply": "اعمال",
+      "promptTitle": "ویرایش ناحیه انتخاب شده",
+      "promptDescription": "توضیح دهید می‌خواهید با ناحیه رنگ شده چه کاری انجام دهید",
+      "promptPlaceholder": "مثلاً: این شیء را حذف کن، رنگ را به آبی تغییر بده، اینجا گل اضافه کن..."
+    },
+    "promptBased": {
+      "title": "ویرایش مبتنی بر پرامپت",
+      "description": "تغییراتی که می‌خواهید ایجاد کنید را توضیح دهید.",
+      "promptLabel": "پرامپت",
+      "promptPlaceholder": "مثلاً: آسمان را به غروب آفتاب زیبا تبدیل کن",
+      "referencesLabel": "مراجع",
+      "uploadImage": "آپلود تصویر",
+      "attachCharacter": "پیوست کاراکتر",
+      "generateButton": "تولید"
+    },
+    "preview": {
+      "noImage": "هنوز تصویری وجود ندارد",
+      "generateToSee": "برای مشاهده، تصویری تولید کنید"
+    },
+    "history": {
+      "title": "تاریخچه"
+    }
+  },
+  "profile": {
+    "title": "پروفایل",
+    "editProfile": "ویرایش پروفایل",
+    "recentEdits": "ویرایش‌های اخیر",
+    "favoriteTemplates": "سبک‌های مورد علاقه",
+    "viewAll": "مشاهده همه",
+    "loadMore": "بارگذاری بیشتر",
+    "noFavorites": "هنوز سبک مورد علاقه‌ای ندارید",
+    "noFavoritesDescription": "سبک‌هایی که دوست دارید را ذخیره کنید تا اینجا نمایش داده شوند",
+    "noGeneratedImages": "هنوز تصویری تولید نشده است",
+    "addToFavorites": "افزودن به علاقه‌مندی‌ها",
+    "removeFromFavorites": "حذف از علاقه‌مندی‌ها",
+    "favoriteAdded": "به علاقه‌مندی‌ها اضافه شد",
+    "favoriteRemoved": "از علاقه‌مندی‌ها حذف شد",
+    "stats": {
+      "totalEdits": "کل ویرایش‌ها",
+      "thisMonth": "این ماه",
+      "favorites": "علاقه‌مندی‌ها"
+    },
+    "accountInfo": "اطلاعات حساب",
+    "email": "ایمیل",
+    "subscription": "اشتراک",
+    "subscriptionStatus": {
+      "free": "رایگان",
+      "pro": "حرفه‌ای",
+      "premium": "ویژه"
+    },
+    "upgradeToPro": "ارتقا به حرفه‌ای",
+    "upgradeNow": "ارتقا دهید",
+    "upgradeDescription": "قابلیت‌های پیشرفته را باز کنید و تجربه خود را بهبود دهید",
+    "upgradeFeatures": {
+      "unlimited": "ویرایش نامحدود",
+      "quality": "خروجی 4K",
+      "priority": "پشتیبانی اولویت‌دار"
+    },
+    "settings": "تنظیمات",
+    "theme": "تم",
+    "themeOptions": {
+      "dark": "تیره",
+      "light": "روشن"
+    },
+    "language": "زبان",
+    "logout": "خروج",
+    "languages": {
+      "english": "انگلیسی",
+      "persian": "فارسی"
+    },
+    "characters": {
+      "title": "کاراکترهای من",
+      "createCharacter": "ساخت کاراکتر",
+      "editCharacter": "ویرایش کاراکتر",
+      "characterName": "نام کاراکتر",
+      "characterNamePlaceholder": "نام کاراکتر را وارد کنید",
+      "uploadImages": "آپلود تصاویر",
+      "minImages": "حداقل ۳ تصویر الزامی است",
+      "maxImages": "حداکثر ۵ تصویر مجاز است",
+      "imageCount": "تصویر",
+      "noCharacters": "هنوز کاراکتری ندارید",
+      "noCharactersDescription": "اولین کاراکتر خود را بسازید تا شروع کنید",
+      "deleteCharacter": "حذف کاراکتر",
+      "deleteConfirm": "آیا مطمئن هستید که می‌خواهید این کاراکتر را حذف کنید؟",
+      "characterCreated": "کاراکتر با موفقیت ساخته شد",
+      "characterUpdated": "کاراکتر با موفقیت به‌روزرسانی شد",
+      "characterDeleted": "کاراکتر با موفقیت حذف شد",
+      "uploadImagesHint": "۳ تا ۵ تصویر از کاراکتر خود آپلود کنید",
+      "dragDropImages": "تصاویر را بکشید و رها کنید یا کلیک کنید",
+      "removeImage": "حذف تصویر",
+      "validation": {
+        "nameRequired": "نام کاراکتر الزامی است",
+        "minImagesRequired": "حداقل ۳ تصویر الزامی است",
+        "maxImagesExceeded": "حداکثر ۵ تصویر مجاز است"
+      }
+    }
+  },
+  "upgrade": {
+    "title": "ارتقا به حرفه‌ای با نرو",
+    "upgradeNow": "ارتقا دهید",
+    "plans": {
+      "free": {
+        "name": "رایگان",
+        "price": "۰ دلار/ماه",
+        "features": [
+          "سبک‌های پایه",
+          "خروجی محدود",
+          "پردازش استاندارد"
+        ]
+      },
+      "pro": {
+        "name": "حرفه‌ای",
+        "price": "۹ دلار/ماه",
+        "features": [
+          "ویرایش نامحدود",
+          "خروجی 4K",
+          "پردازش سریع‌تر AI",
+          "پشتیبانی اولویت‌دار"
+        ]
+      },
+      "premium": {
+        "name": "ویژه",
+        "price": "۱۹ دلار/ماه",
+        "features": [
+          "تمام امکانات حرفه‌ای",
+          "دسترسی اولویت‌دار",
+          "مدل‌های جدید زودتر",
+          "مجوز تجاری"
+        ]
+      }
+    }
+  },
+  "subscription": {
+    "badge": "پلن‌های قیمت‌گذاری",
+    "title": "پلن مناسب را انتخاب کنید",
+    "subtitle": "قدرت کامل خلاقیت با هوش مصنوعی را با گزینه‌های انعطاف‌پذیر ما باز کنید",
+    "popular": "محبوب‌ترین",
+    "month": "ماه",
+    "monthly": "ماهانه",
+    "yearly": "سالانه",
+    "save60": "۶۰٪ صرفه‌جویی",
+    "billedYearly": "به صورت سالانه صورت‌حساب می‌شود",
+    "saveYearly": "{{amount}} در سال صرفه‌جویی کنید",
+    "currentPlan": "پلن فعلی",
+    "selectPlan": "شروع کنید",
+    "processing": "در حال پردازش...",
+    "plans": {
+      "free": {
+        "name": "رایگان",
+        "features": {
+          "limitedGenerations": "۱۰ تولید در ماه",
+          "basicImageGenerator": "تولیدکننده تصویر پایه",
+          "basicPromptEditor": "ویرایشگر پرامپت پایه",
+          "basicImageUpscaler": "بزرگ‌نمایی تصویر پایه (فقط ۲ برابر)",
+          "watermarkOnExports": "واترمارک روی خروجی‌ها",
+          "standardProcessing": "پردازش استاندارد هوش مصنوعی",
+          "communitySupport": "پشتیبانی انجمن"
+        }
+      },
+      "pro": {
+        "name": "حرفه‌ای",
+        "features": {
+          "unlimitedGenerations": "تولید نامحدود",
+          "allTools": "دسترسی به تمام ابزارها و امکانات هوش مصنوعی",
+          "hdExport": "کیفیت خروجی HD و 4K",
+          "noWatermark": "بدون واترمارک روی خروجی‌ها",
+          "fasterProcessing": "پردازش ۳ برابر سریع‌تر هوش مصنوعی",
+          "prioritySupport": "پشتیبانی اولویت‌دار"
+        }
+      }
+    },
+    "whyUpgrade": "چرا ارتقا دهیم؟",
+    "whyUpgradeSubtitle": "خلاقیت خود را با امکانات ویژه به سطح بعدی ببرید",
+    "benefits": {
+      "faster": {
+        "title": "فوق‌العاده سریع",
+        "description": "نتایج را در چند ثانیه با پردازش اولویت‌دار دریافت کنید"
+      },
+      "priority": {
+        "title": "پشتیبانی اولویت‌دار",
+        "description": "هر زمان که نیاز دارید از تیم اختصاصی ما کمک بگیرید"
+      },
+      "quality": {
+        "title": "کیفیت ممتاز",
+        "description": "خروجی در بالاترین کیفیت تا رزولوشن 4K"
+      },
+      "support": {
+        "title": "پشتیبانی ۲۴/۷",
+        "description": "کمک شبانه‌روزی برای تمام نیازهای خلاقانه شما"
+      }
+    },
+    "faq": {
+      "title": "سوالی دارید؟",
+      "description": "ما اینجا هستیم تا کمک کنیم! برای هر سوالی در مورد قیمت یا امکانات با تیم پشتیبانی تماس بگیرید.",
+      "contactButton": "تماس با پشتیبانی"
+    },
+    "moneyBackGuarantee": "گارانتی بازگشت وجه ۳۰ روزه"
+  },
+  "upscale": {
+    "title": "بزرگ‌نمایی تصویر",
+    "description": "تصاویر خود را با هوش مصنوعی بزرگ کنید",
+    "uploadImage": "آپلود تصویر",
+    "uploadHint": "کلیک کنید یا بکشید و رها کنید",
+    "scaleLabel": "ضریب بزرگ‌نمایی",
+    "scaleHint": "انتخاب کنید چند برابر تصویر بزرگ شود",
+    "upscaleButton": "بزرگ‌نمایی تصویر",
+    "upscaling": "در حال بزرگ‌نمایی تصویر شما...",
+    "downloadButton": "دانلود",
+    "closeButton": "بستن",
+    "preview": {
+      "noImage": "هنوز تصویری آپلود نشده است",
+      "uploadToStart": "برای شروع بزرگ‌نمایی، تصویری آپلود کنید"
+    },
+    "result": {
+      "title": "بزرگ‌نمایی با موفقیت انجام شد!",
+      "description": "بزرگ‌نمایی {{scale}} برابر"
+    }
+  },
+  "imageToPrompt": {
+    "title": "تصویر به پرامپت",
+    "description": "پرامپت‌های خلاقانه از تصاویر خود با هوش مصنوعی تولید کنید",
+    "uploadImage": "آپلود تصویر",
+    "uploadHint": "کلیک کنید یا بکشید و رها کنید",
+    "analyzeButton": "تحلیل تصویر",
+    "analyzing": "در حال تحلیل تصویر شما...",
+    "generatedPrompt": "پرامپت تولید شده",
+    "detectedElements": "عناصر شناسایی شده",
+    "copyPrompt": "کپی پرامپت",
+    "preview": {
+      "noImage": "هنوز تصویری آپلود نشده است",
+      "uploadToStart": "برای تحلیل، تصویری آپلود کنید"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "خوش آمدید",
+      "subtitle": "برای ادامه وارد نرو شوید",
+      "signingIn": "در حال ورود...",
+      "googleInfo": "با ورود از طریق گوگل، شما با شرایط استفاده و حریم خصوصی ما موافقت می‌کنید",
+      "phoneLabel": "شماره تلفن",
+      "phonePlaceholder": "شماره تلفن خود را وارد کنید",
+      "continueButton": "ادامه",
+      "termsText": "با ادامه، شما با",
+      "termsLink": "شرایط استفاده",
+      "and": "و",
+      "privacyLink": "حریم خصوصی"
+    },
+    "verification": {
+      "title": "تایید شماره تلفن",
+      "subtitle": "کد ۶ رقمی ارسال شده به",
+      "codePlaceholder": "کد تایید را وارد کنید",
+      "verifyButton": "تایید",
+      "resendCode": "ارسال مجدد کد",
+      "resendIn": "ارسال مجدد در",
+      "seconds": "ثانیه",
+      "changeNumber": "تغییر شماره",
+      "codeResent": "کد با موفقیت ارسال شد"
+    },
+    "errors": {
+      "invalidPhone": "لطفا شماره تلفن معتبر وارد کنید",
+      "invalidCode": "لطفا کد ۶ رقمی معتبر وارد کنید",
+      "verificationFailed": "تایید ناموفق بود. لطفا دوباره تلاش کنید",
+      "networkError": "خطای شبکه. لطفا اتصال خود را بررسی کنید",
+      "tooManyAttempts": "تلاش‌های زیاد. لطفا بعدا دوباره تلاش کنید"
+    }
+  }
+}

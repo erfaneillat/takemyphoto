@@ -1,0 +1,338 @@
+import { useRef, useState } from 'react';
+import { useTranslation } from '@/shared/hooks';
+import { useImageGenerator } from './hooks/useImageGenerator';
+import type { GeneratedImage } from '@/core/domain/entities/Image';
+import type { Character } from '@/core/domain/entities/Character';
+import { CharacterSelectorModal } from '@/features/edit/components/CharacterSelectorModal';
+import { 
+  Image as ImageIcon,
+  Sparkles,
+  Loader2,
+  Users,
+  CheckCircle2,
+  X,
+  Upload,
+  Plus,
+  Download,
+} from 'lucide-react';
+
+export const GeneratePage = () => {
+  const { t } = useTranslation();
+  const {
+    generatedImages,
+    uploadedImages,
+    isProcessing,
+    prompt,
+    setPrompt,
+    selectedCharacters,
+    setSelectedCharacters,
+    generateImage,
+    addUploadedImage,
+    removeUploadedImage,
+    setUploadedImages,
+  } = useImageGenerator();
+
+  const [isCharacterSelectorOpen, setIsCharacterSelectorOpen] = useState(false);
+  const [selectedHistoryImage, setSelectedHistoryImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const MAX_CHARACTERS = 2;
+  const MAX_IMAGES = 3;
+  const canAddMoreCharacters = selectedCharacters.length < MAX_CHARACTERS;
+  const canAddMoreImages = uploadedImages.length < MAX_IMAGES;
+
+  const handleGenerateWithCleanup = async () => {
+    if (!prompt.trim()) return;
+    await generateImage({ prompt });
+    setPrompt('');
+    // Clear uploaded references after generation
+    setUploadedImages([]);
+    // Reset selected history image to show the newly generated image
+    setSelectedHistoryImage(null);
+  };
+
+  const handleOpenCharacterSelector = () => {
+    setIsCharacterSelectorOpen(true);
+  };
+
+  const handleSelectCharacter = async (character: Character) => {
+    // Toggle selection
+    if (selectedCharacters.some(c => c.id === character.id)) {
+      setSelectedCharacters(selectedCharacters.filter(c => c.id !== character.id));
+      return;
+    }
+    if (!canAddMoreCharacters) return;
+    setSelectedCharacters([...selectedCharacters, character]);
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!canAddMoreImages) return;
+    addUploadedImage(file);
+  };
+
+  // Set the main display image (show newest/first image in history)
+  const mainDisplayImage = selectedHistoryImage || (generatedImages.length > 0 ? generatedImages[0].url : null);
+
+  return (
+    <div className="h-full bg-white dark:bg-black flex flex-col overflow-hidden transition-colors">
+      {/* Main Content - Responsive Layout */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        {/* Image Preview & History Panel */}
+        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface p-3 md:p-6 overflow-hidden">
+          {/* Main Image Display */}
+          <div className="flex-1 flex items-center justify-center mb-3 md:mb-6 rounded-xl lg:rounded-2xl overflow-hidden bg-white dark:bg-black border border-gray-200 dark:border-border-light relative">
+            {mainDisplayImage ? (
+              <>
+                <img
+                  src={mainDisplayImage}
+                  alt="Generated"
+                  className="max-w-full max-h-full object-contain"
+                />
+                {/* Action Buttons */}
+                <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 flex gap-2">
+                  {/* Download Button */}
+                  <button
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = mainDisplayImage;
+                      link.download = `generated-image-${Date.now()}.jpg`;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white rounded-full p-2 md:p-3 shadow-lg transition-all active:scale-95"
+                    title="Download image"
+                  >
+                    <Download size={20} className="md:w-6 md:h-6" />
+                  </button>
+                  
+                  {/* Attach as Reference Button */}
+                  <button
+                    onClick={async () => {
+                      try {
+                        // Fetch the image from URL and convert to blob
+                        const response = await fetch(mainDisplayImage);
+                        const blob = await response.blob();
+                        // Create a File from the blob
+                        const file = new File([blob], 'generated-image.jpg', { type: 'image/jpeg' });
+                        addUploadedImage(file);
+                      } catch (error) {
+                        console.error('Failed to attach image as reference:', error);
+                      }
+                    }}
+                    disabled={!canAddMoreImages}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-full p-2 md:p-3 shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                    title={canAddMoreImages ? 'Attach as reference' : 'Maximum images reached'}
+                  >
+                    <Plus size={20} className="md:w-6 md:h-6" />
+                    <span className="text-xs md:text-sm font-medium hidden sm:inline">
+                      {t('generate.attachReference')}
+                    </span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center p-6 md:p-12">
+                <ImageIcon size={48} className="mx-auto text-gray-300 dark:text-gray-700 mb-3 md:mb-4 md:w-16 md:h-16" />
+                <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg font-medium">
+                  {t('generate.preview.noImage')}
+                </p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs md:text-sm mt-1 md:mt-2">
+                  {t('generate.preview.generateToSee')}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* History Carousel */}
+          {generatedImages.length > 0 && (
+            <div className="flex-shrink-0">
+              <h3 className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 md:mb-3">
+                {t('generate.history.title')}
+              </h3>
+              <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 -mx-3 px-3 md:mx-0 md:px-0">
+                {generatedImages.map((image: GeneratedImage, index: number) => (
+                  <button
+                    key={image.id}
+                    onClick={() => setSelectedHistoryImage(image.url)}
+                    className={`flex-shrink-0 w-16 h-16 md:w-24 md:h-24 rounded-lg md:rounded-xl overflow-hidden border-2 transition-all ${
+                      selectedHistoryImage === image.url || (!selectedHistoryImage && index === 0)
+                        ? 'border-blue-500 dark:border-blue-400 shadow-lg'
+                        : 'border-gray-200 dark:border-border-light hover:border-gray-400 dark:hover:border-gray-600'
+                    }`}
+                  >
+                    <img
+                      src={image.url}
+                      alt={`History ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Controls Panel */}
+        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col overflow-visible lg:overflow-hidden max-h-[60vh] lg:max-h-none">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+            {/* Header */}
+            <div className="mb-4 md:mb-6">
+              <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">
+                {t('generate.title')}
+              </h2>
+              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                {t('generate.description')}
+              </p>
+            </div>
+
+            {/* Prompt Input */}
+            <div className="mb-4 md:mb-6">
+              <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('generate.promptLabel')}
+              </label>
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder={t('generate.promptPlaceholder')}
+                className="w-full px-3 md:px-4 py-2.5 md:py-3 bg-gray-50 dark:bg-surface rounded-lg md:rounded-xl border border-gray-200 dark:border-border-light focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none resize-none min-h-[100px] md:min-h-[120px] text-sm"
+              />
+            </div>
+
+            {/* References Section */}
+            <div className="mb-4 md:mb-6">
+              <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 md:mb-3">
+                {t('generate.referencesLabel')}
+              </label>
+              <div className="grid grid-cols-2 gap-2 md:gap-3">
+                {/* Upload Image Button */}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={!canAddMoreImages}
+                  className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${
+                    canAddMoreImages
+                      ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
+                      : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <Upload size={20} className={`md:w-6 md:h-6 ${canAddMoreImages ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`} />
+                  <span className={`text-xs font-medium text-center leading-tight ${
+                    canAddMoreImages
+                      ? 'text-gray-600 dark:text-gray-400'
+                      : 'text-gray-400 dark:text-gray-500'
+                  }`}>
+                    {t('generate.uploadImage')} <br />({uploadedImages.length}/{MAX_IMAGES})
+                  </span>
+                </button>
+
+                {/* Attach Character Button */}
+                <button
+                  onClick={handleOpenCharacterSelector}
+                  disabled={!canAddMoreCharacters}
+                  className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${
+                    canAddMoreCharacters
+                      ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
+                      : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <Users size={20} className={`md:w-6 md:h-6 ${canAddMoreCharacters ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`} />
+                  <span className={`text-xs font-medium text-center leading-tight ${
+                    canAddMoreCharacters
+                      ? 'text-gray-600 dark:text-gray-400'
+                      : 'text-gray-400 dark:text-gray-500'
+                  }`}>
+                    {t('generate.attachCharacter')} <br />({selectedCharacters.length}/{MAX_CHARACTERS})
+                  </span>
+                </button>
+              </div>
+
+              {/* Uploaded Images & Selected Characters Preview */}
+              {(uploadedImages.length > 0 || selectedCharacters.length > 0) && (
+                <div className="mt-3 md:mt-4 grid grid-cols-2 gap-2 md:gap-3">
+                  {uploadedImages.map((image) => (
+                    <div key={image.id} className="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-border-light bg-gray-100 dark:bg-surface group">
+                      <img
+                        src={image.preview}
+                        alt="Uploaded"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-blue-600 rounded-full p-0.5 md:p-1">
+                        <CheckCircle2 size={16} className="md:w-5 md:h-5 text-white fill-blue-600" />
+                      </div>
+                      <button
+                        onClick={() => removeUploadedImage(image.id)}
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
+                      >
+                        <X size={20} className="md:w-6 md:h-6 text-white" />
+                      </button>
+                    </div>
+                  ))}
+                  {selectedCharacters.map((character) => (
+                    <div key={character.id} className="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-border-light bg-gray-100 dark:bg-surface group">
+                      {character.images.length > 0 && (
+                        <img
+                          src={character.images[0].url}
+                          alt={character.name}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-blue-600 rounded-full p-0.5 md:p-1">
+                        <CheckCircle2 size={16} className="md:w-5 md:h-5 text-white fill-blue-600" />
+                      </div>
+                      <button
+                        onClick={() => setSelectedCharacters(selectedCharacters.filter(c => c.id !== character.id))}
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
+                      >
+                        <X size={20} className="md:w-6 md:h-6 text-white" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Generate Button - Fixed at Bottom */}
+          <div className="flex-shrink-0 p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card sticky bottom-24 md:bottom-0 z-50 pb-[env(safe-area-inset-bottom)]">
+            <button
+              onClick={handleGenerateWithCleanup}
+              disabled={!prompt.trim() || isProcessing}
+              className="w-full px-4 md:px-6 py-3 md:py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg md:rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-sm md:text-base active:scale-95"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 size={18} className="md:w-5 md:h-5 animate-spin" />
+                  <span className="truncate">{t('generate.generatingImage')}</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles size={18} className="md:w-5 md:h-5" />
+                  <span>{t('generate.generateButton')}</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+
+      {/* Character Selector Modal */}
+      <CharacterSelectorModal
+        isOpen={isCharacterSelectorOpen}
+        onClose={() => setIsCharacterSelectorOpen(false)}
+        onSelectCharacter={handleSelectCharacter}
+        onUploadImage={() => {}}
+      />
+    </div>
+  );
+};
