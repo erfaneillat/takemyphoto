@@ -4,11 +4,9 @@ import { Download } from 'lucide-react';
 interface ImageCardProps {
   imageUrl: string;
   title: string;
-  buttonText: string;
-  onButtonClick?: () => void;
 }
 
-export const ImageCard = ({ imageUrl, title, buttonText, onButtonClick }: ImageCardProps) => {
+export const ImageCard = ({ imageUrl, title }: ImageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleDownload = (e: React.MouseEvent) => {
