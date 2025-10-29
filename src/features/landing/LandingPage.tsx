@@ -102,8 +102,6 @@ export const LandingPage = () => {
               key={image.id}
               imageUrl={image.url}
               title={image.title}
-              buttonText={t('landing.trending.tryStyle')}
-              onButtonClick={() => navigate('/edit')}
             />
           ))}
         </div>

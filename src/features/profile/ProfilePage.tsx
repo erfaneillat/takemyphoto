@@ -239,8 +239,6 @@ export const ProfilePage = () => {
                         key={image.id}
                         imageUrl={image.imageUrl}
                         title={image.prompt.substring(0, 50) + (image.prompt.length > 50 ? '...' : '')}
-                        buttonText={image.type === 'TEXTTOIAMGE' ? t('generate.title') : t('edit.title')}
-                        onButtonClick={() => navigate(image.type === 'TEXTTOIAMGE' ? '/generate' : '/edit')}
                       />
                     ))}
                   </div>
@@ -277,8 +275,6 @@ export const ProfilePage = () => {
                         key={template.id}
                         imageUrl={template.imageUrl}
                         title={template.prompt}
-                        buttonText={t('explore.useStyle')}
-                        onButtonClick={() => navigate('/edit')}
                       />
                     ))}
                   </div>
