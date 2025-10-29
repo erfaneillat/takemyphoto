@@ -10,12 +10,20 @@ const resolveApiBase = () => {
       try {
         const u = new URL(raw)
         u.protocol = 'https:'
-        return u.toString()
+        let upgraded = u.toString()
+        // If points to /api without version, append /v1
+        if (upgraded.endsWith('/api')) upgraded += '/v1'
+        if (upgraded.endsWith('/api/')) upgraded += 'v1'
+        return upgraded
       } catch {
         // fall through to raw
       }
     }
-    return raw
+    let url = raw
+    // If points to /api without version, append /v1
+    if (url.endsWith('/api')) url += '/v1'
+    if (url.endsWith('/api/')) url += 'v1'
+    return url
   }
   // Default to same-origin relative path
   return '/api/v1'
