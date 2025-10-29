@@ -63,8 +63,8 @@ jobs:
           echo "app_name=nero-dev" >> $GITHUB_OUTPUT
           echo "app_port=3001" >> $GITHUB_OUTPUT
           echo "app_path=/var/www/nero-dev" >> $GITHUB_OUTPUT
-          echo "api_url=https://dev-api.nero.app" >> $GITHUB_OUTPUT
-          echo "web_url=https://dev.nero.app" >> $GITHUB_OUTPUT
+          echo "api_url=http://dev.takemyphoto.xyz" >> $GITHUB_OUTPUT
+          echo "web_url=http://dev.takemyphoto.xyz" >> $GITHUB_OUTPUT
         else
           echo "environment=production" >> $GITHUB_OUTPUT
           echo "server_host=${{ secrets.SERVER_HOST }}" >> $GITHUB_OUTPUT
@@ -74,8 +74,33 @@ jobs:
           echo "app_name=nero" >> $GITHUB_OUTPUT
           echo "app_port=3000" >> $GITHUB_OUTPUT
           echo "app_path=/var/www/nero" >> $GITHUB_OUTPUT
-          echo "api_url=https://api.nero.app" >> $GITHUB_OUTPUT
-          echo "web_url=https://nero.app" >> $GITHUB_OUTPUT
+          echo "api_url=http://takemyphoto.xyz" >> $GITHUB_OUTPUT
+          echo "web_url=http://takemyphoto.xyz" >> $GITHUB_OUTPUT
+        fi
+
+    - name: 🔧 Extract PORT from ENV secret (optional)
+      id: extract_port
+      shell: bash
+      run: |
+        if [ -n "${{ secrets.ENV }}" ]; then
+          echo "${{ secrets.ENV }}" > env_payload.txt
+          PORT_VALUE=$(grep -E '^PORT=' env_payload.txt | head -n1 | cut -d'=' -f2- | tr -d '\r')
+          if [ -n "$PORT_VALUE" ]; then
+            echo "port=$PORT_VALUE" >> $GITHUB_OUTPUT
+            echo "Detected PORT from ENV secret: $PORT_VALUE"
+          fi
+          rm -f env_payload.txt
+        fi
+
+    - name: 🔧 Decide App Port
+      id: port
+      run: |
+        DEFAULT_PORT="${{ steps.env.outputs.app_port }}"
+        EXTRACTED="${{ steps.extract_port.outputs.port }}"
+        if [ -n "$EXTRACTED" ]; then
+          echo "app_port=$EXTRACTED" >> $GITHUB_OUTPUT
+        else
+          echo "app_port=$DEFAULT_PORT" >> $GITHUB_OUTPUT
         fi
 
     - name: 🔨 Build Server
@@ -136,11 +161,14 @@ jobs:
     # ✅ Deploy backend code
     - name: ✅ Deploy Server Code
       uses: appleboy/ssh-action@v1.0.3
+      env:
+        ENV_FILE: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_ENV || secrets.ENV }}
       with:
         host: ${{ steps.env.outputs.server_host }}
         username: ${{ steps.env.outputs.server_username }}
         password: ${{ steps.env.outputs.server_password }}
         port: ${{ steps.env.outputs.server_port }}
+        envs: ENV_FILE
         script: |
           echo "🔍 Navigating to app path: ${{ steps.env.outputs.app_path }}"
           
@@ -159,6 +187,13 @@ jobs:
             git fetch origin ${{ steps.env.outputs.environment == 'development' && 'dev' || 'master' }}
             git reset --hard origin/${{ steps.env.outputs.environment == 'development' && 'dev' || 'master' }}
           fi
+
+          # Write .env file from GitHub secret
+          echo "📝 Writing environment file to server/server/.env"
+          mkdir -p server
+          echo "$ENV_FILE" > server/.env
+          chmod 600 server/.env
+          echo "✅ .env written"
           
           echo "📦 Installing server dependencies..."
           cd server
@@ -267,7 +302,7 @@ jobs:
 
           # Ensure environment is set for the process
           export NODE_ENV=${{ steps.env.outputs.environment }}
-          export PORT=${{ steps.env.outputs.app_port }}
+          export PORT=${{ steps.port.outputs.app_port }}
 
           # Start or restart the app with the correct CWD
           if pm2 describe ${{ steps.env.outputs.app_name }} > /dev/null; then
@@ -296,7 +331,7 @@ jobs:
           sleep 10
           ATTEMPTS=8
           for i in $(seq 1 $ATTEMPTS); do
-            if curl -fsS http://127.0.0.1:${{ steps.env.outputs.app_port }}/api/health > /dev/null; then
+            if curl -fsS http://127.0.0.1:${{ steps.port.outputs.app_port }}/api/health > /dev/null; then
               echo "✅ Application is healthy"
               exit 0
             fi
@@ -315,5 +350,5 @@ jobs:
         echo "- Environment: ${{ steps.env.outputs.environment }}"
         echo "- API URL: ${{ steps.env.outputs.api_url }}"
         echo "- Web URL: ${{ steps.env.outputs.web_url }}"
-        echo "- App Port: ${{ steps.env.outputs.app_port }}"
+        echo "- App Port: ${{ steps.port.outputs.app_port }}"
         echo "- PM2 App Name: ${{ steps.env.outputs.app_name }}"
