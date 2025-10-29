@@ -21,6 +21,7 @@ async function bootstrap() {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`📡 API: http://localhost:${PORT}/api/v1`);
       console.log(`🏥 Health: http://localhost:${PORT}/health`);
+      console.log(`📊 Panel: http://localhost:${PORT}/panel`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
 

@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -107,6 +108,15 @@ export class App {
     this.app.use(`${baseUrl}/enhance`, createEnhanceRoutes(this.container.enhanceController));
     // Image generation routes (Google AI) - kept as /nanobanana for backwards compatibility
     this.app.use(`${baseUrl}/nanobanana`, createImageGenerationRoutes(this.container.imageGenerationController));
+
+    // Serve panel static files at /panel
+    const panelPath = path.join(__dirname, '../../panel/dist');
+    this.app.use('/panel', express.static(panelPath));
+    
+    // Handle panel SPA routing - serve index.html for any /panel/* routes
+    this.app.get('/panel/*', (_req, res) => {
+      res.sendFile(path.join(panelPath, 'index.html'));
+    });
 
     // 404 handler
     this.app.use('*', (req, res) => {
