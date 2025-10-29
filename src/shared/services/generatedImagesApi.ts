@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:2000/api/v1';
+import { apiClient as api } from './api';
 
 export interface GeneratedImage {
   id: string;
@@ -42,13 +40,10 @@ export const generatedImagesApi = {
       throw new Error('No access token found');
     }
 
-    const response = await axios.get<GeneratedImagesResponse>(
-      `${API_URL}/nanobanana/images`,
+    const response = await api.get<GeneratedImagesResponse>(
+      '/nanobanana/images',
       {
         params: { limit, skip },
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
       }
     );
 
