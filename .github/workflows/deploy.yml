@@ -346,11 +346,11 @@ jobs:
 
           # Start or restart the app with the correct CWD
           if pm2 describe ${{ steps.env.outputs.app_name }} > /dev/null; then
-            echo "🔄 Restarting existing PM2 app"
-            pm2 restart ${{ steps.env.outputs.app_name }} --update-env
+            echo "🔄 Restarting existing PM2 app with tsconfig-paths"
+            pm2 restart ${{ steps.env.outputs.app_name }} --update-env --node-args '-r tsconfig-paths/register'
           else
-            echo "🚀 Starting PM2 app for the first time"
-            pm2 start dist/index.js --name ${{ steps.env.outputs.app_name }} --cwd ${{ steps.env.outputs.app_path }}/server
+            echo "🚀 Starting PM2 app for the first time with tsconfig-paths"
+            pm2 start dist/index.js --name ${{ steps.env.outputs.app_name }} --cwd ${{ steps.env.outputs.app_path }}/server --node-args '-r tsconfig-paths/register'
           fi
 
           pm2 save
