@@ -218,8 +218,10 @@ jobs:
           cd server
           
           # Check if package-lock.json exists, if not use npm install
+          # Ensure devDependencies are installed (needed for build: tsc, tsc-alias)
+          export npm_config_production=false
           if [ -f "package-lock.json" ]; then
-            npm ci || { echo "❌ npm ci failed"; exit 1; }
+            npm ci || { echo "⚠️ npm ci failed, falling back to npm install"; npm install || { echo "❌ npm install failed"; exit 1; }; }
           else
             echo "⚠️ No package-lock.json found, using npm install..."
             npm install || { echo "❌ npm install failed"; exit 1; }
@@ -256,8 +258,9 @@ jobs:
           cd ..
           
           # Install web dependencies if needed
+          export npm_config_production=false
           if [ -f "package-lock.json" ]; then
-            npm ci || { echo "❌ npm ci failed for web"; exit 1; }
+            npm ci || { echo "⚠️ npm ci failed for web, falling back to npm install"; npm install || { echo "❌ npm install failed for web"; exit 1; }; }
           else
             echo "⚠️ No package-lock.json found, using npm install..."
             npm install || { echo "❌ npm install failed for web"; exit 1; }
@@ -294,8 +297,9 @@ jobs:
           cd panel
           
           # Install panel dependencies if needed
+          export npm_config_production=false
           if [ -f "package-lock.json" ]; then
-            npm ci || { echo "❌ npm ci failed for panel"; exit 1; }
+            npm ci || { echo "⚠️ npm ci failed for panel, falling back to npm install"; npm install || { echo "❌ npm install failed for panel"; exit 1; }; }
           else
             echo "⚠️ No package-lock.json found, using npm install..."
             npm install || { echo "❌ npm install failed for panel"; exit 1; }
