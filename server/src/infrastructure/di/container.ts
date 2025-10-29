@@ -13,7 +13,7 @@ import { AdminRepository } from '@infrastructure/database/repositories/AdminRepo
 // Services
 import { JwtService } from '@infrastructure/services/JwtService';
 import { LocalFileUploadService } from '@infrastructure/services/LocalFileUploadService';
-import { TwilioSmsService, MockSmsService } from '@infrastructure/services/SmsService';
+import { MockSmsService } from '@infrastructure/services/SmsService';
 import { OpenAIService } from '@infrastructure/services/OpenAIService';
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { RemoteImageService } from '@infrastructure/services/RemoteImageService';
@@ -70,7 +70,7 @@ export class Container {
   // Services
   public jwtService: JwtService;
   public fileUploadService: LocalFileUploadService;
-  public smsService: TwilioSmsService | MockSmsService;
+  public smsService: MockSmsService;
   public openAIService: OpenAIService;
   public googleAIService: GoogleAIService;
   public remoteImageService: RemoteImageService;
@@ -131,10 +131,9 @@ export class Container {
     this.googleAIService = new GoogleAIService();
     this.remoteImageService = new RemoteImageService();
     
-    // Use mock SMS service in development, real service in production
-    this.smsService = process.env.NODE_ENV === 'production' 
-      ? new TwilioSmsService() 
-      : new MockSmsService();
+    // Use MockSmsService - logs verification codes to console
+    // For production SMS, integrate with AWS SNS, Vonage, or another SMS provider
+    this.smsService = new MockSmsService();
 
     // Initialize Use Cases
     this.sendVerificationCodeUseCase = new SendVerificationCodeUseCase(
