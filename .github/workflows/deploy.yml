@@ -182,12 +182,13 @@ jobs:
       uses: appleboy/ssh-action@v1.0.3
       env:
         ENV_FILE: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_ENV || secrets.ENV }}
+        WEB_ENV_FILE: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_WEB_ENV || secrets.WEB_ENV }}
       with:
         host: ${{ steps.env.outputs.server_host }}
         username: ${{ steps.env.outputs.server_username }}
         password: ${{ steps.env.outputs.server_password }}
         port: ${{ steps.env.outputs.server_port }}
-        envs: ENV_FILE
+        envs: ENV_FILE,WEB_ENV_FILE
         script: |
           echo "🔍 Navigating to app path: ${{ steps.env.outputs.app_path }}"
           
@@ -207,12 +208,35 @@ jobs:
             git reset --hard origin/${{ steps.env.outputs.environment == 'development' && 'dev' || 'master' }}
           fi
 
-          # Write .env file from GitHub secret
-          echo "📝 Writing environment file to server/server/.env"
+          # Write server .env file from GitHub secret
+          echo "📝 Writing server environment file to server/.env"
           mkdir -p server
           echo "$ENV_FILE" > server/.env
           chmod 600 server/.env
-          echo "✅ .env written"
+          echo "✅ Server .env written"
+          
+          # Write web .env file for frontend build
+          echo "📝 Writing web environment file to .env"
+          if [ -n "$WEB_ENV_FILE" ]; then
+            echo "$WEB_ENV_FILE" > .env
+            chmod 600 .env
+            echo "✅ Web .env written"
+          else
+            echo "⚠️  WEB_ENV_FILE not set, creating default .env"
+            cat > .env << EOF
+VITE_API_URL=${{ steps.env.outputs.api_url }}/api
+VITE_GOOGLE_CLIENT_ID=${{ secrets.DEV_GOOGLE_CLIENT_ID || secrets.GOOGLE_CLIENT_ID }}
+VITE_FIREBASE_API_KEY=AIzaSyB_xb9MsTagBJY0XmFIgr9H-6Jcz_mPjPw
+VITE_FIREBASE_AUTH_DOMAIN=nero-d9eec.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=nero-d9eec
+VITE_FIREBASE_STORAGE_BUCKET=nero-d9eec.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=448577746795
+VITE_FIREBASE_APP_ID=1:448577746795:web:a9368454f2b7864ccefe2e
+VITE_FIREBASE_MEASUREMENT_ID=G-TN1ZGWZLQ1
+EOF
+            chmod 600 .env
+            echo "✅ Default web .env created"
+          fi
           
           echo "📦 Installing server dependencies..."
           cd server

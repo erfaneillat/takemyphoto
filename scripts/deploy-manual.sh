@@ -35,6 +35,32 @@ git reset --hard origin/"${BRANCH}"
 echo -e "${GREEN}✅ Code updated${NC}"
 echo ""
 
+# Check for .env file
+if [ ! -f ".env" ]; then
+    echo -e "${YELLOW}⚠️  .env file not found in root directory${NC}"
+    echo -e "${YELLOW}⚠️  Creating .env from .env.example${NC}"
+    if [ -f ".env.example" ]; then
+        cp .env.example .env
+        echo -e "${YELLOW}⚠️  Please update .env with your actual values${NC}"
+    else
+        echo -e "${RED}❌ .env.example not found. Cannot create .env${NC}"
+        echo -e "${YELLOW}💡 You need to create a .env file manually with Vite environment variables${NC}"
+    fi
+fi
+
+# Check for server .env file
+if [ ! -f "server/.env" ]; then
+    echo -e "${YELLOW}⚠️  server/.env file not found${NC}"
+    echo -e "${YELLOW}⚠️  Creating server/.env from server/.env.example${NC}"
+    if [ -f "server/.env.example" ]; then
+        cp server/.env.example server/.env
+        echo -e "${YELLOW}⚠️  Please update server/.env with your actual values${NC}"
+    else
+        echo -e "${RED}❌ server/.env.example not found. Cannot create server/.env${NC}"
+    fi
+fi
+echo ""
+
 # Install and build server
 echo -e "${BLUE}📦 Installing server dependencies...${NC}"
 cd server
