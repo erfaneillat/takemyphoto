@@ -365,6 +365,39 @@ jobs:
           mkdir -p server/uploads
           echo "✅ Uploads directory ready"
 
+    # ✅ Finalize Web Build On Server (as requested)
+    - name: ✅ Finalize Web Build On Server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ steps.env.outputs.server_host }}
+        username: ${{ steps.env.outputs.server_username }}
+        password: ${{ steps.env.outputs.server_password }}
+        port: ${{ steps.env.outputs.server_port }}
+        script: |
+          echo "🔍 Finalizing web build in: ${{ steps.env.outputs.app_path }}"
+          cd ${{ steps.env.outputs.app_path }}
+
+          # Ensure devDependencies are installed for build
+          export npm_config_production=false
+          echo "📦 Running npm ci (fallback to npm install)"
+          if [ -f "package-lock.json" ]; then
+            npm ci || { echo "⚠️ npm ci failed, falling back to npm install"; npm install || { echo "❌ npm install failed"; exit 1; }; }
+          else
+            echo "⚠️ No package-lock.json found, using npm install..."
+            npm install || { echo "❌ npm install failed"; exit 1; }
+          fi
+
+          echo "🔨 Running npm run build in app root"
+          npm run build || { echo "❌ npm run build failed in app root"; exit 1; }
+
+          # Verify web dist exists
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ Error: Web build not found after finalize step (dist/index.html missing)"
+            ls -la dist || true
+            exit 1
+          fi
+          echo "✅ Final web build verified"
+
     # ✅ Restart PM2
     - name: ✅ Restart PM2
       uses: appleboy/ssh-action@v1.0.3
