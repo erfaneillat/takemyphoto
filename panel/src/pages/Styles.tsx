@@ -171,8 +171,14 @@ const Styles = () => {
       }
 
       // Get auth token from localStorage
-      const token = localStorage.getItem('adminToken');
-      const baseURL = apiClient.defaults.baseURL || 'http://localhost:3000';
+      const token = localStorage.getItem('accessToken') || localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Authentication token not found. Please login again.');
+        setImporting(false);
+        return;
+      }
+
+      const baseURL = apiClient.defaults.baseURL || '/api/v1';
       
       // Send POST request and read SSE stream
       fetch(`${baseURL}/admin/templates/import`, {
@@ -183,6 +189,9 @@ const Styles = () => {
         },
         body: JSON.stringify({ items })
       }).then(response => {
+        if (!response.ok && response.status === 401) {
+          throw new Error('Unauthorized - Please login again');
+        }
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
 
