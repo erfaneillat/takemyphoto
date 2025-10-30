@@ -4,11 +4,13 @@ import { Template } from '@core/domain/entities/Template';
 export interface PopularStylesRequest {
   limit?: number;
   period?: 'all' | 'month' | 'week';
+  offset?: number;
+  category?: string;
 }
 
 export class GetPopularStylesUseCase {
   async execute(request: PopularStylesRequest = {}): Promise<Template[]> {
-    const { limit = 10, period = 'all' } = request;
+    const { limit = 10, period = 'all', offset = 0, category } = request;
 
     // Calculate date filter based on period
     let dateFilter: any = {};
@@ -18,11 +20,13 @@ export class GetPopularStylesUseCase {
       const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
       dateFilter = { createdAt: { $gte: startDate } };
     }
+    const query = { ...dateFilter, ...(category ? { category } : {}) } as any;
 
     // Get templates sorted by usage count
     const templates = await TemplateModel
-      .find(dateFilter)
+      .find(query)
       .sort({ usageCount: -1, likeCount: -1 })
+      .skip(offset)
       .limit(limit)
       .lean();
 

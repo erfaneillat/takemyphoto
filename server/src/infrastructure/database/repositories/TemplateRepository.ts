@@ -20,7 +20,7 @@ export class TemplateRepository implements ITemplateRepository {
 
   async findAll(limit: number = 50, offset: number = 0): Promise<Template[]> {
     const templates = await TemplateModel.find()
-      .sort({ usageCount: -1, likeCount: -1, createdAt: -1 })
+      .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
     return templates.map(t => t.toJSON() as Template);
@@ -28,25 +28,36 @@ export class TemplateRepository implements ITemplateRepository {
 
   async findByCategory(category: string, limit: number = 50, offset: number = 0): Promise<Template[]> {
     const templates = await TemplateModel.find({ category })
-      .sort({ usageCount: -1, likeCount: -1, createdAt: -1 })
+      .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
     return templates.map(t => t.toJSON() as Template);
   }
 
-  async findTrending(limit: number = 20, offset: number = 0, period: 'week' | 'month' = 'week'): Promise<Template[]> {
+  async findTrending(
+    limit: number = 20,
+    period: 'week' | 'month' = 'week',
+    offset: number = 0,
+    category?: string
+  ): Promise<Template[]> {
     // Calculate dynamic trending based on recent activity
     const now = new Date();
     const daysAgo = period === 'week' ? 7 : 30;
     const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
 
-    // Get templates created or updated within the period, sorted by engagement
-    const templates = await TemplateModel.find({
+    // Build query: recent activity within period, optional category filter
+    const query: any = {
       $or: [
         { createdAt: { $gte: startDate } },
         { updatedAt: { $gte: startDate } }
       ]
-    })
+    };
+    if (category) {
+      query.category = category;
+    }
+
+    // Get templates created or updated within the period, sorted by engagement
+    const templates = await TemplateModel.find(query)
       .sort({ 
         usageCount: -1,
         likeCount: -1, 

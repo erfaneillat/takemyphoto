@@ -22,6 +22,7 @@ export interface Template {
   isFavorite: boolean;
   viewCount: number;
   likeCount: number;
+  usageCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +39,8 @@ export interface GetTemplatesParams {
 export interface GetPopularStylesParams {
   limit?: number;
   period?: 'all' | 'month' | 'week';
+  offset?: number;
+  category?: string;
 }
 
 export const templateApi = {

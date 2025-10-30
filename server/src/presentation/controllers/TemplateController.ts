@@ -58,11 +58,13 @@ export class TemplateController {
   });
 
   getPopularStyles = asyncHandler(async (req: Request, res: Response) => {
-    const { limit, period } = req.query;
+    const { limit, period, offset, category } = req.query;
 
     const templates = await this.getPopularStylesUseCase.execute({
       limit: limit ? parseInt(limit as string) : 10,
-      period: (period as 'all' | 'month' | 'week') || 'all'
+      period: (period as 'all' | 'month' | 'week') || 'all',
+      offset: offset ? parseInt(offset as string) : 0,
+      category: category ? String(category) : undefined
     });
 
     res.status(200).json({
