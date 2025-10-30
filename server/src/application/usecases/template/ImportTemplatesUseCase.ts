@@ -117,10 +117,20 @@ export class ImportTemplatesUseCase {
           tags: item.categories || []
         });
 
-        // Sync likeCount with StyleUsage count from system
-        const usageCount = await this.styleUsageRepository.countByTemplateId(createdTemplate.id);
-        if (usageCount > 0) {
+        // Determine initial usage/like seed
+        const rawLikes: any = (item as any).likes;
+        const seedFromLikes = rawLikes !== undefined && rawLikes !== null
+          ? parseInt(String(rawLikes).replace(/[^0-9]/g, ''), 10)
+          : NaN;
+
+        if (!isNaN(seedFromLikes) && seedFromLikes > 0) {
+          await this.templateRepository.updateLikeCount(createdTemplate.id, seedFromLikes);
+          await this.templateRepository.updateUsageCount(createdTemplate.id, seedFromLikes);
+        } else {
+          // Fallback to real system StyleUsage count
+          const usageCount = await this.styleUsageRepository.countByTemplateId(createdTemplate.id);
           await this.templateRepository.updateLikeCount(createdTemplate.id, usageCount);
+          await this.templateRepository.updateUsageCount(createdTemplate.id, usageCount);
         }
 
         result.success++;

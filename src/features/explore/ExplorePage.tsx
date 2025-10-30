@@ -101,9 +101,9 @@ export const ExplorePage = () => {
                 {t('explore.featuredStyles') || 'Featured Styles'}
               </h2>
 
-              {/* Gallery Grid */}
+              {/* Gallery Masonry Grid */}
               {exploreState.isLoading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 p-4">
+                <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 p-4">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <StyleCardSkeleton key={i} />
                   ))}
@@ -115,13 +115,14 @@ export const ExplorePage = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 p-4">
-                  {templates.map((template) => (
+                <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 p-4">
+                  {templates.map((template, index) => (
                     <StyleCard
                       key={template.id}
                       template={template}
                       onToggleFavorite={handleToggleFavorite}
                       onStyleClick={handleStyleClick}
+                      index={index}
                     />
                   ))}
                 </div>

@@ -19,9 +19,9 @@ export class SyncTemplateStatsUseCase {
         try {
           // Get usage count for this template
           const usageCount = await this.styleUsageRepository.countByTemplateId(template.id);
-
-          // Update template's likeCount to match usage count
+          // Update template's likeCount and usageCount to match usage count
           await this.templateRepository.updateLikeCount(template.id, usageCount);
+          await this.templateRepository.updateUsageCount(template.id, usageCount);
 
           synced++;
         } catch (error) {
@@ -41,5 +41,6 @@ export class SyncTemplateStatsUseCase {
   async syncSingleTemplate(templateId: string): Promise<void> {
     const usageCount = await this.styleUsageRepository.countByTemplateId(templateId);
     await this.templateRepository.updateLikeCount(templateId, usageCount);
+    await this.templateRepository.updateUsageCount(templateId, usageCount);
   }
 }

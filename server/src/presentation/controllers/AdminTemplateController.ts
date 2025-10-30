@@ -101,18 +101,39 @@ export class AdminTemplateController {
     }
 
     // Set headers for Server-Sent Events
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx proxy buffering
     res.flushHeaders();
 
+    // Initial retry and flush to kick off streaming in some proxies
+    res.write('retry: 5000\n');
+    res.write(': connected\n\n');
+    (res as any).flush?.();
+
+    // Heartbeat to keep the connection alive
+    const heartbeat = setInterval(() => {
+      try {
+        res.write(': ping\n\n');
+        (res as any).flush?.();
+      } catch {}
+    }, 15000);
+
     // Send progress updates
+    // Initial progress event
+    res.write(`data: ${JSON.stringify({ type: 'progress', current: 0, total: items.length, success: 0, skipped: 0, failed: 0, currentItem: '' })}\n\n`);
+    (res as any).flush?.();
+
     const result = await this.importTemplatesUseCase.execute(items, (progress) => {
       res.write(`data: ${JSON.stringify({ type: 'progress', ...progress })}\n\n`);
+      (res as any).flush?.();
     });
 
     // Send final result
     res.write(`data: ${JSON.stringify({ type: 'complete', result })}\n\n`);
+    (res as any).flush?.();
+    clearInterval(heartbeat);
     res.end();
   });
 

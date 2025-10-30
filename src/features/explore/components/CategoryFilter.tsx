@@ -13,7 +13,7 @@ export const CategoryFilter = ({ categories, activeTab, onTabChange }: CategoryF
   const tabs = ['all', 'trending', ...categories.map(cat => cat.slug)];
 
   return (
-    <div className="flex gap-3 p-3 overflow-x-auto justify-center scrollbar-hide">
+    <div className="flex flex-wrap gap-3 p-3 justify-center">
       {tabs.map((tab) => {
         const category = categories.find(cat => cat.slug === tab);
         const displayName = tab === 'all' || tab === 'trending' 
@@ -26,7 +26,7 @@ export const CategoryFilter = ({ categories, activeTab, onTabChange }: CategoryF
           <button
             key={tab}
             onClick={() => onTabChange(tab)}
-            className={`flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 transition-all duration-200 whitespace-nowrap font-medium text-sm ${
+            className={`flex h-10 items-center justify-center gap-x-2 rounded-full px-5 transition-all duration-200 whitespace-nowrap font-medium text-sm ${
               isActive
                 ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
                 : 'bg-gray-100 dark:bg-surface text-gray-900 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-surface-hover'

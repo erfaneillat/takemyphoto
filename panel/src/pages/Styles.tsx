@@ -179,63 +179,78 @@ const Styles = () => {
       }
 
       const baseURL = apiClient.defaults.baseURL || '/api/v1';
+      // Show initial progress immediately in loading state
+      setImportProgress({ current: 0, total: items.length, success: 0, skipped: 0, failed: 0, currentItem: 'Starting…' });
       
       // Send POST request and read SSE stream
       fetch(`${baseURL}/admin/templates/import`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'text/event-stream'
         },
+        cache: 'no-cache',
         body: JSON.stringify({ items })
-      }).then(response => {
-        if (!response.ok && response.status === 401) {
-          throw new Error('Unauthorized - Please login again');
+      }).then(async response => {
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Unauthorized - Please login again');
+          }
+          throw new Error(`Server error: ${response.status}`);
         }
+        
         const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body');
+        }
+        
         const decoder = new TextDecoder();
+        let buffer = '';
 
-        function readStream(): any {
-          return reader?.read().then(({ done, value }) => {
-            if (done) {
-              setImporting(false);
-              fetchTemplates();
-              return;
-            }
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) {
+            setImporting(false);
+            fetchTemplates();
+            break;
+          }
 
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                try {
-                  const data = JSON.parse(line.substring(6));
-                  
-                  if (data.type === 'progress') {
-                    setImportProgress({
-                      current: data.current,
-                      total: data.total,
-                      success: data.success,
-                      skipped: data.skipped,
-                      failed: data.failed,
-                      currentItem: data.currentItem
-                    });
-                  } else if (data.type === 'complete') {
-                    setImportResult(data.result);
-                    setImportJson('');
-                    alert(`Import completed!\nSuccess: ${data.result.success}\nSkipped: ${data.result.skipped}\nFailed: ${data.result.failed}`);
-                  }
-                } catch (e) {
-                  console.error('Error parsing SSE data:', e);
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          
+          // Keep the last incomplete line in the buffer
+          buffer = lines.pop() || '';
+          
+          for (const line of lines) {
+            if (line.trim().startsWith('data: ')) {
+              try {
+                const jsonStr = line.trim().substring(6);
+                const data = JSON.parse(jsonStr);
+                
+                console.log('SSE data received:', data);
+                
+                if (data.type === 'progress') {
+                  setImportProgress({
+                    current: data.current,
+                    total: data.total,
+                    success: data.success,
+                    skipped: data.skipped,
+                    failed: data.failed,
+                    currentItem: data.currentItem
+                  });
+                } else if (data.type === 'complete') {
+                  setImportResult(data.result);
+                  setImportJson('');
+                  alert(`Import completed!\nSuccess: ${data.result.success}\nSkipped: ${data.result.skipped}\nFailed: ${data.result.failed}`);
                 }
+              } catch (e) {
+                console.error('Error parsing SSE data:', e, 'Line:', line);
               }
             }
-
-            return readStream();
-          });
+          }
         }
-
-        readStream();
       }).catch(error => {
         console.error('Error importing templates:', error);
         alert(`Import failed: ${error.message}`);

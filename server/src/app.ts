@@ -62,7 +62,17 @@ export class App {
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
     // Compression
-    this.app.use(compression());
+    this.app.use(compression({
+      filter: (req, res) => {
+        // Disable compression for Server-Sent Events or specific streaming routes
+        const url = (req.originalUrl || req.url || '').toLowerCase();
+        if (url.includes('/admin/templates/import')) return false;
+        const contentType = res.getHeader('Content-Type');
+        if (typeof contentType === 'string' && contentType.includes('text/event-stream')) return false;
+        // Fallback to default filter
+        return compression.filter(req, res);
+      }
+    }));
 
     // Rate limiting
     const limiter = rateLimit({

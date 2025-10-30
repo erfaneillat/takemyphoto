@@ -5,12 +5,14 @@ interface StyleCardProps {
   template: Template;
   onToggleFavorite?: (templateId: string) => void;
   onStyleClick?: (template: Template) => void;
+  index?: number;
 }
 
 export const StyleCard = ({ 
   template, 
   onToggleFavorite,
-  onStyleClick 
+  onStyleClick,
+  index = 0
 }: StyleCardProps) => {
   const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -25,13 +27,19 @@ export const StyleCard = ({
     }
   };
 
+  // Create varying aspect ratios for masonry effect
+  const getAspectRatio = () => {
+    const patterns = ['aspect-[3/4]', 'aspect-square', 'aspect-[4/5]', 'aspect-[2/3]', 'aspect-[3/5]'];
+    return patterns[index % patterns.length];
+  };
+
   return (
     <div
       onClick={handleCardClick}
-      className="group relative flex flex-col rounded-xl overflow-hidden bg-white dark:bg-surface-card border border-gray-200 dark:border-border-light transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+      className="group relative flex flex-col rounded-xl overflow-hidden bg-white dark:bg-surface-card border border-gray-200 dark:border-border-light transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer mb-4 break-inside-avoid"
     >
-      {/* Image Container - Square on all sizes */}
-      <div className="relative w-full aspect-square overflow-hidden bg-gray-900 dark:bg-gray-900">
+      {/* Image Container - Variable aspect ratios */}
+      <div className={`relative w-full ${getAspectRatio()} overflow-hidden bg-gray-900 dark:bg-gray-900`}>
         <img
           src={template.imageUrl}
           alt={template.prompt}

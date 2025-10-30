@@ -14,4 +14,5 @@ export interface ITemplateRepository {
   incrementLikeCount(id: string): Promise<void>;
   decrementLikeCount(id: string): Promise<void>;
   updateLikeCount(id: string, count: number): Promise<void>;
+  updateUsageCount(id: string, count: number): Promise<void>;
 }

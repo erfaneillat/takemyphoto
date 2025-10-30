@@ -77,4 +77,8 @@ export class TemplateRepository implements ITemplateRepository {
   async updateLikeCount(id: string, count: number): Promise<void> {
     await TemplateModel.findByIdAndUpdate(id, { $set: { likeCount: count } });
   }
+
+  async updateUsageCount(id: string, count: number): Promise<void> {
+    await TemplateModel.findByIdAndUpdate(id, { $set: { usageCount: count } });
+  }
 }
