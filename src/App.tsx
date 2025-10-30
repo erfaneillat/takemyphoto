@@ -10,7 +10,7 @@ import { SubscriptionPage } from '@/features/subscription';
 import { LoginPage } from '@/features/auth';
 import { UpscalePage, ImageToPromptPage } from '@/features/enhance';
 import { useAuthStore } from '@/shared/stores';
-import { useAuthInit, useAppInit, useFirebaseInit } from '@/shared/hooks';
+import { useAuthInit, useAppInit, useFirebaseInit, useCharacterInit } from '@/shared/hooks';
 import { ReactNode } from 'react';
 
 // Wrapper component to handle edit mode routing
@@ -45,6 +45,9 @@ function App() {
   
   // Initialize Firebase
   useFirebaseInit();
+  
+  // Initialize characters from server
+  useCharacterInit();
   
   const { isLoading, isAuthenticated } = useAuthStore();
 

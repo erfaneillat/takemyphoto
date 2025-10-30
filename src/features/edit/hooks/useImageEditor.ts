@@ -41,7 +41,7 @@ export const useImageEditor = () => {
     setUploadedImages(prev => prev.filter(img => img.id !== id));
   }, []);
 
-  const generateImage = useCallback(async (params: ImageGenerationParams & { templateId?: string }) => {
+  const generateImage = useCallback(async (params: ImageGenerationParams & { templateId?: string, characterImageUrls?: string[] }) => {
     setIsProcessing(true);
     setError(null);
     
@@ -56,6 +56,7 @@ export const useImageEditor = () => {
         numImages: 1,
         imageSize: aspectRatio,
         images: uploadedImages.map(img => img.file),
+        characterImageUrls: params.characterImageUrls,
         templateId: params.templateId,
       });
 

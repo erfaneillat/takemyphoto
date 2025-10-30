@@ -29,7 +29,7 @@ export class GenerateImageUseCase {
   ) {}
 
   async execute(request: GenerateImageRequest): Promise<GenerateImageResponse> {
-    const { userId, prompt, imageSize = '1:1', uploadedImages = [], templateId } = request;
+    const { userId, prompt, imageSize = '1:1', uploadedImages = [], characterImageUrls = [], templateId } = request;
 
     // Note: Google AI currently generates one image at a time
     // For multiple images, we'd need to make multiple calls
@@ -53,14 +53,46 @@ export class GenerateImageUseCase {
       }
     }
 
-    // TODO: Handle character images from URLs
-    // We'd need to download and convert them to base64
+    // Handle character images from URLs
+    if (characterImageUrls && characterImageUrls.length > 0) {
+      console.log('📥 Downloading character images:', characterImageUrls.length);
+      for (const imageUrl of characterImageUrls) {
+        try {
+          // Download image from URL
+          const response = await fetch(imageUrl);
+          if (!response.ok) {
+            console.error(`Failed to download character image from ${imageUrl}`);
+            continue;
+          }
+          
+          const arrayBuffer = await response.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          const base64Data = buffer.toString('base64');
+          
+          // Determine mime type from response or URL
+          const contentType = response.headers.get('content-type') || 'image/jpeg';
+          
+          referenceImages.push({
+            mimeType: contentType,
+            data: base64Data
+          });
+          
+          // Track the URL for reference
+          referenceImageUrls.push(imageUrl);
+        } catch (error) {
+          console.error(`Error downloading character image from ${imageUrl}:`, error);
+          // Continue with other images even if one fails
+        }
+      }
+    }
 
     // Call Google AI API (synchronous)
     console.log('🚀 Calling Google AI API for generation:', { 
       prompt: prompt.substring(0, 100) + '...', 
       imageSize, 
-      hasReferenceImages: referenceImages.length > 0 
+      totalReferenceImages: referenceImages.length,
+      uploadedImagesCount: uploadedImages.length,
+      characterImagesCount: characterImageUrls.length
     });
 
     const response = await this.googleAIService.generateImage({

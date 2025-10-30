@@ -81,7 +81,7 @@ export const GeneratePage = () => {
   return (
     <div className="h-full bg-white dark:bg-black flex flex-col overflow-hidden transition-colors">
       {/* Main Content - Responsive Layout */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto pb-[calc(80px+env(safe-area-inset-bottom))] lg:pb-0">
         {/* Image Preview & History Panel */}
         <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface p-3 md:p-6">
           {/* Main Image Display */}
@@ -180,7 +180,7 @@ export const GeneratePage = () => {
 
         {/* Controls Panel */}
         <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col">
-          <div className="p-4 md:p-6 pb-24 lg:pb-6">
+          <div className="p-4 md:p-6 pb-[calc(90px+env(safe-area-inset-bottom))] lg:pb-6 flex flex-col flex-1 overflow-y-auto">
             {/* Header */}
             <div className="mb-4 md:mb-6">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">
@@ -279,51 +279,79 @@ export const GeneratePage = () => {
                       </button>
                     </div>
                   ))}
-                  {selectedCharacters.map((character) => (
-                    <div key={character.id} className="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-border-light bg-gray-100 dark:bg-surface group">
-                      {character.images.length > 0 && (
+                  {selectedCharacters.flatMap((character) => 
+                    character.images.map((image, imageIndex) => (
+                      <div key={`${character.id}-${imageIndex}`} className="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-border-light bg-gray-100 dark:bg-surface group">
                         <img
-                          src={character.images[0].url}
-                          alt={character.name}
+                          src={image.url}
+                          alt={`${character.name} ${imageIndex + 1}`}
                           className="w-full h-full object-cover"
                         />
-                      )}
-                      <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-blue-600 rounded-full p-0.5 md:p-1">
-                        <CheckCircle2 size={16} className="md:w-5 md:h-5 text-white fill-blue-600" />
+                        <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-blue-600 rounded-full p-0.5 md:p-1">
+                          <CheckCircle2 size={16} className="md:w-5 md:h-5 text-white fill-blue-600" />
+                        </div>
+                        {/* Show character name badge */}
+                        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                          {character.name}
+                        </div>
+                        <button
+                          onClick={() => setSelectedCharacters(selectedCharacters.filter(c => c.id !== character.id))}
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
+                        >
+                          <X size={20} className="md:w-6 md:h-6 text-white" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => setSelectedCharacters(selectedCharacters.filter(c => c.id !== character.id))}
-                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
-                      >
-                        <X size={20} className="md:w-6 md:h-6 text-white" />
-                      </button>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Generate Button - Fixed at Bottom on Mobile, Inline on Desktop */}
-          <div className="p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card lg:relative fixed bottom-24 md:bottom-0 left-0 right-0 z-[60] lg:z-auto pb-[env(safe-area-inset-bottom)]">
-            <button
-              onClick={handleGenerateWithCleanup}
-              disabled={!prompt.trim() || isProcessing}
-              className="w-full px-4 md:px-6 py-3 md:py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg md:rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-sm md:text-base active:scale-95"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 size={18} className="md:w-5 md:h-5 animate-spin" />
-                  <span className="truncate">{t('generate.generatingImage')}</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles size={18} className="md:w-5 md:h-5" />
-                  <span>{t('generate.generateButton')}</span>
-                </>
-              )}
-            </button>
-          </div>
+        </div>
+      </div>
+
+      {/* Generate Button - Fixed above bottom nav on mobile */}
+      <div className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] left-0 right-0 lg:hidden p-4 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card z-40">
+        <button
+          onClick={handleGenerateWithCleanup}
+          disabled={!prompt.trim() || isProcessing}
+          className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-sm active:scale-95"
+        >
+          {isProcessing ? (
+            <>
+              <Loader2 size={18} className="animate-spin" />
+              <span className="truncate">{t('generate.generatingImage')}</span>
+            </>
+          ) : (
+            <>
+              <Sparkles size={18} />
+              <span>{t('generate.generateButton')}</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Generate Button - Inline on desktop */}
+      <div className="hidden lg:block absolute bottom-6 right-6 w-80">
+        <div className="p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card rounded-lg">
+          <button
+            onClick={handleGenerateWithCleanup}
+            disabled={!prompt.trim() || isProcessing}
+            className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-base active:scale-95"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 size={18} className="md:w-5 md:h-5 animate-spin" />
+                <span className="truncate">{t('generate.generatingImage')}</span>
+              </>
+            ) : (
+              <>
+                <Sparkles size={18} className="md:w-5 md:h-5" />
+                <span>{t('generate.generateButton')}</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
@@ -341,7 +369,6 @@ export const GeneratePage = () => {
         isOpen={isCharacterSelectorOpen}
         onClose={() => setIsCharacterSelectorOpen(false)}
         onSelectCharacter={handleSelectCharacter}
-        onUploadImage={() => {}}
       />
     </div>
   );

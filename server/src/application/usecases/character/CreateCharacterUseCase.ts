@@ -17,13 +17,17 @@ export class CreateCharacterUseCase {
   async execute(input: CreateCharacterInput): Promise<Character> {
     const { userId, name, images } = input;
 
+    console.log(`[CreateCharacterUseCase] Starting character creation for user: ${userId}, name: ${name}, images: ${images.length}`);
+
     // Validate image count
     if (images.length < 3 || images.length > 5) {
       throw new Error('Character must have between 3 and 5 images');
     }
 
     // Upload images to Cloudinary
+    console.log(`[CreateCharacterUseCase] Uploading ${images.length} images to Cloudinary...`);
     const uploadedFiles = await this.fileUploadService.uploadImages(images, `nero/characters/${userId}`);
+    console.log(`[CreateCharacterUseCase] Images uploaded successfully:`, uploadedFiles);
 
     // Create character images array
     const characterImages: CharacterImage[] = uploadedFiles.map((file, index) => ({
@@ -34,12 +38,14 @@ export class CreateCharacterUseCase {
     }));
 
     // Create character
+    console.log(`[CreateCharacterUseCase] Saving character to database...`);
     const character = await this.characterRepository.create({
       userId,
       name,
       images: characterImages
-    } as any);
+    });
 
+    console.log(`[CreateCharacterUseCase] Character saved successfully:`, character);
     return character;
   }
 }

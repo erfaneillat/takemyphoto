@@ -75,10 +75,19 @@ export class App {
     }));
 
     // Rate limiting
+    const isDev = (process.env.NODE_ENV || 'development') !== 'production';
+    const windowMs = parseInt(
+      process.env.RATE_LIMIT_WINDOW_MS || (isDev ? '60000' : '900000')
+    );
+    const maxRequests = parseInt(
+      process.env.RATE_LIMIT_MAX_REQUESTS || (isDev ? '1000' : '100')
+    );
     const limiter = rateLimit({
-      windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
-      max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
-      message: 'Too many requests from this IP, please try again later'
+      windowMs, // e.g., 1 minute in dev, 15 minutes in prod
+      max: maxRequests, // e.g., 1000 in dev, 100 in prod
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: 'Too many requests from this IP, please try again later',
     });
     this.app.use('/api', limiter);
 

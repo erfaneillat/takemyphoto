@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { Button, ImageCard } from '@/shared/components';
 import { LogOut, Moon, Sun, Mail, Crown, Settings, Heart, X, User, Users } from 'lucide-react';
@@ -11,9 +11,20 @@ import { CharacterList } from './components/CharacterList';
 export const ProfilePage = () => {
   const { t, language, changeLanguage } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { theme, toggleTheme } = useThemeStore();
   const { user: authUser, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'edits' | 'favorites' | 'characters'>('edits');
+  
+  // Get tab from URL or default to 'edits'
+  const tabFromUrl = searchParams.get('tab') as 'edits' | 'favorites' | 'characters' | null;
+  const [activeTab, setActiveTab] = useState<'edits' | 'favorites' | 'characters'>(
+    tabFromUrl || 'edits'
+  );
+
+  // Sync tab changes to URL
+  useEffect(() => {
+    setSearchParams({ tab: activeTab }, { replace: true });
+  }, [activeTab, setSearchParams]);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCharacterForm, setShowCharacterForm] = useState(false);

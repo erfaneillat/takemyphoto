@@ -259,7 +259,7 @@ export const BrushEditPage = () => {
 
         {/* Controls Panel */}
         <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col">
-          <div className="p-4 md:p-6 pb-24 lg:pb-6">
+          <div className="p-4 md:p-6 pb-[calc(90px+env(safe-area-inset-bottom))] lg:pb-6 flex flex-col flex-1 overflow-y-auto">
             {/* Header */}
             <div className="mb-4 md:mb-6">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">

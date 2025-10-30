@@ -29,8 +29,7 @@ export class EditImageUseCase {
   ) {}
 
   async execute(request: EditImageRequest): Promise<EditImageResponse> {
-    const { userId, prompt, imageSize = '1:1', uploadedImages, templateId } = request;
-    // Note: numImages and characterImageUrls are currently unused in Google AI implementation
+    const { userId, prompt, imageSize = '1:1', uploadedImages, characterImageUrls = [], templateId } = request;
 
     // Validate that at least one image is provided for editing
     if (!uploadedImages || uploadedImages.length === 0) {
@@ -54,11 +53,46 @@ export class EditImageUseCase {
       referenceImageUrls.push(uploadResult.url);
     }
 
+    // Handle character images from URLs
+    if (characterImageUrls && characterImageUrls.length > 0) {
+      console.log('📥 Downloading character images:', characterImageUrls.length);
+      for (const imageUrl of characterImageUrls) {
+        try {
+          // Download image from URL
+          const response = await fetch(imageUrl);
+          if (!response.ok) {
+            console.error(`Failed to download character image from ${imageUrl}`);
+            continue;
+          }
+          
+          const arrayBuffer = await response.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          const base64Data = buffer.toString('base64');
+          
+          // Determine mime type from response or URL
+          const contentType = response.headers.get('content-type') || 'image/jpeg';
+          
+          referenceImages.push({
+            mimeType: contentType,
+            data: base64Data
+          });
+          
+          // Track the URL for reference
+          referenceImageUrls.push(imageUrl);
+        } catch (error) {
+          console.error(`Error downloading character image from ${imageUrl}:`, error);
+          // Continue with other images even if one fails
+        }
+      }
+    }
+
     // Call Google AI API for image editing (synchronous)
     console.log('🚀 Calling Google AI API for editing:', { 
       prompt: prompt.substring(0, 100) + '...', 
       imageSize, 
-      referenceImagesCount: referenceImages.length 
+      totalReferenceImages: referenceImages.length,
+      uploadedImagesCount: uploadedImages.length,
+      characterImagesCount: characterImageUrls.length
     });
 
     const response = await this.googleAIService.generateImage({

@@ -17,7 +17,7 @@ export interface Character {
 export interface CreateCharacterDTO {
   userId: string;
   name: string;
-  images: Express.Multer.File[];
+  images: CharacterImage[];
 }
 
 export interface UpdateCharacterDTO {

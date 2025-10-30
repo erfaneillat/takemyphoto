@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X, Upload, User as UserIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, User as UserIcon } from 'lucide-react';
 import { useTranslation } from '@/shared/hooks';
 import { useCharacterStore } from '@/shared/stores';
 import type { Character } from '@/core/domain/entities/Character';
@@ -9,20 +9,24 @@ interface CharacterSelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectCharacter: (character: Character) => void;
-  onUploadImage: () => void;
 }
 
 export const CharacterSelectorModal = ({
   isOpen,
   onClose,
   onSelectCharacter,
-  onUploadImage,
 }: CharacterSelectorModalProps) => {
   const { t } = useTranslation();
-  const { characters } = useCharacterStore();
+  const { characters, fetchCharacters } = useCharacterStore();
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
   const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
   const [showCreateCharacter, setShowCreateCharacter] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchCharacters();
+    }
+  }, [isOpen, fetchCharacters]);
 
   if (!isOpen) return null;
 
@@ -32,11 +36,6 @@ export const CharacterSelectorModal = ({
       onSelectCharacter(character);
       onClose();
     }
-  };
-
-  const handleUploadClick = () => {
-    onUploadImage();
-    onClose();
   };
 
   return (
@@ -57,36 +56,6 @@ export const CharacterSelectorModal = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {/* Upload Option */}
-          <div className="mb-6">
-            <button
-              onClick={handleUploadClick}
-              className="w-full p-6 border-2 border-dashed border-gray-300 dark:border-border-light hover:border-gray-900 dark:hover:border-white/50 rounded-xl flex flex-col items-center justify-center gap-3 transition-all duration-300 bg-gray-50 dark:bg-surface hover:bg-gray-100 dark:hover:bg-surface-hover"
-            >
-              <Upload size={32} className="text-gray-600 dark:text-gray-400" />
-              <div className="text-center">
-                <p className="text-base font-semibold text-gray-900 dark:text-white mb-1">
-                  {t('edit.characterSelector.uploadImage')}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('edit.characterSelector.uploadImageDescription')}
-                </p>
-              </div>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200 dark:border-border-light"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-surface-card text-gray-500 dark:text-gray-400">
-                {t('edit.characterSelector.orSelectCharacter')}
-              </span>
-            </div>
-          </div>
-
           {/* Characters Grid */}
           {characters.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 dark:bg-surface rounded-xl">

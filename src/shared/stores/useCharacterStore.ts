@@ -1,123 +1,218 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { Character, CharacterImage, CreateCharacterData } from '@/core/domain/entities/Character';
+import { fetchWithRetry } from '@/shared/hooks';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:2000/api/v1';
+
+let fetchCharactersInFlight: Promise<void> | null = null;
+let lastFetchAt = 0;
+const MIN_FETCH_INTERVAL_MS = 2000;
 
 interface CharacterStore {
   characters: Character[];
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   createCharacter: (data: CreateCharacterData) => Promise<void>;
   updateCharacter: (id: string, name: string, images: CharacterImage[]) => Promise<void>;
   deleteCharacter: (id: string) => Promise<void>;
   getCharacterById: (id: string) => Character | undefined;
+  fetchCharacters: () => Promise<void>;
   clearError: () => void;
 }
 
-// Helper function to convert File to base64
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
-};
+export const useCharacterStore = create<CharacterStore>((set, get) => ({
+  characters: [],
+  isLoading: false,
+  error: null,
 
-export const useCharacterStore = create<CharacterStore>()(
-  persist(
-    (set, get) => ({
-      characters: [],
-      isLoading: false,
-      error: null,
+  createCharacter: async (data: CreateCharacterData) => {
+    set({ isLoading: true, error: null });
 
-      createCharacter: async (data: CreateCharacterData) => {
-        set({ isLoading: true, error: null });
-        
-        try {
-          // Convert files to base64 for storage
-          const imagePromises = data.images.map(async (file, index) => {
-            const preview = await fileToBase64(file);
-            return {
-              id: `${Date.now()}-${index}`,
-              url: preview,
-              preview,
-            };
-          });
+    try {
+      const formData = new FormData();
+      formData.append('name', data.name);
 
-          const images = await Promise.all(imagePromises);
+      // Append image files
+      data.images.forEach((file) => {
+        formData.append('images', file);
+      });
 
-          const newCharacter: Character = {
-            id: `character-${Date.now()}`,
-            name: data.name,
-            images,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in first.');
+      }
 
-          set((state) => ({
-            characters: [...state.characters, newCharacter],
-            isLoading: false,
-          }));
-        } catch (error) {
-          set({
-            isLoading: false,
-            error: error instanceof Error ? error.message : 'Failed to create character',
-          });
-          throw error;
-        }
-      },
+      const response = await fetch(`${API_BASE_URL}/characters`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-      updateCharacter: async (id: string, name: string, images: CharacterImage[]) => {
-        set({ isLoading: true, error: null });
-        
-        try {
-          set((state) => ({
-            characters: state.characters.map((char) =>
-              char.id === id
-                ? { ...char, name, images, updatedAt: new Date() }
-                : char
-            ),
-            isLoading: false,
-          }));
-        } catch (error) {
-          set({
-            isLoading: false,
-            error: error instanceof Error ? error.message : 'Failed to update character',
-          });
-          throw error;
-        }
-      },
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Character creation error:', errorText);
+        throw new Error(`Failed to create character: ${response.statusText}`);
+      }
 
-      deleteCharacter: async (id: string) => {
-        set({ isLoading: true, error: null });
-        
-        try {
-          set((state) => ({
-            characters: state.characters.filter((char) => char.id !== id),
-            isLoading: false,
-          }));
-        } catch (error) {
-          set({
-            isLoading: false,
-            error: error instanceof Error ? error.message : 'Failed to delete character',
-          });
-          throw error;
-        }
-      },
+      const responseData = await response.json();
+      console.log('Character created successfully:', responseData);
 
-      getCharacterById: (id: string) => {
-        return get().characters.find((char) => char.id === id);
-      },
+      const newCharacter = responseData.data?.character;
+      if (!newCharacter) {
+        console.error('Invalid response format:', responseData);
+        throw new Error('Invalid response format from server');
+      }
 
-      clearError: () => set({ error: null }),
-    }),
-    {
-      name: 'nero-character-storage',
-      partialize: (state) => ({
-        characters: state.characters,
-      }),
+      set((state) => ({
+        characters: [...state.characters, newCharacter],
+        isLoading: false,
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create character';
+      set({
+        isLoading: false,
+        error: errorMessage,
+      });
+      throw error;
     }
-  )
-);
+  },
+
+  fetchCharacters: async () => {
+    const now = Date.now();
+    if (now - lastFetchAt < MIN_FETCH_INTERVAL_MS) {
+      return;
+    }
+    if (fetchCharactersInFlight) {
+      return fetchCharactersInFlight;
+    }
+
+    set({ isLoading: true, error: null });
+
+    const run = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          throw new Error('No authentication token found. Please log in first.');
+        }
+
+        const response = await fetchWithRetry(`${API_BASE_URL}/characters`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }, {
+          maxRetries: 3,
+          baseDelayMs: 800,
+          retryOn: [429, 502, 503, 504],
+          jitter: true,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch characters: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        set({
+          characters: data.data.characters || [],
+          isLoading: false,
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch characters';
+        set({
+          isLoading: false,
+          error: errorMessage,
+        });
+      } finally {
+        lastFetchAt = Date.now();
+        fetchCharactersInFlight = null;
+      }
+    };
+
+    fetchCharactersInFlight = run();
+    return fetchCharactersInFlight;
+  },
+
+  updateCharacter: async (id: string, name: string, images: CharacterImage[]) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in first.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/characters/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, images }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update character: ${response.statusText}`);
+      }
+
+      const updatedCharacter = await response.json();
+
+      set((state) => ({
+        characters: state.characters.map((char) =>
+          char.id === id ? updatedCharacter.data.character : char
+        ),
+        isLoading: false,
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update character';
+      set({
+        isLoading: false,
+        error: errorMessage,
+      });
+      throw error;
+    }
+  },
+
+  deleteCharacter: async (id: string) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in first.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/characters/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete character: ${response.statusText}`);
+      }
+
+      set((state) => ({
+        characters: state.characters.filter((char) => char.id !== id),
+        isLoading: false,
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete character';
+      set({
+        isLoading: false,
+        error: errorMessage,
+      });
+      throw error;
+    }
+  },
+
+  getCharacterById: (id: string) => {
+    return get().characters.find((char) => char.id === id);
+  },
+
+  clearError: () => set({ error: null }),
+}));
