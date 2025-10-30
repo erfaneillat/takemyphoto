@@ -42,6 +42,7 @@ const Styles = () => {
   const [importJson, setImportJson] = useState('');
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
+  const [importProgress, setImportProgress] = useState<any>(null);
 
   useEffect(() => {
     fetchTemplates();
@@ -159,26 +160,81 @@ const Styles = () => {
     try {
       setImporting(true);
       setImportResult(null);
+      setImportProgress(null);
 
       const items = JSON.parse(importJson);
       
       if (!Array.isArray(items)) {
         alert('JSON must be an array of items');
+        setImporting(false);
         return;
       }
 
-      const response = await apiClient.post('/admin/templates/import', { items });
-      const result = response.data.data.result;
+      // Get auth token from localStorage
+      const token = localStorage.getItem('adminToken');
+      const baseURL = apiClient.defaults.baseURL || 'http://localhost:3000';
       
-      setImportResult(result);
-      setImportJson('');
-      fetchTemplates();
-      
-      alert(`Import completed!\nSuccess: ${result.success}\nSkipped: ${result.skipped}\nFailed: ${result.failed}`);
+      // Send POST request and read SSE stream
+      fetch(`${baseURL}/admin/templates/import`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ items })
+      }).then(response => {
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+
+        function readStream(): any {
+          return reader?.read().then(({ done, value }) => {
+            if (done) {
+              setImporting(false);
+              fetchTemplates();
+              return;
+            }
+
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.substring(6));
+                  
+                  if (data.type === 'progress') {
+                    setImportProgress({
+                      current: data.current,
+                      total: data.total,
+                      success: data.success,
+                      skipped: data.skipped,
+                      failed: data.failed,
+                      currentItem: data.currentItem
+                    });
+                  } else if (data.type === 'complete') {
+                    setImportResult(data.result);
+                    setImportJson('');
+                    alert(`Import completed!\nSuccess: ${data.result.success}\nSkipped: ${data.result.skipped}\nFailed: ${data.result.failed}`);
+                  }
+                } catch (e) {
+                  console.error('Error parsing SSE data:', e);
+                }
+              }
+            }
+
+            return readStream();
+          });
+        }
+
+        readStream();
+      }).catch(error => {
+        console.error('Error importing templates:', error);
+        alert(`Import failed: ${error.message}`);
+        setImporting(false);
+      });
     } catch (error: any) {
       console.error('Error importing templates:', error);
-      alert(`Import failed: ${error.response?.data?.message || error.message}`);
-    } finally {
+      alert(`Import failed: ${error.message}`);
       setImporting(false);
     }
   };
@@ -187,6 +243,7 @@ const Styles = () => {
     setShowImportModal(false);
     setImportJson('');
     setImportResult(null);
+    setImportProgress(null);
   };
 
   if (loading) {
@@ -444,6 +501,42 @@ const Styles = () => {
                   disabled={importing}
                 />
               </div>
+
+              {importProgress && (
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-700">
+                      Processing: {importProgress.current} / {importProgress.total}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {Math.round((importProgress.current / importProgress.total) * 100)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
+                    <div
+                      className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${(importProgress.current / importProgress.total) * 100}%` }}
+                    ></div>
+                  </div>
+                  <div className="text-xs text-gray-600 mb-2">
+                    Current: <span className="font-medium">{importProgress.currentItem}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="text-center">
+                      <div className="font-bold text-green-600">{importProgress.success}</div>
+                      <div className="text-gray-500">Success</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="font-bold text-yellow-600">{importProgress.skipped}</div>
+                      <div className="text-gray-500">Skipped</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="font-bold text-red-600">{importProgress.failed}</div>
+                      <div className="text-gray-500">Failed</div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {importResult && (
                 <div className="bg-gray-50 p-4 rounded-xl">

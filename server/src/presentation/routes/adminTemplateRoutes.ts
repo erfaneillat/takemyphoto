@@ -10,6 +10,7 @@ export const createAdminTemplateRoutes = (adminTemplateController: AdminTemplate
   router.get('/', authMiddleware, adminTemplateController.getTemplates);
   router.post('/', authMiddleware, upload.single('image'), adminTemplateController.createTemplate);
   router.post('/import', authMiddleware, adminTemplateController.importTemplates);
+  router.post('/sync-stats', authMiddleware, adminTemplateController.syncTemplateStats);
   router.put('/:id', authMiddleware, adminTemplateController.updateTemplate);
   router.delete('/:id', authMiddleware, adminTemplateController.deleteTemplate);
 

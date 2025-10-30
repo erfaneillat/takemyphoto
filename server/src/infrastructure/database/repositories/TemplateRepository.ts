@@ -73,4 +73,8 @@ export class TemplateRepository implements ITemplateRepository {
   async decrementLikeCount(id: string): Promise<void> {
     await TemplateModel.findByIdAndUpdate(id, { $inc: { likeCount: -1 } });
   }
+
+  async updateLikeCount(id: string, count: number): Promise<void> {
+    await TemplateModel.findByIdAndUpdate(id, { $set: { likeCount: count } });
+  }
 }

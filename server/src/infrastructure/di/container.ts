@@ -9,6 +9,7 @@ import { CategoryRepository } from '@infrastructure/database/repositories/Catego
 import { GenerationTaskRepository } from '@infrastructure/database/repositories/GenerationTaskRepository';
 import { GeneratedImageEntityRepository } from '@infrastructure/database/repositories/GeneratedImageEntityRepository';
 import { AdminRepository } from '@infrastructure/database/repositories/AdminRepository';
+import { StyleUsageRepository } from '@infrastructure/database/repositories/StyleUsageRepository';
 
 // Services
 import { JwtService } from '@infrastructure/services/JwtService';
@@ -34,6 +35,7 @@ import { CreateTemplateUseCase } from '@application/usecases/template/CreateTemp
 import { UpdateTemplateUseCase } from '@application/usecases/template/UpdateTemplateUseCase';
 import { DeleteTemplateUseCase } from '@application/usecases/template/DeleteTemplateUseCase';
 import { ImportTemplatesUseCase } from '@application/usecases/template/ImportTemplatesUseCase';
+import { SyncTemplateStatsUseCase } from '@application/usecases/template/SyncTemplateStatsUseCase';
 import { GetPopularStylesUseCase } from '@application/usecases/template/GetPopularStylesUseCase';
 import { CreateCategoryUseCase } from '@application/usecases/category/CreateCategoryUseCase';
 import { GetCategoriesUseCase } from '@application/usecases/category/GetCategoriesUseCase';
@@ -71,6 +73,7 @@ export class Container {
   public generationTaskRepository: GenerationTaskRepository;
   public generatedImageEntityRepository: GeneratedImageEntityRepository;
   public adminRepository: AdminRepository;
+  public styleUsageRepository: StyleUsageRepository;
 
   // Services
   public jwtService: JwtService;
@@ -96,6 +99,7 @@ export class Container {
   public updateTemplateUseCase: UpdateTemplateUseCase;
   public deleteTemplateUseCase: DeleteTemplateUseCase;
   public importTemplatesUseCase: ImportTemplatesUseCase;
+  public syncTemplateStatsUseCase: SyncTemplateStatsUseCase;
   public getPopularStylesUseCase: GetPopularStylesUseCase;
   public createCategoryUseCase: CreateCategoryUseCase;
   public getCategoriesUseCase: GetCategoriesUseCase;
@@ -133,6 +137,7 @@ export class Container {
     this.generationTaskRepository = new GenerationTaskRepository();
     this.generatedImageEntityRepository = new GeneratedImageEntityRepository();
     this.adminRepository = new AdminRepository();
+    this.styleUsageRepository = new StyleUsageRepository();
 
     // Initialize Services
     this.jwtService = new JwtService();
@@ -217,7 +222,13 @@ export class Container {
 
     this.importTemplatesUseCase = new ImportTemplatesUseCase(
       this.templateRepository,
-      this.categoryRepository
+      this.categoryRepository,
+      this.styleUsageRepository
+    );
+
+    this.syncTemplateStatsUseCase = new SyncTemplateStatsUseCase(
+      this.templateRepository,
+      this.styleUsageRepository
     );
 
     this.createCategoryUseCase = new CreateCategoryUseCase(
@@ -295,6 +306,7 @@ export class Container {
       this.updateTemplateUseCase,
       this.deleteTemplateUseCase,
       this.importTemplatesUseCase,
+      this.syncTemplateStatsUseCase,
       this.fileUploadService
     );
 

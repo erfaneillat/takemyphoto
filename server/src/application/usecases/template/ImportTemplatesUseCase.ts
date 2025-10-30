@@ -1,5 +1,6 @@
 import { ITemplateRepository } from '@core/domain/repositories/ITemplateRepository';
 import { ICategoryRepository } from '@core/domain/repositories/ICategoryRepository';
+import { IStyleUsageRepository } from '@core/domain/repositories/IStyleUsageRepository';
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -15,6 +16,7 @@ export interface ImportResult {
   success: number;
   skipped: number;
   failed: number;
+  total: number;
   details: {
     imported: string[];
     skipped: Array<{ title: string; reason: string }>;
@@ -22,21 +24,38 @@ export interface ImportResult {
   };
 }
 
+export interface ImportProgress {
+  current: number;
+  total: number;
+  success: number;
+  skipped: number;
+  failed: number;
+  currentItem: string;
+}
+
+export type ProgressCallback = (progress: ImportProgress) => void;
+
 export class ImportTemplatesUseCase {
   private uploadsDir: string;
+  private readonly BATCH_SIZE = 10; // Process 10 items at a time
 
   constructor(
     private templateRepository: ITemplateRepository,
-    private categoryRepository: ICategoryRepository
+    private categoryRepository: ICategoryRepository,
+    private styleUsageRepository: IStyleUsageRepository
   ) {
     this.uploadsDir = path.resolve(__dirname, '../../../../../uploads');
   }
 
-  async execute(items: ImportTemplateItem[]): Promise<ImportResult> {
+  async execute(
+    items: ImportTemplateItem[],
+    onProgress?: ProgressCallback
+  ): Promise<ImportResult> {
     const result: ImportResult = {
       success: 0,
       skipped: 0,
       failed: 0,
+      total: items.length,
       details: {
         imported: [],
         skipped: [],
@@ -44,7 +63,8 @@ export class ImportTemplatesUseCase {
       }
     };
 
-    for (const item of items) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
       try {
         // Skip if prompt is empty
         if (!item.fullPrompt || item.fullPrompt.trim() === '') {
@@ -88,7 +108,7 @@ export class ImportTemplatesUseCase {
         }
 
         // Create template
-        await this.templateRepository.create({
+        const createdTemplate = await this.templateRepository.create({
           imageUrl: imageResult.url,
           publicId: imageResult.publicId,
           prompt: item.fullPrompt,
@@ -96,6 +116,12 @@ export class ImportTemplatesUseCase {
           category: categorySlug,
           tags: item.categories || []
         });
+
+        // Sync likeCount with StyleUsage count from system
+        const usageCount = await this.styleUsageRepository.countByTemplateId(createdTemplate.id);
+        if (usageCount > 0) {
+          await this.templateRepository.updateLikeCount(createdTemplate.id, usageCount);
+        }
 
         result.success++;
         result.details.imported.push(item.title);
@@ -105,6 +131,23 @@ export class ImportTemplatesUseCase {
           title: item.title,
           error: error instanceof Error ? error.message : 'Unknown error'
         });
+      } finally {
+        // Report progress
+        if (onProgress) {
+          onProgress({
+            current: i + 1,
+            total: items.length,
+            success: result.success,
+            skipped: result.skipped,
+            failed: result.failed,
+            currentItem: item.title
+          });
+        }
+
+        // Small delay every batch to prevent overwhelming the system
+        if ((i + 1) % this.BATCH_SIZE === 0) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
       }
     }
 

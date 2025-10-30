@@ -4,6 +4,7 @@ import { GetTemplatesUseCase } from '@application/usecases/template/GetTemplates
 import { UpdateTemplateUseCase } from '@application/usecases/template/UpdateTemplateUseCase';
 import { DeleteTemplateUseCase } from '@application/usecases/template/DeleteTemplateUseCase';
 import { ImportTemplatesUseCase } from '@application/usecases/template/ImportTemplatesUseCase';
+import { SyncTemplateStatsUseCase } from '@application/usecases/template/SyncTemplateStatsUseCase';
 import { asyncHandler } from '../middleware/errorHandler';
 import { IFileUploadService } from '@infrastructure/services/FileUploadService';
 
@@ -14,6 +15,7 @@ export class AdminTemplateController {
     private updateTemplateUseCase: UpdateTemplateUseCase,
     private deleteTemplateUseCase: DeleteTemplateUseCase,
     private importTemplatesUseCase: ImportTemplatesUseCase,
+    private syncTemplateStatsUseCase: SyncTemplateStatsUseCase,
     private fileUploadService: IFileUploadService
   ) {}
 
@@ -98,10 +100,28 @@ export class AdminTemplateController {
       throw new Error('Items array is required');
     }
 
-    const result = await this.importTemplatesUseCase.execute(items);
+    // Set headers for Server-Sent Events
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    // Send progress updates
+    const result = await this.importTemplatesUseCase.execute(items, (progress) => {
+      res.write(`data: ${JSON.stringify({ type: 'progress', ...progress })}\n\n`);
+    });
+
+    // Send final result
+    res.write(`data: ${JSON.stringify({ type: 'complete', result })}\n\n`);
+    res.end();
+  });
+
+  syncTemplateStats = asyncHandler(async (req: Request, res: Response) => {
+    const result = await this.syncTemplateStatsUseCase.execute();
 
     res.status(200).json({
       status: 'success',
+      message: 'Template stats synced with StyleUsage counts',
       data: { result }
     });
   });
