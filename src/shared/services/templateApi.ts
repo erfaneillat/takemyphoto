@@ -30,14 +30,29 @@ export interface GetTemplatesParams {
   category?: string;
   search?: string;
   trending?: boolean;
+  trendingPeriod?: 'week' | 'month';
   limit?: number;
   offset?: number;
+}
+
+export interface GetPopularStylesParams {
+  limit?: number;
+  period?: 'all' | 'month' | 'week';
 }
 
 export const templateApi = {
   // Get all templates with filters
   getTemplates: async (params?: GetTemplatesParams) => {
     const response = await apiClient.get<{ status: string; data: { templates: Template[] } }>('/templates', { params });
+    return response.data.data.templates;
+  },
+
+  // Get popular styles
+  getPopularStyles: async (params?: GetPopularStylesParams) => {
+    const response = await apiClient.get<{ status: string; data: { templates: Template[] } }>(
+      '/templates/popular',
+      { params }
+    );
     return response.data.data.templates;
   },
 

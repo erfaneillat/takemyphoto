@@ -129,6 +129,14 @@
     "featuredStyles": "Featured Styles",
     "results": "results",
     "noResults": "No styles found",
+    "sortBy": "Sort by",
+    "sort": {
+      "trending": "Trending",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "popular": "Popular",
+      "favorites": "Favorites"
+    },
     "tabs": {
       "all": "All",
       "trending": "Trending",

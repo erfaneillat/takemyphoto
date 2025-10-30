@@ -15,13 +15,14 @@ export class TemplateController {
   ) {}
 
   getTemplates = asyncHandler(async (req: Request | AuthRequest, res: Response) => {
-    const { category, search, trending, limit, offset } = req.query;
+    const { category, search, trending, trendingPeriod, limit, offset } = req.query;
     const userId = (req as AuthRequest).user?.userId;
 
     const templates = await this.getTemplatesWithFavoritesUseCase.execute({
       category: category as string,
       search: search as string,
       trending: trending === 'true',
+      trendingPeriod: (trendingPeriod as 'week' | 'month') || 'week',
       limit: limit ? parseInt(limit as string) : undefined,
       offset: offset ? parseInt(offset as string) : undefined,
       userId

@@ -272,7 +272,8 @@ Get templates with optional filtering.
 **Query Parameters:**
 - `category` (string, optional): Filter by category (e.g., "portrait", "landscape")
 - `search` (string, optional): Search in prompts and tags
-- `trending` (boolean, optional): Get only trending templates
+- `trending` (boolean, optional): Get trending templates (dynamically calculated)
+- `trendingPeriod` (string, optional): Period for trending calculation - "week" or "month" (default: "week")
 - `limit` (number, optional): Number of results (default: 50)
 - `offset` (number, optional): Pagination offset (default: 0)
 
@@ -306,8 +307,11 @@ Get templates with optional filtering.
 # Get all templates
 GET /templates
 
-# Get trending templates
+# Get trending templates (last week)
 GET /templates?trending=true
+
+# Get trending templates (last month)
+GET /templates?trending=true&trendingPeriod=month
 
 # Get templates by category
 GET /templates?category=portrait&limit=20

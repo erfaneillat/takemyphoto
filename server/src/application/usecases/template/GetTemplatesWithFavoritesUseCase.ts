@@ -6,6 +6,7 @@ export interface GetTemplatesInput {
   category?: string;
   search?: string;
   trending?: boolean;
+  trendingPeriod?: 'week' | 'month';
   limit?: number;
   offset?: number;
   userId?: string;
@@ -22,12 +23,12 @@ export class GetTemplatesWithFavoritesUseCase {
   ) {}
 
   async execute(input: GetTemplatesInput): Promise<TemplateWithFavorite[]> {
-    const { category, search, trending, limit = 50, offset = 0, userId } = input;
+    const { category, search, trending, trendingPeriod = 'week', limit = 50, offset = 0, userId } = input;
 
     // Fetch templates based on filters
     let templates: Template[];
     if (trending) {
-      templates = await this.templateRepository.findTrending(limit);
+      templates = await this.templateRepository.findTrending(limit, trendingPeriod);
     } else if (search) {
       templates = await this.templateRepository.search(search, limit, offset);
     } else if (category) {

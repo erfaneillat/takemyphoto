@@ -1,4 +1,5 @@
 import { Heart } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { Template } from '@/shared/services/templateApi';
 
 interface StyleCardProps {
@@ -14,6 +15,35 @@ export const StyleCard = ({
   onStyleClick,
   index = 0
 }: StyleCardProps) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: '50px', // Start loading 50px before the image enters viewport
+        threshold: 0.01,
+      }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onToggleFavorite) {
@@ -39,12 +69,25 @@ export const StyleCard = ({
       className="group relative flex flex-col rounded-xl overflow-hidden bg-white dark:bg-surface-card border border-gray-200 dark:border-border-light transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer mb-4 break-inside-avoid"
     >
       {/* Image Container - Variable aspect ratios */}
-      <div className={`relative w-full ${getAspectRatio()} overflow-hidden bg-gray-900 dark:bg-gray-900`}>
-        <img
-          src={template.imageUrl}
-          alt={template.prompt}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+      <div ref={imgRef} className={`relative w-full ${getAspectRatio()} overflow-hidden bg-gray-900 dark:bg-gray-900`}>
+        {isVisible && (
+          <>
+            {!isLoaded && (
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-surface-hover dark:via-gray-700 dark:to-surface-hover animate-shimmer bg-[length:200%_100%]"></div>
+            )}
+            <img
+              src={template.imageUrl}
+              alt={template.prompt}
+              loading="lazy"
+              decoding="async"
+              onLoad={() => setIsLoaded(true)}
+              className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+                isLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              crossOrigin="anonymous"
+            />
+          </>
+        )}
         
         {/* Favorite Button */}
         <button

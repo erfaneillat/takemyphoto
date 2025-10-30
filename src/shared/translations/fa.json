@@ -129,6 +129,14 @@
     "featuredStyles": "سبک‌های برجسته",
     "results": "نتیجه",
     "noResults": "سبکی یافت نشد",
+    "sortBy": "مرتب‌سازی بر اساس",
+    "sort": {
+      "trending": "ترند",
+      "newest": "جدیدترین",
+      "oldest": "قدیمی‌ترین",
+      "popular": "محبوب",
+      "favorites": "علاقه‌مندی‌ها"
+    },
     "tabs": {
       "all": "همه",
       "trending": "ترند",
