@@ -216,9 +216,8 @@ export const ExplorePage = () => {
                 {t('explore.featuredStyles') || 'Featured Styles'}
               </h2>
 
-              {/* Gallery Masonry Grid */}
               {exploreState.isLoading && templates.length === 0 ? (
-                <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 p-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
                   {Array.from({ length: 12 }).map((_, i) => (
                     <StyleCardSkeleton key={i} index={i} />
                   ))}
@@ -230,7 +229,7 @@ export const ExplorePage = () => {
                   </p>
                 </div>
               ) : (
-                <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 p-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
                   {templates.map((template, index) => (
                     <StyleCard
                       key={template.id}
@@ -240,7 +239,7 @@ export const ExplorePage = () => {
                       index={index}
                     />
                   ))}
-                  <div ref={loadMoreRef} className="h-1 w-full"></div>
+                  <div ref={loadMoreRef} className="h-1 w-full col-span-full"></div>
                 </div>
               )}
             </div>
