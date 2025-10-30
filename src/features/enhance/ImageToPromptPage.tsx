@@ -54,11 +54,11 @@ export const ImageToPromptPage = () => {
   return (
     <div className="h-full bg-white dark:bg-black flex flex-col overflow-hidden transition-colors">
       {/* Main Content - Responsive Layout */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto">
         {/* Image Preview Panel */}
-        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface p-3 md:p-6 overflow-hidden">
+        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface p-3 md:p-6">
           {/* Main Image Display */}
-          <div className="flex-1 flex items-center justify-center rounded-xl lg:rounded-2xl overflow-hidden bg-white dark:bg-black border border-gray-200 dark:border-border-light">
+          <div className="flex-1 min-h-[300px] md:min-h-[400px] flex items-center justify-center rounded-xl lg:rounded-2xl overflow-hidden bg-white dark:bg-black border border-gray-200 dark:border-border-light">
             {uploadedImage ? (
               <div className="relative w-full h-full flex items-center justify-center">
                 <img
@@ -88,8 +88,8 @@ export const ImageToPromptPage = () => {
         </div>
 
         {/* Controls Panel */}
-        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col overflow-visible lg:overflow-hidden max-h-[60vh] lg:max-h-none">
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col">
+          <div className="p-4 md:p-6 pb-24 lg:pb-6">
             {/* Header */}
             <div className="mb-4 md:mb-6">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">
@@ -179,9 +179,9 @@ export const ImageToPromptPage = () => {
             )}
           </div>
 
-          {/* Analyze Button - Fixed at Bottom */}
+          {/* Analyze Button - Fixed at Bottom on Mobile, Inline on Desktop */}
           {uploadedImage && (
-            <div className="flex-shrink-0 p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card sticky bottom-24 md:bottom-0 z-50 pb-[env(safe-area-inset-bottom)]">
+            <div className="p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card lg:relative fixed bottom-24 md:bottom-0 left-0 right-0 z-[60] lg:z-auto pb-[env(safe-area-inset-bottom)]">
               <button
                 onClick={handleAnalyze}
                 disabled={isProcessing}

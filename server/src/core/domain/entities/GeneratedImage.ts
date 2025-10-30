@@ -11,6 +11,7 @@ export interface GeneratedImage {
   imageUrl: string;
   publicId: string;
   parentId?: string; // For tracking edit history
+  templateId?: string; // Template/style used for generation
   metadata: {
     aspectRatio?: string;
     quality?: string;
@@ -27,6 +28,7 @@ export interface CreateGeneratedImageDTO {
   imageUrl: string;
   publicId: string;
   parentId?: string;
+  templateId?: string;
   metadata?: {
     aspectRatio?: string;
     quality?: string;

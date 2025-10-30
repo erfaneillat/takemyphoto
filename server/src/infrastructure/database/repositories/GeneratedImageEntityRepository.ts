@@ -45,6 +45,14 @@ export class GeneratedImageEntityRepository implements IGeneratedImageEntityRepo
     return images.map(image => this.toEntity(image));
   }
 
+  async findAll(limit: number = 50, skip: number = 0): Promise<GeneratedImageEntity[]> {
+    const images = await GeneratedImageEntityModel.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip);
+    return images.map(image => this.toEntity(image));
+  }
+
   async update(id: string, updates: Partial<GeneratedImageEntity>): Promise<GeneratedImageEntity | null> {
     const image = await GeneratedImageEntityModel.findByIdAndUpdate(
       id,
@@ -71,4 +79,9 @@ export class GeneratedImageEntityRepository implements IGeneratedImageEntityRepo
   async countByUserId(userId: string): Promise<number> {
     return GeneratedImageEntityModel.countDocuments({ userId });
   }
+
+  async countAll(): Promise<number> {
+    return GeneratedImageEntityModel.countDocuments();
+  }
 }
+

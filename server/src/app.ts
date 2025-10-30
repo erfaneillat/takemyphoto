@@ -15,6 +15,7 @@ import { createCategoryRoutes } from '@presentation/routes/categoryRoutes';
 import { createAdminTemplateRoutes } from '@presentation/routes/adminTemplateRoutes';
 import { createEnhanceRoutes } from '@presentation/routes/enhanceRoutes';
 import { createImageGenerationRoutes } from '@presentation/routes/nanobananaRoutes';
+import { createDashboardRoutes } from '@presentation/routes/dashboardRoutes';
 import { errorHandler } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -122,6 +123,7 @@ export class App {
     this.app.use(`${baseUrl}/enhance`, createEnhanceRoutes(this.container.enhanceController));
     // Image generation routes (Google AI) - kept as /nanobanana for backwards compatibility
     this.app.use(`${baseUrl}/nanobanana`, createImageGenerationRoutes(this.container.imageGenerationController));
+    this.app.use(`${baseUrl}/dashboard`, createDashboardRoutes(this.container.dashboardController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');

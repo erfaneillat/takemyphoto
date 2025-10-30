@@ -157,10 +157,10 @@ export const BrushEditPage = () => {
   return (
     <div className="h-full bg-white dark:bg-black flex flex-col overflow-hidden transition-colors">
       {/* Main Content - Responsive Layout */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto">
         {/* Image Preview & Canvas Panel */}
-        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface overflow-hidden min-h-0">
-          <div className="flex-1 flex items-center justify-center overflow-hidden min-h-0">
+        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface min-h-0">
+          <div className="flex-1 min-h-[300px] md:min-h-[400px] flex items-center justify-center overflow-hidden">
             {uploadedImage || mainDisplayImage ? (
               <div className="w-full h-full relative">
                 <InlineBrushCanvas
@@ -258,8 +258,8 @@ export const BrushEditPage = () => {
         </div>
 
         {/* Controls Panel */}
-        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col overflow-visible lg:overflow-hidden max-h-[35vh] lg:max-h-none">
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col">
+          <div className="p-4 md:p-6 pb-24 lg:pb-6">
             {/* Header */}
             <div className="mb-4 md:mb-6">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">
@@ -327,9 +327,9 @@ export const BrushEditPage = () => {
             )}
           </div>
 
-          {/* Generate Button - Fixed at Bottom */}
+          {/* Generate Button - Fixed at Bottom on Mobile, Inline on Desktop */}
           {uploadedImage && (
-            <div className="flex-shrink-0 p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card sticky bottom-24 md:bottom-0 z-50 pb-[env(safe-area-inset-bottom)]">
+            <div className="p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card lg:relative fixed bottom-24 md:bottom-0 left-0 right-0 z-[60] lg:z-auto pb-[env(safe-area-inset-bottom)]">
               <button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || isProcessing}

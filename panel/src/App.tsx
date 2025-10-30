@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Categories from './pages/Categories'
 import Styles from './pages/Styles'
+import GeneratedImages from './pages/GeneratedImages'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthDebugWidget } from './components/AuthDebugWidget'
 
@@ -24,6 +25,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="categories" element={<Categories />} />
           <Route path="styles" element={<Styles />} />
+          <Route path="generated-images" element={<GeneratedImages />} />
         </Route>
       </Routes>
     </Router>

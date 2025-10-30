@@ -3,13 +3,15 @@ import { AuthRequest } from '../middleware/authMiddleware';
 import { GetTemplatesWithFavoritesUseCase } from '@application/usecases/template/GetTemplatesWithFavoritesUseCase';
 import { ToggleFavoriteTemplateUseCase } from '@application/usecases/template/ToggleFavoriteTemplateUseCase';
 import { GetUserFavoritesUseCase } from '@application/usecases/template/GetUserFavoritesUseCase';
+import { GetPopularStylesUseCase } from '@application/usecases/template/GetPopularStylesUseCase';
 import { asyncHandler } from '../middleware/errorHandler';
 
 export class TemplateController {
   constructor(
     private getTemplatesWithFavoritesUseCase: GetTemplatesWithFavoritesUseCase,
     private toggleFavoriteTemplateUseCase: ToggleFavoriteTemplateUseCase,
-    private getUserFavoritesUseCase: GetUserFavoritesUseCase
+    private getUserFavoritesUseCase: GetUserFavoritesUseCase,
+    private getPopularStylesUseCase: GetPopularStylesUseCase
   ) {}
 
   getTemplates = asyncHandler(async (req: Request | AuthRequest, res: Response) => {
@@ -51,6 +53,20 @@ export class TemplateController {
     res.status(200).json({
       status: 'success',
       data: result
+    });
+  });
+
+  getPopularStyles = asyncHandler(async (req: Request, res: Response) => {
+    const { limit, period } = req.query;
+
+    const templates = await this.getPopularStylesUseCase.execute({
+      limit: limit ? parseInt(limit as string) : 10,
+      period: (period as 'all' | 'month' | 'week') || 'all'
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: { templates }
     });
   });
 }

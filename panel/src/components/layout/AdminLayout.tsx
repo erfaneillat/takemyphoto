@@ -7,7 +7,8 @@ import {
   X,
   LogOut,
   Tag,
-  Palette
+  Palette,
+  Images
 } from 'lucide-react'
 
 const AdminLayout = () => {
@@ -20,6 +21,7 @@ const AdminLayout = () => {
     { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/categories', icon: Tag, label: 'Categories' },
     { path: '/styles', icon: Palette, label: 'Styles' },
+    { path: '/generated-images', icon: Images, label: 'Generated Images' },
   ]
 
   const isActive = (path: string) => {

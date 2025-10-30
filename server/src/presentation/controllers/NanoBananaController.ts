@@ -19,7 +19,7 @@ export class ImageGenerationController {
       throw new AppError(401, 'Authentication required');
     }
 
-    const { prompt, numImages, imageSize, characterImageUrls } = req.body;
+    const { prompt, numImages, imageSize, characterImageUrls, templateId } = req.body;
 
     if (!prompt || typeof prompt !== 'string') {
       throw new AppError(400, 'Prompt is required');
@@ -34,7 +34,8 @@ export class ImageGenerationController {
       numImages: numImages ? parseInt(numImages) : 1,
       imageSize,
       uploadedImages,
-      characterImageUrls: characterImageUrls ? JSON.parse(characterImageUrls) : []
+      characterImageUrls: characterImageUrls ? JSON.parse(characterImageUrls) : [],
+      templateId
     });
 
     // Return the generated image immediately
@@ -51,7 +52,7 @@ export class ImageGenerationController {
       throw new AppError(401, 'Authentication required');
     }
 
-    const { prompt, numImages, imageSize, characterImageUrls } = req.body;
+    const { prompt, numImages, imageSize, characterImageUrls, templateId } = req.body;
     const uploadedImages = req.files as Express.Multer.File[] | undefined;
 
     if (!prompt || typeof prompt !== 'string') {
@@ -69,7 +70,8 @@ export class ImageGenerationController {
       numImages: numImages ? parseInt(numImages) : 1,
       imageSize,
       uploadedImages,
-      characterImageUrls: characterImageUrls ? JSON.parse(characterImageUrls) : []
+      characterImageUrls: characterImageUrls ? JSON.parse(characterImageUrls) : [],
+      templateId
     });
 
     // Return the edited image immediately

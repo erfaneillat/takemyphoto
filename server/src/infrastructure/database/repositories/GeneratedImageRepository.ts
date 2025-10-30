@@ -26,6 +26,18 @@ export class GeneratedImageRepository implements IGeneratedImageRepository {
     return images.map(img => img.toJSON() as GeneratedImage);
   }
 
+  async findAll(limit: number = 100, offset: number = 0): Promise<GeneratedImage[]> {
+    const images = await GeneratedImageModel.find()
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
+    return images.map(img => img.toJSON() as GeneratedImage);
+  }
+
+  async count(): Promise<number> {
+    return await GeneratedImageModel.countDocuments();
+  }
+
   async delete(id: string): Promise<boolean> {
     const result = await GeneratedImageModel.findByIdAndDelete(id);
     return !!result;

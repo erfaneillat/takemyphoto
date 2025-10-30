@@ -33,6 +33,8 @@ import { GetUserFavoritesUseCase } from '@application/usecases/template/GetUserF
 import { CreateTemplateUseCase } from '@application/usecases/template/CreateTemplateUseCase';
 import { UpdateTemplateUseCase } from '@application/usecases/template/UpdateTemplateUseCase';
 import { DeleteTemplateUseCase } from '@application/usecases/template/DeleteTemplateUseCase';
+import { ImportTemplatesUseCase } from '@application/usecases/template/ImportTemplatesUseCase';
+import { GetPopularStylesUseCase } from '@application/usecases/template/GetPopularStylesUseCase';
 import { CreateCategoryUseCase } from '@application/usecases/category/CreateCategoryUseCase';
 import { GetCategoriesUseCase } from '@application/usecases/category/GetCategoriesUseCase';
 import { UpdateCategoryUseCase } from '@application/usecases/category/UpdateCategoryUseCase';
@@ -42,6 +44,8 @@ import { UpscaleImageUseCase } from '@application/usecases/enhance/UpscaleImageU
 import { ImageToPromptUseCase } from '@application/usecases/enhance/ImageToPromptUseCase';
 import { GenerateImageUseCase } from '@application/usecases/nanobanana/GenerateImageUseCase';
 import { EditImageUseCase } from '@application/usecases/nanobanana/EditImageUseCase';
+import { GetDashboardStatsUseCase } from '@application/usecases/dashboard/GetDashboardStatsUseCase';
+import { GetGeneratedImagesUseCase } from '@application/usecases/dashboard/GetGeneratedImagesUseCase';
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
 // Controllers
@@ -53,6 +57,7 @@ import { CategoryController } from '@presentation/controllers/CategoryController
 import { AdminTemplateController } from '@presentation/controllers/AdminTemplateController';
 import { EnhanceController } from '@presentation/controllers/EnhanceController';
 import { ImageGenerationController } from '@presentation/controllers/NanoBananaController';
+import { DashboardController } from '@presentation/controllers/DashboardController';
 
 export class Container {
   // Repositories
@@ -90,6 +95,8 @@ export class Container {
   public createTemplateUseCase: CreateTemplateUseCase;
   public updateTemplateUseCase: UpdateTemplateUseCase;
   public deleteTemplateUseCase: DeleteTemplateUseCase;
+  public importTemplatesUseCase: ImportTemplatesUseCase;
+  public getPopularStylesUseCase: GetPopularStylesUseCase;
   public createCategoryUseCase: CreateCategoryUseCase;
   public getCategoriesUseCase: GetCategoriesUseCase;
   public updateCategoryUseCase: UpdateCategoryUseCase;
@@ -99,6 +106,8 @@ export class Container {
   public imageToPromptUseCase: ImageToPromptUseCase;
   public generateImageUseCase: GenerateImageUseCase;
   public editImageUseCase: EditImageUseCase;
+  public getDashboardStatsUseCase: GetDashboardStatsUseCase;
+  public getGeneratedImagesUseCase: GetGeneratedImagesUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -110,6 +119,7 @@ export class Container {
   public adminTemplateController: AdminTemplateController;
   public enhanceController: EnhanceController;
   public imageGenerationController: ImageGenerationController;
+  public dashboardController: DashboardController;
 
   constructor() {
     // Initialize Repositories
@@ -205,6 +215,11 @@ export class Container {
       this.templateRepository
     );
 
+    this.importTemplatesUseCase = new ImportTemplatesUseCase(
+      this.templateRepository,
+      this.categoryRepository
+    );
+
     this.createCategoryUseCase = new CreateCategoryUseCase(
       this.categoryRepository
     );
@@ -253,10 +268,13 @@ export class Container {
       this.deleteCharacterUseCase
     );
 
+    this.getPopularStylesUseCase = new GetPopularStylesUseCase();
+
     this.templateController = new TemplateController(
       this.getTemplatesWithFavoritesUseCase,
       this.toggleFavoriteTemplateUseCase,
-      this.getUserFavoritesUseCase
+      this.getUserFavoritesUseCase,
+      this.getPopularStylesUseCase
     );
 
     this.userController = new UserController(
@@ -276,6 +294,7 @@ export class Container {
       this.getTemplatesUseCase,
       this.updateTemplateUseCase,
       this.deleteTemplateUseCase,
+      this.importTemplatesUseCase,
       this.fileUploadService
     );
 
@@ -288,6 +307,18 @@ export class Container {
       this.generateImageUseCase,
       this.editImageUseCase,
       this.generatedImageEntityRepository
+    );
+
+    this.getDashboardStatsUseCase = new GetDashboardStatsUseCase();
+
+    this.getGeneratedImagesUseCase = new GetGeneratedImagesUseCase(
+      this.generatedImageEntityRepository,
+      this.templateRepository
+    );
+
+    this.dashboardController = new DashboardController(
+      this.getDashboardStatsUseCase,
+      this.getGeneratedImagesUseCase
     );
   }
 }

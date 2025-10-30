@@ -3,6 +3,7 @@ import { CreateTemplateUseCase } from '@application/usecases/template/CreateTemp
 import { GetTemplatesUseCase } from '@application/usecases/template/GetTemplatesUseCase';
 import { UpdateTemplateUseCase } from '@application/usecases/template/UpdateTemplateUseCase';
 import { DeleteTemplateUseCase } from '@application/usecases/template/DeleteTemplateUseCase';
+import { ImportTemplatesUseCase } from '@application/usecases/template/ImportTemplatesUseCase';
 import { asyncHandler } from '../middleware/errorHandler';
 import { IFileUploadService } from '@infrastructure/services/FileUploadService';
 
@@ -12,6 +13,7 @@ export class AdminTemplateController {
     private getTemplatesUseCase: GetTemplatesUseCase,
     private updateTemplateUseCase: UpdateTemplateUseCase,
     private deleteTemplateUseCase: DeleteTemplateUseCase,
+    private importTemplatesUseCase: ImportTemplatesUseCase,
     private fileUploadService: IFileUploadService
   ) {}
 
@@ -87,5 +89,20 @@ export class AdminTemplateController {
     await this.deleteTemplateUseCase.execute(id);
 
     res.status(204).send();
+  });
+
+  importTemplates = asyncHandler(async (req: Request, res: Response) => {
+    const { items } = req.body;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new Error('Items array is required');
+    }
+
+    const result = await this.importTemplatesUseCase.execute(items);
+
+    res.status(200).json({
+      status: 'success',
+      data: { result }
+    });
   });
 }

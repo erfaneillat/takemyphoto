@@ -7,6 +7,7 @@ export const createTemplateRoutes = (templateController: TemplateController): Ro
 
   // Public route with optional auth (to include isFavorite field if user is logged in)
   router.get('/', optionalAuthMiddleware, templateController.getTemplates);
+  router.get('/popular', templateController.getPopularStyles);
 
   // Protected routes
   router.get('/favorites', authMiddleware, templateController.getUserFavorites);

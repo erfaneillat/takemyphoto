@@ -9,6 +9,7 @@ export const createAdminTemplateRoutes = (adminTemplateController: AdminTemplate
   // All routes are protected (you may want to add admin middleware)
   router.get('/', authMiddleware, adminTemplateController.getTemplates);
   router.post('/', authMiddleware, upload.single('image'), adminTemplateController.createTemplate);
+  router.post('/import', authMiddleware, adminTemplateController.importTemplates);
   router.put('/:id', authMiddleware, adminTemplateController.updateTemplate);
   router.delete('/:id', authMiddleware, adminTemplateController.deleteTemplate);
 

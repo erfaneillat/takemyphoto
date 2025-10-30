@@ -6,6 +6,7 @@ export interface GenerateImageRequest {
   imageSize?: string;
   images?: File[];
   characterImageUrls?: string[];
+  templateId?: string;
 }
 
 export interface EditImageRequest {
@@ -14,6 +15,7 @@ export interface EditImageRequest {
   imageSize?: string;
   images: File[];
   characterImageUrls?: string[];
+  templateId?: string;
 }
 
 export interface GenerateImageResponse {
@@ -62,6 +64,10 @@ class NanoBananaApi {
     if (request.characterImageUrls && request.characterImageUrls.length > 0) {
       formData.append('characterImageUrls', JSON.stringify(request.characterImageUrls));
     }
+
+    if (request.templateId) {
+      formData.append('templateId', request.templateId);
+    }
     
     if (request.images) {
       request.images.forEach((image) => {
@@ -76,6 +82,7 @@ class NanoBananaApi {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        timeout: 120000, // 120 seconds for image generation
       }
     );
 
@@ -100,6 +107,10 @@ class NanoBananaApi {
     if (request.characterImageUrls && request.characterImageUrls.length > 0) {
       formData.append('characterImageUrls', JSON.stringify(request.characterImageUrls));
     }
+
+    if (request.templateId) {
+      formData.append('templateId', request.templateId);
+    }
     
     request.images.forEach((image) => {
       formData.append('images', image);
@@ -112,6 +123,7 @@ class NanoBananaApi {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        timeout: 120000, // 120 seconds for image editing
       }
     );
 

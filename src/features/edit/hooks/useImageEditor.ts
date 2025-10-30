@@ -7,6 +7,7 @@ import type {
   ImageEditParams 
 } from '@/core/domain/entities/Image';
 import { nanoBananaApi } from '@/shared/services';
+import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 
 export const useImageEditor = () => {
   const [mode, setMode] = useState<EditMode>('generate');
@@ -14,6 +15,7 @@ export const useImageEditor = () => {
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [prompt, setPrompt] = useState('');
+  const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>('1:1');
   const [error, setError] = useState<string | null>(null);
 
   const addUploadedImage = useCallback((file: File) => {
@@ -39,7 +41,7 @@ export const useImageEditor = () => {
     setUploadedImages(prev => prev.filter(img => img.id !== id));
   }, []);
 
-  const generateImage = useCallback(async (params: ImageGenerationParams) => {
+  const generateImage = useCallback(async (params: ImageGenerationParams & { templateId?: string }) => {
     setIsProcessing(true);
     setError(null);
     
@@ -52,8 +54,9 @@ export const useImageEditor = () => {
       const response = await nanoBananaApi.editImage({
         prompt: params.prompt,
         numImages: 1,
-        imageSize: '1:1',
+        imageSize: aspectRatio,
         images: uploadedImages.map(img => img.file),
+        templateId: params.templateId,
       });
 
       // Resolve image URL to absolute path
@@ -77,7 +80,7 @@ export const useImageEditor = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages]);
+  }, [uploadedImages, aspectRatio]);
 
   const editImages = useCallback(async (params: ImageEditParams) => {
     setIsProcessing(true);
@@ -87,7 +90,7 @@ export const useImageEditor = () => {
       const response = await nanoBananaApi.editImage({
         prompt: params.prompt,
         numImages: 1,
-        imageSize: '1:1',
+        imageSize: aspectRatio,
         images: params.images.map(img => img.file),
       });
 
@@ -142,6 +145,8 @@ export const useImageEditor = () => {
     isProcessing,
     prompt,
     setPrompt,
+    aspectRatio,
+    setAspectRatio,
     addUploadedImage,
     removeUploadedImage,
     generateImage,

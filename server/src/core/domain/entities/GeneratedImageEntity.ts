@@ -8,6 +8,7 @@ export interface GeneratedImageEntity {
   originImageUrl?: string; // For image-to-image edits
   referenceImageUrls?: string[]; // Input images used
   characterIds?: string[]; // Characters used
+  templateId?: string; // Template/style used for generation
   status: 'pending' | 'completed' | 'failed';
   error?: string;
   createdAt: Date;

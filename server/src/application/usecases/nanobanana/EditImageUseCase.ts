@@ -1,6 +1,8 @@
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
+import { TemplateModel } from '@infrastructure/database/models/TemplateModel';
+import { StyleUsageModel } from '@infrastructure/database/models/StyleUsageModel';
 
 export interface EditImageRequest {
   userId: string;
@@ -9,6 +11,7 @@ export interface EditImageRequest {
   imageSize?: string;
   uploadedImages: Express.Multer.File[];
   characterImageUrls?: string[];
+  templateId?: string;
 }
 
 export interface EditImageResponse {
@@ -26,7 +29,7 @@ export class EditImageUseCase {
   ) {}
 
   async execute(request: EditImageRequest): Promise<EditImageResponse> {
-    const { userId, prompt, imageSize = '1:1', uploadedImages } = request;
+    const { userId, prompt, imageSize = '1:1', uploadedImages, templateId } = request;
     // Note: numImages and characterImageUrls are currently unused in Google AI implementation
 
     // Validate that at least one image is provided for editing
@@ -101,9 +104,31 @@ export class EditImageUseCase {
       type: 'IMAGETOIAMGE',
       imageUrl: localImageUrl,
       referenceImageUrls,
+      templateId,
       status: 'completed',
       completedAt: new Date()
     });
+
+    // Track style usage if template was used
+    if (templateId) {
+      try {
+        // Increment template usage count
+        await TemplateModel.findByIdAndUpdate(
+          templateId,
+          { $inc: { usageCount: 1 } }
+        );
+
+        // Record style usage
+        await StyleUsageModel.create({
+          templateId,
+          userId,
+          generatedImageId: generatedImage.id
+        });
+      } catch (error) {
+        console.error('Failed to track style usage:', error);
+        // Don't fail the generation if tracking fails
+      }
+    }
 
     return {
       imageUrl: localImageUrl,

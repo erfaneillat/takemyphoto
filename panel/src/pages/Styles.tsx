@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Image as ImageIcon, TrendingUp } from 'lucide-react';
+import { Plus, Edit, Trash2, Image as ImageIcon, TrendingUp, Upload } from 'lucide-react';
 import { apiClient } from '../services/apiClient';
 
 interface Category {
@@ -38,6 +38,10 @@ const Styles = () => {
     tags: '',
     isTrending: false,
   });
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importJson, setImportJson] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<any>(null);
 
   useEffect(() => {
     fetchTemplates();
@@ -151,6 +155,40 @@ const Styles = () => {
     });
   };
 
+  const handleImport = async () => {
+    try {
+      setImporting(true);
+      setImportResult(null);
+
+      const items = JSON.parse(importJson);
+      
+      if (!Array.isArray(items)) {
+        alert('JSON must be an array of items');
+        return;
+      }
+
+      const response = await apiClient.post('/admin/templates/import', { items });
+      const result = response.data.data.result;
+      
+      setImportResult(result);
+      setImportJson('');
+      fetchTemplates();
+      
+      alert(`Import completed!\nSuccess: ${result.success}\nSkipped: ${result.skipped}\nFailed: ${result.failed}`);
+    } catch (error: any) {
+      console.error('Error importing templates:', error);
+      alert(`Import failed: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleCloseImportModal = () => {
+    setShowImportModal(false);
+    setImportJson('');
+    setImportResult(null);
+  };
+
   if (loading) {
     return <div className="text-center py-12">Loading...</div>;
   }
@@ -162,13 +200,22 @@ const Styles = () => {
           <h1 className="text-3xl font-bold text-gray-900">Styles</h1>
           <p className="text-gray-500 mt-2 text-base">Manage style templates for users</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-black text-white px-5 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          <Plus size={20} />
-          Add Style
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            <Upload size={20} />
+            Import
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 bg-black text-white px-5 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            <Plus size={20} />
+            Add Style
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -368,6 +415,99 @@ const Styles = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-6 my-4 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Import Styles
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Paste a JSON array of styles to import. Each item should have: title, fullPrompt, imageUrl, and categories.
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  JSON Data
+                </label>
+                <textarea
+                  value={importJson}
+                  onChange={(e) => setImportJson(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-sm"
+                  rows={12}
+                  placeholder='[{"title": "...", "fullPrompt": "...", "imageUrl": "...", "categories": [...]}]'
+                  disabled={importing}
+                />
+              </div>
+
+              {importResult && (
+                <div className="bg-gray-50 p-4 rounded-xl">
+                  <h3 className="font-semibold text-gray-900 mb-2">Import Results</h3>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <div className="text-2xl font-bold text-green-700">{importResult.success}</div>
+                      <div className="text-sm text-green-600">Success</div>
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded-lg">
+                      <div className="text-2xl font-bold text-yellow-700">{importResult.skipped}</div>
+                      <div className="text-sm text-yellow-600">Skipped</div>
+                    </div>
+                    <div className="bg-red-100 p-3 rounded-lg">
+                      <div className="text-2xl font-bold text-red-700">{importResult.failed}</div>
+                      <div className="text-sm text-red-600">Failed</div>
+                    </div>
+                  </div>
+                  {importResult.details && (
+                    <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+                      {importResult.details.skipped?.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-sm text-yellow-700 mb-1">Skipped:</h4>
+                          {importResult.details.skipped.map((item: any, idx: number) => (
+                            <div key={idx} className="text-xs text-gray-600">
+                              {item.title}: {item.reason}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {importResult.details.failed?.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-sm text-red-700 mb-1">Failed:</h4>
+                          {importResult.details.failed.map((item: any, idx: number) => (
+                            <div key={idx} className="text-xs text-gray-600">
+                              {item.title}: {item.error}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleCloseImportModal}
+                  className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold"
+                  disabled={importing}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handleImport}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={importing || !importJson.trim()}
+                >
+                  {importing ? 'Importing...' : 'Import'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

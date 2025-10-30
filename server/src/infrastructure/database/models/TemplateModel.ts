@@ -46,6 +46,12 @@ const TemplateSchema = new Schema<ITemplateDocument>(
       type: Number,
       default: 0,
       min: 0
+    },
+    usageCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+      index: true
     }
   },
   {

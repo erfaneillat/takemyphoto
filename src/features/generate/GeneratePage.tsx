@@ -4,6 +4,7 @@ import { useImageGenerator } from './hooks/useImageGenerator';
 import type { GeneratedImage } from '@/core/domain/entities/Image';
 import type { Character } from '@/core/domain/entities/Character';
 import { CharacterSelectorModal } from '@/features/edit/components/CharacterSelectorModal';
+import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
 import { 
   Image as ImageIcon,
   Sparkles,
@@ -26,6 +27,8 @@ export const GeneratePage = () => {
     setPrompt,
     selectedCharacters,
     setSelectedCharacters,
+    aspectRatio,
+    setAspectRatio,
     generateImage,
     addUploadedImage,
     removeUploadedImage,
@@ -78,11 +81,11 @@ export const GeneratePage = () => {
   return (
     <div className="h-full bg-white dark:bg-black flex flex-col overflow-hidden transition-colors">
       {/* Main Content - Responsive Layout */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto">
         {/* Image Preview & History Panel */}
-        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface p-3 md:p-6 overflow-hidden">
+        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface p-3 md:p-6">
           {/* Main Image Display */}
-          <div className="flex-1 flex items-center justify-center mb-3 md:mb-6 rounded-xl lg:rounded-2xl overflow-hidden bg-white dark:bg-black border border-gray-200 dark:border-border-light relative">
+          <div className="flex-1 min-h-[300px] md:min-h-[400px] flex items-center justify-center mb-3 md:mb-6 rounded-xl lg:rounded-2xl overflow-hidden bg-white dark:bg-black border border-gray-200 dark:border-border-light relative">
             {mainDisplayImage ? (
               <>
                 <img
@@ -148,11 +151,11 @@ export const GeneratePage = () => {
 
           {/* History Carousel */}
           {generatedImages.length > 0 && (
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 mt-auto">
               <h3 className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 md:mb-3">
                 {t('generate.history.title')}
               </h3>
-              <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 -mx-3 px-3 md:mx-0 md:px-0">
+              <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
                 {generatedImages.map((image: GeneratedImage, index: number) => (
                   <button
                     key={image.id}
@@ -176,8 +179,8 @@ export const GeneratePage = () => {
         </div>
 
         {/* Controls Panel */}
-        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col overflow-visible lg:overflow-hidden max-h-[60vh] lg:max-h-none">
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col">
+          <div className="p-4 md:p-6 pb-24 lg:pb-6">
             {/* Header */}
             <div className="mb-4 md:mb-6">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">
@@ -200,6 +203,13 @@ export const GeneratePage = () => {
                 className="w-full px-3 md:px-4 py-2.5 md:py-3 bg-gray-50 dark:bg-surface rounded-lg md:rounded-xl border border-gray-200 dark:border-border-light focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none resize-none min-h-[100px] md:min-h-[120px] text-sm"
               />
             </div>
+
+            {/* Aspect Ratio Selector */}
+            <AspectRatioSelector
+              value={aspectRatio}
+              onChange={setAspectRatio}
+              className="mb-4 md:mb-6"
+            />
 
             {/* References Section */}
             <div className="mb-4 md:mb-6">
@@ -294,8 +304,8 @@ export const GeneratePage = () => {
             </div>
           </div>
 
-          {/* Generate Button - Fixed at Bottom */}
-          <div className="flex-shrink-0 p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card sticky bottom-24 md:bottom-0 z-50 pb-[env(safe-area-inset-bottom)]">
+          {/* Generate Button - Fixed at Bottom on Mobile, Inline on Desktop */}
+          <div className="p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card lg:relative fixed bottom-24 md:bottom-0 left-0 right-0 z-[60] lg:z-auto pb-[env(safe-area-inset-bottom)]">
             <button
               onClick={handleGenerateWithCleanup}
               disabled={!prompt.trim() || isProcessing}

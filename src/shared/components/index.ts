@@ -8,3 +8,5 @@ export { BottomNavigation } from './BottomNavigation';
 export { ImageCard } from './ImageCard';
 export { FeatureCard } from './FeatureCard';
 export { Drawer } from './Drawer';
+export { AspectRatioSelector } from './AspectRatioSelector';
+export type { AspectRatioValue } from './AspectRatioSelector';

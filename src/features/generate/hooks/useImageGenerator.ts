@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import type { GeneratedImage, ImageGenerationParams, UploadedImage } from '@/core/domain/entities/Image';
 import type { Character } from '@/core/domain/entities/Character';
 import { nanoBananaApi } from '@/shared/services';
+import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 
 export const useImageGenerator = () => {
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
@@ -9,6 +10,7 @@ export const useImageGenerator = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [selectedCharacters, setSelectedCharacters] = useState<Character[]>([]);
+  const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>('1:1');
   const [error, setError] = useState<string | null>(null);
 
   const MAX_IMAGES = 3;
@@ -50,7 +52,7 @@ export const useImageGenerator = () => {
       const response = await nanoBananaApi.generateImage({
         prompt: params.prompt,
         numImages: 1,
-        imageSize: '1:1',
+        imageSize: aspectRatio,
         images: uploadedImages.map(img => img.file),
         characterImageUrls
       });
@@ -76,7 +78,7 @@ export const useImageGenerator = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, selectedCharacters]);
+  }, [uploadedImages, selectedCharacters, aspectRatio]);
 
   const clearAll = useCallback(() => {
     setGeneratedImages([]);
@@ -93,6 +95,8 @@ export const useImageGenerator = () => {
     setPrompt,
     selectedCharacters,
     setSelectedCharacters,
+    aspectRatio,
+    setAspectRatio,
     generateImage,
     addUploadedImage,
     removeUploadedImage,

@@ -5,6 +5,8 @@ export interface IGeneratedImageRepository {
   findById(id: string): Promise<GeneratedImage | null>;
   findByUserId(userId: string, limit?: number, offset?: number): Promise<GeneratedImage[]>;
   findByParentId(parentId: string): Promise<GeneratedImage[]>;
+  findAll(limit?: number, offset?: number): Promise<GeneratedImage[]>;
+  count(): Promise<number>;
   delete(id: string): Promise<boolean>;
   countByUserId(userId: string): Promise<number>;
   countByUserIdThisMonth(userId: string): Promise<number>;

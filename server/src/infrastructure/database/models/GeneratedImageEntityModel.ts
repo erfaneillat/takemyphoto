@@ -35,6 +35,10 @@ const GeneratedImageEntitySchema = new Schema<GeneratedImageEntityDocument>(
     characterIds: [{ 
       type: String 
     }],
+    templateId: {
+      type: String,
+      index: true
+    },
     status: { 
       type: String, 
       enum: ['pending', 'completed', 'failed'], 

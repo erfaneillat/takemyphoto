@@ -9,6 +9,7 @@ export interface Template {
   isTrending: boolean;
   viewCount: number;
   likeCount: number;
+  usageCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
