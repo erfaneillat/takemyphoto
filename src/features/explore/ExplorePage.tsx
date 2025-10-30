@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { templateApi, categoryApi, Template, Category } from '@/shared/services/templateApi';
@@ -23,11 +23,28 @@ export const ExplorePage = () => {
   const [hasMore, setHasMore] = useState(true);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const [favoritesCache, setFavoritesCache] = useState<Template[] | null>(null);
+  const [columnCount, setColumnCount] = useState(2);
 
   const LIMIT = 24;
 
   useEffect(() => {
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const computeCols = () => {
+      if (typeof window === 'undefined') return 2;
+      const w = window.innerWidth;
+      if (w >= 1280) return 6;
+      if (w >= 1024) return 5;
+      if (w >= 768) return 4;
+      if (w >= 640) return 3;
+      return 2;
+    };
+    const onResize = () => setColumnCount(computeCols());
+    setColumnCount(computeCols());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   useEffect(() => {
@@ -66,8 +83,15 @@ export const ExplorePage = () => {
     return () => {
       if (current) observer.unobserve(current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasMore, exploreState.isLoading]);
+
+  const distributedColumns = useMemo(() => {
+    const cols: { item: Template; index: number }[][] = Array.from({ length: columnCount }, () => []);
+    templates.forEach((item, i) => {
+      cols[i % columnCount].push({ item, index: i });
+    });
+    return cols;
+  }, [templates, columnCount]);
 
   const fetchCategories = async () => {
     try {
@@ -216,8 +240,9 @@ export const ExplorePage = () => {
                 {t('explore.featuredStyles') || 'Featured Styles'}
               </h2>
 
+              {/* Gallery Masonry Grid */}
               {exploreState.isLoading && templates.length === 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
+                <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 p-4">
                   {Array.from({ length: 12 }).map((_, i) => (
                     <StyleCardSkeleton key={i} index={i} />
                   ))}
@@ -229,18 +254,24 @@ export const ExplorePage = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
-                  {templates.map((template, index) => (
-                    <StyleCard
-                      key={template.id}
-                      template={template}
-                      onToggleFavorite={handleToggleFavorite}
-                      onStyleClick={handleStyleClick}
-                      index={index}
-                    />
-                  ))}
-                  <div ref={loadMoreRef} className="h-1 w-full col-span-full"></div>
-                </div>
+                <>
+                  <div className="flex gap-4 p-4">
+                    {distributedColumns.map((col: { item: Template; index: number }[], ci: number) => (
+                      <div key={ci} className="flex flex-col gap-4 flex-1">
+                        {col.map((entry: { item: Template; index: number }) => (
+                          <StyleCard
+                            key={entry.item.id}
+                            template={entry.item}
+                            onToggleFavorite={handleToggleFavorite}
+                            onStyleClick={handleStyleClick}
+                            index={entry.index}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  <div ref={loadMoreRef} className="h-1 w-full"></div>
+                </>
               )}
             </div>
           </div>

@@ -93,18 +93,8 @@ export const StyleCard = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <div className="absolute bottom-0 left-0 right-0 p-3">
             <p className="text-white text-sm font-semibold truncate">{template.prompt || template.style || 'Style'}</p>
-            {template.usageCount !== undefined && template.usageCount > 0 && (
-              <p className="text-white/80 text-xs mt-1">{template.usageCount} uses</p>
-            )}
           </div>
         </div>
-
-        {/* Usage Count Badge */}
-        {template.usageCount !== undefined && template.usageCount > 0 && (
-          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
-            {template.usageCount}
-          </div>
-        )}
         
         {/* Favorite Button */}
         <button
