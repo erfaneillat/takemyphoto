@@ -116,7 +116,7 @@ export class AdminTemplateController {
     res.end();
   });
 
-  syncTemplateStats = asyncHandler(async (req: Request, res: Response) => {
+  syncTemplateStats = asyncHandler(async (_req: Request, res: Response) => {
     const result = await this.syncTemplateStatsUseCase.execute();
 
     res.status(200).json({
