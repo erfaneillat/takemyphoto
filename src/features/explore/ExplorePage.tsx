@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { templateApi, categoryApi, Template, Category } from '@/shared/services/templateApi';
@@ -20,13 +20,16 @@ export const ExplorePage = () => {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('trending'); // Default to trending
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const LIMIT = 24;
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    fetchTemplates();
+    reloadTemplates();
   }, [exploreState.activeTab, exploreState.searchQuery, sortBy]);
 
   const fetchCategories = async () => {
@@ -38,20 +41,18 @@ export const ExplorePage = () => {
     }
   };
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async (append: boolean = false, page: number = exploreState.page) => {
     try {
       exploreState.setIsLoading(true);
       const params: any = {};
 
-      // Favorites: use dedicated endpoint and filter client-side
+      // Favorites: use dedicated endpoint and filter client-side (no pagination)
       if (sortBy === 'favorites') {
         let favs = await templateApi.getUserFavorites();
 
-        // Apply category filter locally
         if (exploreState.activeTab !== 'all' && exploreState.activeTab !== 'trending') {
           favs = favs.filter(t => t.category === exploreState.activeTab);
         }
-        // Apply search filter locally
         if (exploreState.searchQuery) {
           const q = exploreState.searchQuery.toLowerCase();
           favs = favs.filter(t =>
@@ -59,11 +60,12 @@ export const ExplorePage = () => {
             (Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(q)))
           );
         }
+        setHasMore(false);
         setTemplates(favs);
         return;
       }
 
-      // Popular: use dedicated endpoint then optionally filter locally
+      // Popular: use dedicated endpoint then optionally filter locally (no pagination on API)
       if (sortBy === 'popular') {
         let popular = await templateApi.getPopularStyles({ limit: 100, period: 'all' });
         if (exploreState.activeTab !== 'all' && exploreState.activeTab !== 'trending') {
@@ -76,16 +78,16 @@ export const ExplorePage = () => {
             (Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(q)))
           );
         }
-        // Ensure isFavorite exists for UI logic
         popular = popular.map(t => ({ ...t, isFavorite: !!(t as any).isFavorite }));
+        setHasMore(false);
         setTemplates(popular);
         return;
       }
 
-      // Default/trending/category/search via /templates
+      // Default/trending/category/search via /templates with pagination
       if (exploreState.activeTab === 'trending' || sortBy === 'trending') {
         params.trending = true;
-        params.trendingPeriod = 'week'; // Dynamic trending based on last week's activity
+        params.trendingPeriod = 'week';
       } else if (exploreState.activeTab !== 'all') {
         params.category = exploreState.activeTab;
       }
@@ -93,6 +95,9 @@ export const ExplorePage = () => {
       if (exploreState.searchQuery) {
         params.search = exploreState.searchQuery;
       }
+
+      params.limit = LIMIT;
+      params.offset = (page - 1) * LIMIT;
 
       let data = await templateApi.getTemplates(params);
 
@@ -103,19 +108,50 @@ export const ExplorePage = () => {
         data = [...data].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       }
 
-      setTemplates(data);
+      if (append) {
+        setTemplates(prev => [...prev, ...data]);
+      } else {
+        setTemplates(data);
+      }
+      setHasMore(data.length === LIMIT);
     } catch (error) {
       console.error('Error fetching templates:', error);
     } finally {
       exploreState.setIsLoading(false);
     }
-  };
+  }, [LIMIT, exploreState, sortBy]);
+
+  const reloadTemplates = useCallback(() => {
+    setTemplates([]);
+    setHasMore(true);
+    exploreState.setPage(1);
+    fetchTemplates(false, 1);
+  }, [fetchTemplates, exploreState]);
+
+  useEffect(() => {
+    if (exploreState.page > 1) {
+      fetchTemplates(true, exploreState.page);
+    }
+  }, [exploreState.page, fetchTemplates]);
+
+  useEffect(() => {
+    const node = loadMoreRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(entries => {
+      const entry = entries[0];
+      if (entry.isIntersecting && hasMore && !exploreState.isLoading && sortBy !== 'popular' && sortBy !== 'favorites') {
+        exploreState.setPage(exploreState.page + 1);
+      }
+    }, { rootMargin: '200px', threshold: 0 });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMore, exploreState.isLoading, sortBy, exploreState, templates.length]);
 
   const handleToggleFavorite = async (templateId: string) => {
     try {
       await templateApi.toggleFavorite(templateId);
-      // Refresh templates to update isFavorite state
-      await fetchTemplates();
+      // Update local state to reflect favorite change without refetching
+      setTemplates(prev => prev.map(t => t.id === templateId ? { ...t, isFavorite: !t.isFavorite } : t));
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
@@ -137,7 +173,7 @@ export const ExplorePage = () => {
             <SearchBar
               value={exploreState.searchQuery}
               onChange={exploreState.setSearchQuery}
-              onSearch={fetchTemplates}
+              onSearch={reloadTemplates}
             />
 
             {/* Category Filter */}
@@ -181,8 +217,10 @@ export const ExplorePage = () => {
                       onToggleFavorite={handleToggleFavorite}
                       onStyleClick={handleStyleClick}
                       index={index}
+                      showUsage={sortBy === 'popular' || sortBy === 'trending' || exploreState.activeTab === 'trending'}
                     />
                   ))}
+                  <div ref={loadMoreRef} />
                 </div>
               )}
             </div>
