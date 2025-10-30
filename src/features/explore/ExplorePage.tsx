@@ -19,7 +19,7 @@ export const ExplorePage = () => {
   const exploreState = useExploreState();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('trending'); // Default to trending
+  const sortBy = exploreState.sortBy as SortOption;
   const [hasMore, setHasMore] = useState(true);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const [favoritesCache, setFavoritesCache] = useState<Template[] | null>(null);
@@ -49,7 +49,7 @@ export const ExplorePage = () => {
 
   useEffect(() => {
     fetchTemplates(false);
-  }, [exploreState.activeTab, exploreState.searchQuery, sortBy]);
+  }, [exploreState.activeTab, exploreState.searchQuery, exploreState.sortBy]);
 
   useEffect(() => {
     if (exploreState.page > 1) {
@@ -66,7 +66,7 @@ export const ExplorePage = () => {
     // Ensure page is 1 on sort change
     exploreState.setPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy]);
+  }, [exploreState.sortBy]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -231,7 +231,7 @@ export const ExplorePage = () => {
             {/* Sort Widget */}
             <SortWidget
               activeSort={sortBy}
-              onSortChange={setSortBy}
+              onSortChange={exploreState.setSortBy}
             />
 
             {/* Featured Styles Section */}
