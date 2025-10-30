@@ -290,7 +290,16 @@ jobs:
             exit 1
           fi
           
+          # Verify dist has files
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ Error: Web build incomplete - index.html not found in dist"
+            ls -la dist/
+            exit 1
+          fi
+          
           echo "✅ Web application built successfully"
+          echo "📊 Web dist contents:"
+          ls -lh dist/ | head -20
           
           # Build Admin Panel
           echo "🔨 Building admin panel..."
@@ -344,12 +353,28 @@ jobs:
           echo "🔍 Using app path: ${{ steps.env.outputs.app_path }}/server"
           cd ${{ steps.env.outputs.app_path }}/server
 
+          # Verify built files exist before restarting
+          echo "🔍 Verifying build artifacts..."
+          if [ ! -f "dist/index.js" ]; then
+            echo "❌ Error: Server build not found (dist/index.js missing)"
+            exit 1
+          fi
+          if [ ! -f "../dist/index.html" ]; then
+            echo "❌ Error: Web build not found (../dist/index.html missing)"
+            exit 1
+          fi
+          if [ ! -f "../panel/dist/index.html" ]; then
+            echo "❌ Error: Panel build not found (../panel/dist/index.html missing)"
+            exit 1
+          fi
+          echo "✅ All build artifacts verified"
+
           # Ensure environment is set for the process
           export NODE_ENV=${{ steps.env.outputs.environment }}
           export PORT=${{ steps.port.outputs.app_port }}
 
           # Start or restart the app with the correct CWD
-          if pm2 describe ${{ steps.env.outputs.app_name }} > /dev/null; then
+          if pm2 describe ${{ steps.env.outputs.app_name }} > /dev/null 2>&1; then
             echo "🔄 Restarting existing PM2 app with tsconfig-paths"
             pm2 restart ${{ steps.env.outputs.app_name }} --update-env --node-args '-r tsconfig-paths/register'
           else
@@ -360,6 +385,10 @@ jobs:
           pm2 save
           pm2 status ${{ steps.env.outputs.app_name }}
           echo "✅ PM2 process started/restarted"
+          
+          # Show recent logs to verify startup
+          echo "📋 Recent PM2 logs:"
+          pm2 logs ${{ steps.env.outputs.app_name }} --lines 20 --nostream
 
     # ✅ Health Check
     - name: ✅ Health Check

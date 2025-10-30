@@ -149,12 +149,21 @@ export class App {
       res.sendFile(path.join(panelPath, 'index.html'));
     });
 
-    // 404 handler
-    this.app.use('*', (req, res) => {
-      res.status(404).json({
-        status: 'error',
-        message: `Route ${req.originalUrl} not found`
-      });
+    // Serve main web frontend static files
+    const webPath = path.join(__dirname, '../../dist');
+    this.app.use(express.static(webPath));
+
+    // Handle web app SPA routing - serve index.html for any non-API routes
+    this.app.get('*', (req, res) => {
+      // Don't serve index.html for API routes
+      if (req.path.startsWith('/api')) {
+        res.status(404).json({
+          status: 'error',
+          message: `Route ${req.originalUrl} not found`
+        });
+      } else {
+        res.sendFile(path.join(webPath, 'index.html'));
+      }
     });
   }
 
