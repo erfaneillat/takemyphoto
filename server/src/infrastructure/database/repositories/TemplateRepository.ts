@@ -20,7 +20,7 @@ export class TemplateRepository implements ITemplateRepository {
 
   async findAll(limit: number = 50, offset: number = 0): Promise<Template[]> {
     const templates = await TemplateModel.find()
-      .sort({ createdAt: -1 })
+      .sort({ usageCount: -1, likeCount: -1, createdAt: -1 })
       .skip(offset)
       .limit(limit);
     return templates.map(t => t.toJSON() as Template);
@@ -28,13 +28,13 @@ export class TemplateRepository implements ITemplateRepository {
 
   async findByCategory(category: string, limit: number = 50, offset: number = 0): Promise<Template[]> {
     const templates = await TemplateModel.find({ category })
-      .sort({ createdAt: -1 })
+      .sort({ usageCount: -1, likeCount: -1, createdAt: -1 })
       .skip(offset)
       .limit(limit);
     return templates.map(t => t.toJSON() as Template);
   }
 
-  async findTrending(limit: number = 20, period: 'week' | 'month' = 'week'): Promise<Template[]> {
+  async findTrending(limit: number = 20, offset: number = 0, period: 'week' | 'month' = 'week'): Promise<Template[]> {
     // Calculate dynamic trending based on recent activity
     const now = new Date();
     const daysAgo = period === 'week' ? 7 : 30;
@@ -52,6 +52,7 @@ export class TemplateRepository implements ITemplateRepository {
         likeCount: -1, 
         viewCount: -1 
       })
+      .skip(offset)
       .limit(limit);
     
     return templates.map(t => t.toJSON() as Template);

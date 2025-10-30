@@ -1,4 +1,4 @@
-import { Heart, Eye } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Template } from '@/shared/services/templateApi';
 
@@ -7,15 +7,13 @@ interface StyleCardProps {
   onToggleFavorite?: (templateId: string) => void;
   onStyleClick?: (template: Template) => void;
   index?: number;
-  showUsage?: boolean;
 }
 
 export const StyleCard = ({ 
   template, 
   onToggleFavorite,
   onStyleClick,
-  index = 0,
-  showUsage = false
+  index = 0
 }: StyleCardProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -89,12 +87,6 @@ export const StyleCard = ({
               crossOrigin="anonymous"
             />
           </>
-        )}
-        {showUsage && (
-          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-white text-xs font-semibold shadow-md flex items-center gap-1.5">
-            <Eye size={14} className="text-gray-700 dark:text-gray-300" />
-            <span>{(template.viewCount ?? template.likeCount ?? 0).toLocaleString()}</span>
-          </div>
         )}
         
         {/* Favorite Button */}

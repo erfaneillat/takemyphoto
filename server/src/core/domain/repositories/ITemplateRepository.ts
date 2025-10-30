@@ -6,7 +6,7 @@ export interface ITemplateRepository {
   findByIds(ids: string[]): Promise<Template[]>;
   findAll(limit?: number, offset?: number): Promise<Template[]>;
   findByCategory(category: string, limit?: number, offset?: number): Promise<Template[]>;
-  findTrending(limit?: number, period?: 'week' | 'month'): Promise<Template[]>;
+  findTrending(limit?: number, offset?: number, period?: 'week' | 'month'): Promise<Template[]>;
   search(query: string, limit?: number, offset?: number): Promise<Template[]>;
   update(id: string, data: UpdateTemplateDTO): Promise<Template | null>;
   delete(id: string): Promise<boolean>;

@@ -28,7 +28,7 @@ export class GetTemplatesWithFavoritesUseCase {
     // Fetch templates based on filters
     let templates: Template[];
     if (trending) {
-      templates = await this.templateRepository.findTrending(limit, trendingPeriod);
+      templates = await this.templateRepository.findTrending(limit, offset, trendingPeriod);
     } else if (search) {
       templates = await this.templateRepository.search(search, limit, offset);
     } else if (category) {
