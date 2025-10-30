@@ -18,7 +18,7 @@ export const BottomNavigation = () => {
   const RightIcon = sideNavItems[1].icon;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 shadow-2xl transition-colors">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-black backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 shadow-2xl transition-colors">
       <div className="relative flex justify-around items-center px-2 py-2 safe-area-inset-bottom">
         {/* Left Nav Item */}
         <Link

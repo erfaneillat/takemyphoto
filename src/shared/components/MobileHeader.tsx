@@ -11,7 +11,7 @@ export const MobileHeader = () => {
   const userStars = user?.stars || 0;
 
   return (
-    <header className="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors">
+    <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-black backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors">
       <div className="flex justify-between items-center px-4 py-3">
         {/* Logo */}
         <Link 

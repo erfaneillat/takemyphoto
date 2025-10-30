@@ -308,7 +308,7 @@ export const ProfilePage = () => {
 
       {/* Account Info Modal - Mobile Only */}
       {showAccountModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-end lg:hidden">
+        <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-[60] flex items-end lg:hidden">
           <div className="bg-white dark:bg-surface-card w-full rounded-t-2xl p-6 pb-24 shadow-2xl border-t border-gray-200 dark:border-border-light transition-colors animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -359,7 +359,7 @@ export const ProfilePage = () => {
 
       {/* Settings Modal - Mobile Only */}
       {showSettingsModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-end lg:hidden">
+        <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-[60] flex items-end lg:hidden">
           <div className="bg-white dark:bg-surface-card w-full rounded-t-2xl p-6 pb-24 shadow-2xl border-t border-gray-200 dark:border-border-light transition-colors animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">

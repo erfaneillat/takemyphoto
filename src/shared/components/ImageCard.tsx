@@ -35,7 +35,7 @@ export const ImageCard = ({ imageUrl, title }: ImageCardProps) => {
       {/* Download Button on Hover */}
       <button
         onClick={handleDownload}
-        className={`absolute bottom-3 right-3 p-2.5 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-md text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110 shadow-lg ${
+        className={`absolute bottom-3 right-3 p-2.5 rounded-full bg-white dark:bg-gray-900 backdrop-blur-md text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110 shadow-lg ${
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
         aria-label="Download image"

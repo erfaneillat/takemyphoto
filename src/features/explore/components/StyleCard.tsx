@@ -92,7 +92,7 @@ export const StyleCard = ({
         {/* Favorite Button */}
         <button
           onClick={handleToggleFavorite}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm cursor-pointer hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-md z-10"
+          className="absolute top-3 right-3 p-2 rounded-full bg-white dark:bg-gray-800 backdrop-blur-sm cursor-pointer hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-md z-10"
           aria-label={template.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart

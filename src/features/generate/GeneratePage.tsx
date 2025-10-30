@@ -10,7 +10,6 @@ import {
   Sparkles,
   Loader2,
   Users,
-  CheckCircle2,
   X,
   Upload,
   Plus,
@@ -268,9 +267,6 @@ export const GeneratePage = () => {
                         alt="Uploaded"
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-blue-600 rounded-full p-0.5 md:p-1">
-                        <CheckCircle2 size={16} className="md:w-5 md:h-5 text-white fill-blue-600" />
-                      </div>
                       <button
                         onClick={() => removeUploadedImage(image.id)}
                         className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
@@ -279,36 +275,57 @@ export const GeneratePage = () => {
                       </button>
                     </div>
                   ))}
-                  {selectedCharacters.flatMap((character) => 
-                    character.images.map((image, imageIndex) => (
-                      <div key={`${character.id}-${imageIndex}`} className="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-border-light bg-gray-100 dark:bg-surface group">
+                  {selectedCharacters.map((character) => (
+                    <div key={character.id} className="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-border-light bg-gray-100 dark:bg-surface group flex items-center justify-center">
+                      {character.images.length > 0 ? (
                         <img
-                          src={image.url}
-                          alt={`${character.name} ${imageIndex + 1}`}
+                          src={character.images[0].url}
+                          alt={character.name}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-blue-600 rounded-full p-0.5 md:p-1">
-                          <CheckCircle2 size={16} className="md:w-5 md:h-5 text-white fill-blue-600" />
-                        </div>
-                        {/* Show character name badge */}
-                        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                          {character.name}
-                        </div>
-                        <button
-                          onClick={() => setSelectedCharacters(selectedCharacters.filter(c => c.id !== character.id))}
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
-                        >
-                          <X size={20} className="md:w-6 md:h-6 text-white" />
-                        </button>
+                      ) : (
+                        <Users size={32} className="md:w-10 md:h-10 text-gray-400 dark:text-gray-600" />
+                      )}
+                      {/* Show character name and image count badge */}
+                      <div className="absolute bottom-2 left-2 bg-black/80 dark:bg-black/90 text-white text-xs px-2 py-1 rounded">
+                        <div className="font-semibold">{character.name}</div>
+                        <div className="text-xs opacity-90">{character.images.length} {t('profile.characters.imageCount')}</div>
                       </div>
-                    ))
-                  )}
+                      <button
+                        onClick={() => setSelectedCharacters(selectedCharacters.filter(c => c.id !== character.id))}
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
+                      >
+                        <X size={20} className="md:w-6 md:h-6 text-white" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-          </div>
 
+            {/* Generate Button - Desktop */}
+            <div className="hidden lg:block mt-auto pt-4 md:pt-6 border-t border-gray-200 dark:border-border-light">
+              <button
+                onClick={handleGenerateWithCleanup}
+                disabled={!prompt.trim() || isProcessing}
+                className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-base active:scale-95"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 size={18} className="md:w-5 md:h-5 animate-spin" />
+                    <span className="truncate">{t('generate.generatingImage')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={18} className="md:w-5 md:h-5" />
+                    <span>{t('generate.generateButton')}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
+
       </div>
 
       {/* Generate Button - Fixed above bottom nav on mobile */}
@@ -332,28 +349,6 @@ export const GeneratePage = () => {
         </button>
       </div>
 
-      {/* Generate Button - Inline on desktop */}
-      <div className="hidden lg:block absolute bottom-6 right-6 w-80">
-        <div className="p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card rounded-lg">
-          <button
-            onClick={handleGenerateWithCleanup}
-            disabled={!prompt.trim() || isProcessing}
-            className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-base active:scale-95"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 size={18} className="md:w-5 md:h-5 animate-spin" />
-                <span className="truncate">{t('generate.generatingImage')}</span>
-              </>
-            ) : (
-              <>
-                <Sparkles size={18} className="md:w-5 md:h-5" />
-                <span>{t('generate.generateButton')}</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
 
       {/* Hidden file input */}
       <input

@@ -107,7 +107,7 @@ const CharacterCard = ({ character, onDelete, isDeleting }: CharacterCardProps) 
           </div>
         ))}
         {character.images.length > 3 && (
-          <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+          <div className="absolute bottom-2 right-2 bg-black/80 dark:bg-black/90 text-white text-xs px-2 py-1 rounded">
             +{character.images.length - 3}
           </div>
         )}

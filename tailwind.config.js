@@ -32,13 +32,13 @@ export default {
           light: '#404040',
           dark: '#000000',
         },
-        // Dark mode surface colors with white opacity
+        // Dark mode surface colors - solid dark backgrounds
         surface: {
-          DEFAULT: 'rgba(255, 255, 255, 0.05)',  // 5% white
-          hover: 'rgba(255, 255, 255, 0.10)',    // 10% white
-          active: 'rgba(255, 255, 255, 0.15)',   // 15% white
-          card: 'rgba(255, 255, 255, 0.10)',     // 10% white for cards
-          elevated: 'rgba(255, 255, 255, 0.20)', // 20% white for elevated elements
+          DEFAULT: '#0A0A0A',  // Solid dark
+          hover: '#1A1A1A',    // Slightly lighter
+          active: '#2A2A2A',   // Even lighter
+          card: '#111111',     // Solid dark for cards
+          elevated: '#1F1F1F', // Slightly lighter for elevated elements
         },
         // Grayscale palette replacing teal
         teal: {
@@ -64,7 +64,7 @@ export default {
         border: {
           DEFAULT: '#E5E7EB',
           dark: '#000000',
-          light: 'rgba(255, 255, 255, 0.20)', // 20% white for dark mode borders
+          light: '#333333', // Solid dark gray for dark mode borders
         },
       },
       keyframes: {
