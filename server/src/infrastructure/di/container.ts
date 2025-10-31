@@ -27,6 +27,7 @@ import { AdminLoginUseCase } from '@application/usecases/auth/AdminLoginUseCase'
 import { CreateCharacterUseCase } from '@application/usecases/character/CreateCharacterUseCase';
 import { GetUserCharactersUseCase } from '@application/usecases/character/GetUserCharactersUseCase';
 import { DeleteCharacterUseCase } from '@application/usecases/character/DeleteCharacterUseCase';
+import { UpdateCharacterUseCase } from '@application/usecases/character/UpdateCharacterUseCase';
 import { GetTemplatesUseCase } from '@application/usecases/template/GetTemplatesUseCase';
 import { GetTemplatesWithFavoritesUseCase } from '@application/usecases/template/GetTemplatesWithFavoritesUseCase';
 import { ToggleFavoriteTemplateUseCase } from '@application/usecases/template/ToggleFavoriteTemplateUseCase';
@@ -91,6 +92,7 @@ export class Container {
   public createCharacterUseCase: CreateCharacterUseCase;
   public getUserCharactersUseCase: GetUserCharactersUseCase;
   public deleteCharacterUseCase: DeleteCharacterUseCase;
+  public updateCharacterUseCase: UpdateCharacterUseCase;
   public getTemplatesUseCase: GetTemplatesUseCase;
   public getTemplatesWithFavoritesUseCase: GetTemplatesWithFavoritesUseCase;
   public toggleFavoriteTemplateUseCase: ToggleFavoriteTemplateUseCase;
@@ -179,6 +181,11 @@ export class Container {
     );
 
     this.deleteCharacterUseCase = new DeleteCharacterUseCase(
+      this.characterRepository,
+      this.fileUploadService
+    );
+
+    this.updateCharacterUseCase = new UpdateCharacterUseCase(
       this.characterRepository,
       this.fileUploadService
     );
@@ -276,7 +283,8 @@ export class Container {
     this.characterController = new CharacterController(
       this.createCharacterUseCase,
       this.getUserCharactersUseCase,
-      this.deleteCharacterUseCase
+      this.deleteCharacterUseCase,
+      this.updateCharacterUseCase
     );
 
     this.getPopularStylesUseCase = new GetPopularStylesUseCase();

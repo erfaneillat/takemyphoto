@@ -65,8 +65,9 @@ export const characterSchemas = {
     name: Joi.string()
       .min(1)
       .max(100)
-      .optional()
-  })
+      .optional(),
+    existingImages: Joi.string().optional()
+  }).unknown(true)
 };
 
 export const userSchemas = {

@@ -108,7 +108,6 @@ export const CharacterForm = ({ character, onClose, onSuccess }: CharacterFormPr
     if (images.length < 3) {
       newErrors.images = t('profile.characters.validation.minImagesRequired');
     }
-
     if (images.length > 5) {
       newErrors.images = t('profile.characters.validation.maxImagesExceeded');
     }
@@ -126,25 +125,9 @@ export const CharacterForm = ({ character, onClose, onSuccess }: CharacterFormPr
 
     try {
       if (isEditMode && character) {
-        // For edit mode: we need to handle both new and existing images
-        // Extract new files and existing image data
         const newFiles = images.filter(img => img.file).map(img => img.file!);
         const existingImages = images.filter(img => img.existingImage).map(img => img.existingImage!);
-        
-        // If there are new files, we need to upload them
-        // For now, we'll only update the name and keep existing images
-        // A full implementation would need server support for partial updates
-        if (newFiles.length > 0) {
-          // Create new character with all new images
-          const data: CreateCharacterData = {
-            name: name.trim(),
-            images: images.filter(img => img.file).map(img => img.file!),
-          };
-          await createCharacter(data);
-        } else {
-          // Just update name with existing images
-          await updateCharacter(character.id, name.trim(), existingImages);
-        }
+        await updateCharacter(character.id, name.trim(), existingImages, newFiles);
       } else {
         // Create mode
         const data: CreateCharacterData = {

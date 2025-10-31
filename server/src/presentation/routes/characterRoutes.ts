@@ -21,5 +21,12 @@ export const createCharacterRoutes = (characterController: CharacterController):
 
   router.delete('/:id', characterController.deleteCharacter);
 
+  router.put(
+    '/:id',
+    upload.array('newImages', 5),
+    validate(characterSchemas.update),
+    characterController.updateCharacter
+  );
+
   return router;
 };

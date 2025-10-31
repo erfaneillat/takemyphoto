@@ -33,7 +33,7 @@ interface CharacterStore {
 
   // Actions
   createCharacter: (data: CreateCharacterData) => Promise<void>;
-  updateCharacter: (id: string, name: string, images: CharacterImage[]) => Promise<void>;
+  updateCharacter: (id: string, name: string, existingImages: CharacterImage[], newFiles: File[]) => Promise<void>;
   deleteCharacter: (id: string) => Promise<void>;
   getCharacterById: (id: string) => Character | undefined;
   fetchCharacters: () => Promise<void>;
@@ -154,7 +154,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     return fetchCharactersInFlight;
   },
 
-  updateCharacter: async (id: string, name: string, images: CharacterImage[]) => {
+  updateCharacter: async (id: string, name: string, existingImages: CharacterImage[], newFiles: File[]) => {
     set({ isLoading: true, error: null });
 
     try {
@@ -163,13 +163,17 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
         throw new Error('No authentication token found. Please log in first.');
       }
 
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('existingImages', JSON.stringify(existingImages));
+      newFiles.forEach((file) => formData.append('newImages', file));
+
       const response = await fetch(`${API_BASE_URL}/characters/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, images }),
+        body: formData,
       });
 
       if (!response.ok) {

@@ -1,6 +1,8 @@
 export interface CharacterImage {
   id: string;
   url: string;
+  publicId?: string;
+  order?: number;
   file?: File;
   preview?: string;
 }
