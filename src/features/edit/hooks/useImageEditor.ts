@@ -46,9 +46,12 @@ export const useImageEditor = () => {
     setError(null);
     
     try {
-      // Call NanoBanana edit API (requires at least one image)
-      if (uploadedImages.length === 0) {
-        throw new Error('At least one image is required for editing');
+      // Validate that we have either uploaded images or character images
+      const hasUploadedImages = uploadedImages.length > 0;
+      const hasCharacterImages = params.characterImageUrls && params.characterImageUrls.length > 0;
+      
+      if (!hasUploadedImages && !hasCharacterImages) {
+        throw new Error('Please upload images or select a character');
       }
 
       const response = await nanoBananaApi.editImage({

@@ -7,6 +7,7 @@ import { useFavorites, useGeneratedImages } from './hooks';
 import { useThemeStore, useAuthStore } from '@/shared/stores';
 import { CharacterForm } from './components/CharacterForm';
 import { CharacterList } from './components/CharacterList';
+import type { Character } from '@/core/domain/entities/Character';
 
 export const ProfilePage = () => {
   const { t, language, changeLanguage } = useTranslation();
@@ -28,6 +29,7 @@ export const ProfilePage = () => {
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCharacterForm, setShowCharacterForm] = useState(false);
+  const [editingCharacter, setEditingCharacter] = useState<Character | undefined>(undefined);
   const { favoriteTemplates, isLoading: loadingFavorites, error: favoritesError } = useFavorites();
   const { images: generatedImages, isLoading: loadingImages, error: imagesError, loadMore, pagination } = useGeneratedImages(20);
 
@@ -213,7 +215,16 @@ export const ProfilePage = () => {
 
             {/* Tab Content */}
             {activeTab === 'characters' ? (
-              <CharacterList onCreateClick={() => setShowCharacterForm(true)} />
+              <CharacterList 
+                onCreateClick={() => {
+                  setEditingCharacter(undefined);
+                  setShowCharacterForm(true);
+                }}
+                onEditClick={(character) => {
+                  setEditingCharacter(character);
+                  setShowCharacterForm(true);
+                }}
+              />
             ) : activeTab === 'edits' ? (
               <div>
                 <div className="flex justify-between items-center mb-3 sm:mb-4">
@@ -428,8 +439,15 @@ export const ProfilePage = () => {
       {/* Character Form Modal */}
       {showCharacterForm && (
         <CharacterForm
-          onClose={() => setShowCharacterForm(false)}
-          onSuccess={() => setShowCharacterForm(false)}
+          character={editingCharacter}
+          onClose={() => {
+            setShowCharacterForm(false);
+            setEditingCharacter(undefined);
+          }}
+          onSuccess={() => {
+            setShowCharacterForm(false);
+            setEditingCharacter(undefined);
+          }}
         />
       )}
     </div>

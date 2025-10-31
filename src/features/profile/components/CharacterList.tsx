@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from '@/shared/hooks';
 import { Button } from '@/shared/components';
-import { Trash2, User as UserIcon } from 'lucide-react';
+import { Trash2, User as UserIcon, Edit } from 'lucide-react';
 import { useCharacterStore } from '@/shared/stores';
 import type { Character } from '@/core/domain/entities/Character';
 
 interface CharacterListProps {
   onCreateClick: () => void;
+  onEditClick: (character: Character) => void;
 }
 
-export const CharacterList = ({ onCreateClick }: CharacterListProps) => {
+export const CharacterList = ({ onCreateClick, onEditClick }: CharacterListProps) => {
   const { t } = useTranslation();
   const { characters, deleteCharacter } = useCharacterStore();
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -68,6 +69,7 @@ export const CharacterList = ({ onCreateClick }: CharacterListProps) => {
             key={character.id}
             character={character}
             onDelete={handleDelete}
+            onEdit={onEditClick}
             isDeleting={deletingId === character.id}
           />
         ))}
@@ -79,10 +81,11 @@ export const CharacterList = ({ onCreateClick }: CharacterListProps) => {
 interface CharacterCardProps {
   character: Character;
   onDelete: (id: string) => void;
+  onEdit: (character: Character) => void;
   isDeleting: boolean;
 }
 
-const CharacterCard = ({ character, onDelete, isDeleting }: CharacterCardProps) => {
+const CharacterCard = ({ character, onDelete, onEdit, isDeleting }: CharacterCardProps) => {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
 
@@ -124,14 +127,23 @@ const CharacterCard = ({ character, onDelete, isDeleting }: CharacterCardProps) 
               {character.images.length} {t('profile.characters.imageCount')}
             </p>
           </div>
-          <button
-            onClick={() => onDelete(character.id)}
-            disabled={isDeleting}
-            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all disabled:opacity-50"
-            title={t('profile.characters.deleteCharacter')}
-          >
-            <Trash2 size={18} />
-          </button>
+          <div className="flex gap-1">
+            <button
+              onClick={() => onEdit(character)}
+              className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+              title={t('profile.characters.editCharacter')}
+            >
+              <Edit size={18} />
+            </button>
+            <button
+              onClick={() => onDelete(character.id)}
+              disabled={isDeleting}
+              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all disabled:opacity-50"
+              title={t('profile.characters.deleteCharacter')}
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
         </div>
 
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
