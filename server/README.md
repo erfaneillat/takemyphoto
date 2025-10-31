@@ -35,7 +35,7 @@ src/
 - **User Management**: Profile, subscription tiers, stars system
 - **Character Management**: Create, update, delete characters with images
 - **Template System**: Browse, search, and favorite templates
-- **Image Upload**: Cloudinary integration for image storage
+- **Image Upload**: Local file storage for image management
 - **Security**: Helmet, rate limiting, input validation, sanitization
 - **Clean Architecture**: Separation of concerns, testable code
 
@@ -43,7 +43,6 @@ src/
 
 - Node.js 18+
 - MongoDB 5.0+
-- Cloudinary account (for image storage)
 - Twilio account (for SMS - optional in development)
 
 ## 🛠️ Installation
@@ -66,7 +65,6 @@ cp .env.example .env
 Edit `.env` and configure:
 - MongoDB connection string
 - JWT secrets
-- Cloudinary credentials
 - Twilio credentials (optional for development)
 - CORS origin
 
@@ -182,7 +180,7 @@ images: [file1.jpg, file2.jpg, file3.jpg]
 ### Character
 - User reference
 - Name
-- Images (3-5 images with Cloudinary URLs)
+- Images (3-5 images stored locally)
 - Timestamps
 
 ### Template
@@ -234,7 +232,6 @@ See `.env.example` for all required environment variables.
 **Critical Variables:**
 - `MONGODB_URI` - MongoDB connection string
 - `JWT_SECRET` - JWT signing secret
-- `CLOUDINARY_*` - Cloudinary credentials
 - `TWILIO_*` - Twilio credentials (optional in dev)
 
 ## 🚀 Deployment
@@ -244,11 +241,11 @@ See `.env.example` for all required environment variables.
 1. Set `NODE_ENV=production`
 2. Use strong JWT secrets
 3. Configure production MongoDB
-4. Setup Cloudinary production account
-5. Configure Twilio for SMS
-6. Set appropriate CORS origins
-7. Enable HTTPS
-8. Setup monitoring and logging
+4. Configure Twilio for SMS
+5. Set appropriate CORS origins
+6. Enable HTTPS
+7. Setup monitoring and logging
+8. Ensure `/uploads` directory is properly persisted
 
 ### Deploy to Services
 
@@ -300,7 +297,6 @@ git push heroku main
 - [Express.js Documentation](https://expressjs.com/)
 - [MongoDB Documentation](https://docs.mongodb.com/)
 - [Mongoose Documentation](https://mongoosejs.com/)
-- [Cloudinary Documentation](https://cloudinary.com/documentation)
 - [Twilio Documentation](https://www.twilio.com/docs)
 
 ## 🤝 Contributing

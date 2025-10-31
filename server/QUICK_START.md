@@ -24,9 +24,6 @@ JWT_REFRESH_SECRET=your-refresh-secret-key
 CORS_ORIGIN=http://localhost:5173
 
 # Optional in development (uses mock services)
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_PHONE_NUMBER=
@@ -67,7 +64,7 @@ curl -X POST http://localhost:5000/api/v1/auth/verify-code \
 
 ### Mock Services in Development
 - **SMS**: Codes are logged to console instead of being sent
-- **File Upload**: Configure Cloudinary or files will fail to upload
+- **File Upload**: Images are stored locally in the `/uploads` directory
 
 ### Default Test Code
 In development mode, any 6-digit code will work for testing.
@@ -134,12 +131,11 @@ const API_BASE_URL = 'http://localhost:5000/api/v1';
 ## 🎯 Next Steps
 
 1. ✅ Test authentication flow
-2. ✅ Setup Cloudinary for image uploads
-3. ✅ Configure Twilio for SMS (production)
-4. ✅ Add seed data for templates
-5. ✅ Implement remaining features
-6. ✅ Write tests
-7. ✅ Deploy to production
+2. ✅ Configure Twilio for SMS (production)
+3. ✅ Add seed data for templates
+4. ✅ Implement remaining features
+5. ✅ Write tests
+6. ✅ Deploy to production
 
 ## 📚 Learn More
 

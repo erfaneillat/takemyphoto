@@ -1,5 +1,5 @@
 import { ICharacterRepository } from '@core/domain/repositories/ICharacterRepository';
-import { IFileUploadService } from '@infrastructure/services/FileUploadService';
+import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { Character, CharacterImage } from '@core/domain/entities/Character';
 
 export interface CreateCharacterInput {
@@ -24,8 +24,8 @@ export class CreateCharacterUseCase {
       throw new Error('Character must have between 3 and 5 images');
     }
 
-    // Upload images to Cloudinary
-    console.log(`[CreateCharacterUseCase] Uploading ${images.length} images to Cloudinary...`);
+    // Upload images to local storage
+    console.log(`[CreateCharacterUseCase] Uploading ${images.length} images...`);
     const uploadedFiles = await this.fileUploadService.uploadImages(images, `nero/characters/${userId}`);
     console.log(`[CreateCharacterUseCase] Images uploaded successfully:`, uploadedFiles);
 

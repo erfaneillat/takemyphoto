@@ -6,7 +6,7 @@ import { DeleteTemplateUseCase } from '@application/usecases/template/DeleteTemp
 import { ImportTemplatesUseCase } from '@application/usecases/template/ImportTemplatesUseCase';
 import { SyncTemplateStatsUseCase } from '@application/usecases/template/SyncTemplateStatsUseCase';
 import { asyncHandler } from '../middleware/errorHandler';
-import { IFileUploadService } from '@infrastructure/services/FileUploadService';
+import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 
 export class AdminTemplateController {
   constructor(

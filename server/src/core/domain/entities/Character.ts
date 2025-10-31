@@ -1,7 +1,7 @@
 export interface CharacterImage {
   id: string;
   url: string;
-  publicId: string; // Cloudinary public ID
+  publicId: string; // File path identifier
   order: number;
 }
 

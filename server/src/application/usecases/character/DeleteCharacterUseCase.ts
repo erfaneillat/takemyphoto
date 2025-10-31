@@ -1,5 +1,5 @@
 import { ICharacterRepository } from '@core/domain/repositories/ICharacterRepository';
-import { IFileUploadService } from '@infrastructure/services/FileUploadService';
+import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 
 export class DeleteCharacterUseCase {
   constructor(
@@ -20,7 +20,7 @@ export class DeleteCharacterUseCase {
       throw new Error('Unauthorized to delete this character');
     }
 
-    // Delete images from Cloudinary
+    // Delete images from local storage
     const publicIds = character.images.map(img => img.publicId);
     await this.fileUploadService.deleteImages(publicIds);
 
