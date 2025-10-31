@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { useTranslation } from '@/shared/hooks';
 import { useAuthStore } from '@/shared/stores';
+import { Logo } from '@/shared/components';
 
 // Decode JWT token to get user info
 const decodeJWT = (token: string) => {
@@ -68,10 +68,7 @@ export const LoginPage = () => {
             <div className="text-center mb-6 sm:mb-8 space-y-3 sm:space-y-4">
               <div className="flex justify-center">
                 <div className="relative">
-                  <Sparkles 
-                    className="text-gray-900 dark:text-white" 
-                    size={40} 
-                  />
+                  <Logo size="lg" />
                   <div className="absolute inset-0 bg-gray-900/20 dark:bg-white/20 blur-2xl" />
                 </div>
               </div>

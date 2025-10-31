@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { useThemeStore, useAuthStore } from '@/shared/stores';
-import { Sparkles, Menu, X, Compass, User, Star, Moon, Sun, Wand2, ImagePlus, Wrench, LogIn, CreditCard } from 'lucide-react';
+import { Logo } from './Logo';
+import { Menu, X, Compass, User, Star, Moon, Sun, Wand2, ImagePlus, Wrench, LogIn, CreditCard } from 'lucide-react';
 
 export const Header = () => {
   const { t } = useTranslation();
@@ -38,11 +39,8 @@ export const Header = () => {
             to="/" 
             className="flex items-center gap-2 group"
           >
-            <div className="relative">
-              <Sparkles 
-                className="text-gray-900 dark:text-white transition-transform group-hover:scale-110 group-hover:rotate-12 duration-300" 
-                size={28} 
-              />
+            <div className="relative transition-transform group-hover:scale-110 group-hover:rotate-12 duration-300">
+              <Logo size="lg" />
               <div className="absolute inset-0 bg-gray-900/20 dark:bg-white/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">

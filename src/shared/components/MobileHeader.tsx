@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { useThemeStore, useAuthStore } from '@/shared/stores';
-import { Sparkles, Star, Moon, Sun, LogIn } from 'lucide-react';
+import { Logo } from './Logo';
+import { Star, Moon, Sun, LogIn } from 'lucide-react';
 
 export const MobileHeader = () => {
   const { t } = useTranslation();
@@ -19,10 +20,7 @@ export const MobileHeader = () => {
           className="flex items-center gap-2"
         >
           <div className="relative">
-            <Sparkles 
-              className="text-gray-900 dark:text-white" 
-              size={24} 
-            />
+            <Logo size="md" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
             {t('app.title')}

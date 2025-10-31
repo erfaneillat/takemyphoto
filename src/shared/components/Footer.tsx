@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
+import { Logo } from './Logo';
 import { Github, Twitter, Instagram, Info, FileText, Shield, Mail } from 'lucide-react';
 
 export const Footer = () => {
@@ -15,6 +16,15 @@ export const Footer = () => {
   return (
     <footer className="bg-gray-50 dark:bg-surface-card border-t border-gray-200 dark:border-border-light mt-auto transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Logo and Branding */}
+        <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-200 dark:border-border-light">
+          <Logo size="md" />
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('app.title')}</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('app.description')}</p>
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* Links */}
           <div className="flex flex-wrap justify-center gap-6 text-sm">

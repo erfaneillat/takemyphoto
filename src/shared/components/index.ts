@@ -10,3 +10,4 @@ export { FeatureCard } from './FeatureCard';
 export { Drawer } from './Drawer';
 export { AspectRatioSelector } from './AspectRatioSelector';
 export type { AspectRatioValue } from './AspectRatioSelector';
+export { Logo } from './Logo';
