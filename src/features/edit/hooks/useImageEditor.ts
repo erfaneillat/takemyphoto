@@ -54,6 +54,16 @@ export const useImageEditor = () => {
         throw new Error('Please upload images or select a character');
       }
 
+      // Resolve character image URLs to absolute using server origin (without /api path)
+      const serverOrigin = (() => {
+        const raw = import.meta.env.VITE_API_BASE_URL as string | undefined;
+        if (!raw) return '';
+        try { const u = new URL(raw); return `${u.protocol}//${u.host}`; } catch { return ''; }
+      })();
+      const resolvedCharacterUrls = (params.characterImageUrls || []).map(u =>
+        u.startsWith('http') ? u : `${serverOrigin}${u}`
+      );
+
       // If no uploaded images, use text-to-image generate endpoint with characterImageUrls
       const response = hasUploadedImages
         ? await nanoBananaApi.editImage({
@@ -61,21 +71,21 @@ export const useImageEditor = () => {
             numImages: 1,
             imageSize: aspectRatio,
             images: uploadedImages.map(img => img.file),
-            characterImageUrls: params.characterImageUrls,
+            characterImageUrls: resolvedCharacterUrls.length > 0 ? resolvedCharacterUrls : undefined,
             templateId: params.templateId,
           })
         : await nanoBananaApi.generateImage({
             prompt: params.prompt,
             numImages: 1,
             imageSize: aspectRatio,
-            characterImageUrls: params.characterImageUrls,
+            characterImageUrls: resolvedCharacterUrls.length > 0 ? resolvedCharacterUrls : undefined,
             templateId: params.templateId,
           });
 
-      // Resolve image URL to absolute path
+      // Resolve returned image URL to absolute path
       const resolvedUrl = response.imageUrl.startsWith('http')
         ? response.imageUrl
-        : `${import.meta.env.VITE_API_BASE_URL || ''}${response.imageUrl}`;
+        : `${serverOrigin}${response.imageUrl}`;
 
       // Immediate response: add single edited image to history
       const newImage: GeneratedImage = {

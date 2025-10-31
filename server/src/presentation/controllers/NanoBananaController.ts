@@ -27,6 +27,16 @@ export class ImageGenerationController {
 
     const uploadedImages = req.files as Express.Multer.File[] | undefined;
 
+    // Normalize characterImageUrls to absolute URLs using request origin
+    const origin = `${req.protocol}://${req.get('host')}`;
+    let normalizedCharacterUrls: string[] = [];
+    try {
+      const raw = characterImageUrls ? (Array.isArray(characterImageUrls) ? characterImageUrls : JSON.parse(characterImageUrls)) : [];
+      normalizedCharacterUrls = (raw as string[]).map((u) => (typeof u === 'string' && u.startsWith('http') ? u : `${origin}${u}`));
+    } catch {
+      normalizedCharacterUrls = [];
+    }
+
     // Generate image synchronously with Google AI
     const result = await this.generateImageUseCase.execute({
       userId,
@@ -34,7 +44,7 @@ export class ImageGenerationController {
       numImages: numImages ? parseInt(numImages) : 1,
       imageSize,
       uploadedImages,
-      characterImageUrls: characterImageUrls ? JSON.parse(characterImageUrls) : [],
+      characterImageUrls: normalizedCharacterUrls,
       templateId
     });
 
@@ -63,6 +73,16 @@ export class ImageGenerationController {
       throw new AppError(400, 'At least one image is required for editing');
     }
 
+    // Normalize characterImageUrls to absolute URLs using request origin
+    const origin = `${req.protocol}://${req.get('host')}`;
+    let normalizedCharacterUrls: string[] = [];
+    try {
+      const raw = characterImageUrls ? (Array.isArray(characterImageUrls) ? characterImageUrls : JSON.parse(characterImageUrls)) : [];
+      normalizedCharacterUrls = (raw as string[]).map((u) => (typeof u === 'string' && u.startsWith('http') ? u : `${origin}${u}`));
+    } catch {
+      normalizedCharacterUrls = [];
+    }
+
     // Edit image synchronously with Google AI
     const result = await this.editImageUseCase.execute({
       userId,
@@ -70,7 +90,7 @@ export class ImageGenerationController {
       numImages: numImages ? parseInt(numImages) : 1,
       imageSize,
       uploadedImages,
-      characterImageUrls: characterImageUrls ? JSON.parse(characterImageUrls) : [],
+      characterImageUrls: normalizedCharacterUrls,
       templateId
     });
 

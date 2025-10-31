@@ -43,10 +43,18 @@ export const useImageGenerator = () => {
     setError(null);
     
     try {
-      // Get character image URLs from selected characters
+      // Resolve server origin from VITE_API_BASE_URL (strip /api path)
+      const serverOrigin = (() => {
+        const raw = import.meta.env.VITE_API_BASE_URL as string | undefined;
+        if (!raw) return '';
+        try { const u = new URL(raw); return `${u.protocol}//${u.host}`; } catch { return ''; }
+      })();
+
+      // Get character image URLs from selected characters and resolve to absolute URLs
       const characterImageUrls = selectedCharacters
         .flatMap(char => char.images.map(img => img.url))
-        .slice(0, 2);
+        .slice(0, 2)
+        .map(u => (u.startsWith('http') ? u : `${serverOrigin}${u}`));
 
       // Call API (now synchronous)
       const response = await nanoBananaApi.generateImage({
@@ -60,7 +68,7 @@ export const useImageGenerator = () => {
       // Resolve image URL to absolute path
       const resolvedUrl = response.imageUrl.startsWith('http')
         ? response.imageUrl
-        : `${import.meta.env.VITE_API_BASE_URL || ''}${response.imageUrl}`;
+        : `${serverOrigin}${response.imageUrl}`;
 
       // Immediate result: add to history
       const newImage: GeneratedImage = {
