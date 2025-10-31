@@ -54,14 +54,23 @@ export const useImageEditor = () => {
         throw new Error('Please upload images or select a character');
       }
 
-      const response = await nanoBananaApi.editImage({
-        prompt: params.prompt,
-        numImages: 1,
-        imageSize: aspectRatio,
-        images: uploadedImages.map(img => img.file),
-        characterImageUrls: params.characterImageUrls,
-        templateId: params.templateId,
-      });
+      // If no uploaded images, use text-to-image generate endpoint with characterImageUrls
+      const response = hasUploadedImages
+        ? await nanoBananaApi.editImage({
+            prompt: params.prompt,
+            numImages: 1,
+            imageSize: aspectRatio,
+            images: uploadedImages.map(img => img.file),
+            characterImageUrls: params.characterImageUrls,
+            templateId: params.templateId,
+          })
+        : await nanoBananaApi.generateImage({
+            prompt: params.prompt,
+            numImages: 1,
+            imageSize: aspectRatio,
+            characterImageUrls: params.characterImageUrls,
+            templateId: params.templateId,
+          });
 
       // Resolve image URL to absolute path
       const resolvedUrl = response.imageUrl.startsWith('http')
