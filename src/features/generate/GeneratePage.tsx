@@ -68,10 +68,17 @@ export const GeneratePage = () => {
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!canAddMoreImages) return;
-    addUploadedImage(file);
+    const files = event.target.files;
+    if (!files) return;
+    
+    // Convert FileList to array and process each file
+    Array.from(files).forEach((file) => {
+      if (uploadedImages.length >= MAX_IMAGES) return; // Stop if we've reached the limit
+      addUploadedImage(file);
+    });
+    
+    // Reset the input so the same file can be selected again
+    event.target.value = '';
   };
 
   // Set the main display image (show newest/first image in history)
@@ -355,6 +362,7 @@ export const GeneratePage = () => {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         onChange={handleImageUpload}
         className="hidden"
       />

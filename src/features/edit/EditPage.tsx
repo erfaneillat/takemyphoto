@@ -56,11 +56,18 @@ export const EditPage = () => {
   const hasAnyAttachment = uploadedImages.length > 0 || selectedCharacters.length > 0;
 
   const handleGenerateModeImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!canAddMoreImages) return;
-    // Use hook to add image to the list (keeps previous ones)
-    addUploadedImage(file);
+    const files = event.target.files;
+    if (!files) return;
+    
+    // Convert FileList to array and process each file
+    Array.from(files).forEach((file) => {
+      if (uploadedImages.length >= MAX_IMAGES) return; // Stop if we've reached the limit
+      // Use hook to add image to the list (keeps previous ones)
+      addUploadedImage(file);
+    });
+    
+    // Reset the input so the same file can be selected again
+    event.target.value = '';
   };
 
   const handleGenerate = async () => {
@@ -428,6 +435,7 @@ export const EditPage = () => {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         onChange={handleGenerateModeImageUpload}
         className="hidden"
       />
@@ -435,6 +443,7 @@ export const EditPage = () => {
         ref={generateImageInputRef}
         type="file"
         accept="image/*"
+        multiple
         onChange={handleGenerateModeImageUpload}
         className="hidden"
       />

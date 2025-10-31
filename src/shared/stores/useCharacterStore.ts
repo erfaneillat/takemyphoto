@@ -2,7 +2,25 @@ import { create } from 'zustand';
 import type { Character, CharacterImage, CreateCharacterData } from '@/core/domain/entities/Character';
 import { fetchWithRetry } from '@/shared/hooks';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:2000/api/v1';
+const resolveApiBase = () => {
+  const raw = import.meta.env.VITE_API_BASE_URL as string | undefined;
+  // If no env set, use same-origin relative path
+  if (!raw) return '/api/v1';
+  
+  // If page is https but env uses http, upgrade to https to avoid mixed content
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && raw.startsWith('http://')) {
+    try {
+      const u = new URL(raw);
+      u.protocol = 'https:';
+      return u.toString();
+    } catch {
+      // fall through to raw
+    }
+  }
+  return raw;
+};
+
+const API_BASE_URL = resolveApiBase();
 
 let fetchCharactersInFlight: Promise<void> | null = null;
 let lastFetchAt = 0;

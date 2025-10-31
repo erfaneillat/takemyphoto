@@ -63,7 +63,7 @@ export const useImageEditor = () => {
       // Resolve image URL to absolute path
       const resolvedUrl = response.imageUrl.startsWith('http')
         ? response.imageUrl
-        : `${import.meta.env.VITE_SERVER_ORIGIN || 'http://localhost:2000'}${response.imageUrl}`;
+        : `${import.meta.env.VITE_API_BASE_URL || ''}${response.imageUrl}`;
 
       // Immediate response: add single edited image to history
       const newImage: GeneratedImage = {
@@ -98,7 +98,7 @@ export const useImageEditor = () => {
       // Resolve image URL to absolute path
       const resolvedUrl = response.imageUrl.startsWith('http')
         ? response.imageUrl
-        : `${import.meta.env.VITE_SERVER_ORIGIN || 'http://localhost:2000'}${response.imageUrl}`;
+        : `${import.meta.env.VITE_API_BASE_URL || ''}${response.imageUrl}`;
 
       // Immediate response: add single edited image to history
       const newImage: GeneratedImage = {

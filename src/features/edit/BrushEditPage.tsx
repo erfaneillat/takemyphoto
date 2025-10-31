@@ -130,7 +130,7 @@ export const BrushEditPage = () => {
       // Add generated image to history
       const generatedImageUrl = result.imageUrl.startsWith('http') 
         ? result.imageUrl 
-        : `${import.meta.env.VITE_SERVER_ORIGIN || 'http://localhost:2000'}${result.imageUrl}`;
+        : `${import.meta.env.VITE_API_BASE_URL || ''}${result.imageUrl}`;
       
       setGeneratedImages(prev => [...prev, generatedImageUrl]);
       setSelectedHistoryImage(generatedImageUrl);
