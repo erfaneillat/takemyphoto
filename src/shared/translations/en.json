@@ -52,6 +52,96 @@
     "contact": "Contact",
     "copyright": "© Take My Photo 2025"
   },
+  "about": {
+    "title": "About Take My Photo",
+    "subtitle": "Empowering Creativity with AI",
+    "mission": {
+      "title": "Our Mission",
+      "description": "We believe that everyone deserves access to powerful creative tools. Take My Photo makes advanced AI-powered image editing accessible to everyone, regardless of technical skill level."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To democratize creative expression by providing intuitive, powerful, and affordable AI tools that help people bring their imagination to life."
+    },
+    "values": {
+      "title": "Our Values",
+      "items": [
+        {
+          "title": "Accessibility",
+          "description": "Making advanced AI tools available to everyone"
+        },
+        {
+          "title": "Innovation",
+          "description": "Constantly pushing the boundaries of what's possible with AI"
+        },
+        {
+          "title": "Quality",
+          "description": "Delivering premium results that exceed expectations"
+        },
+        {
+          "title": "Privacy",
+          "description": "Protecting user data and respecting privacy"
+        }
+      ]
+    },
+    "features": {
+      "title": "Why Choose Take My Photo?",
+      "items": [
+        {
+          "title": "AI-Powered Editing",
+          "description": "Advanced algorithms that understand your creative intent"
+        },
+        {
+          "title": "Easy to Use",
+          "description": "Intuitive interface that requires no technical knowledge"
+        },
+        {
+          "title": "Fast Processing",
+          "description": "Get results in seconds, not hours"
+        },
+        {
+          "title": "High Quality",
+          "description": "Export in up to 4K resolution"
+        }
+      ]
+    },
+    "team": {
+      "title": "Our Team",
+      "description": "We're a passionate team of designers, engineers, and AI enthusiasts dedicated to making creative tools accessible to everyone."
+    }
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "We'd love to hear from you",
+    "description": "Have questions, feedback, or need support? Fill out the form below and we'll get back to you as soon as possible.",
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "What is this about?",
+      "message": "Message",
+      "messagePlaceholder": "Tell us more about your inquiry...",
+      "send": "Send Message",
+      "sending": "Sending..."
+    },
+    "success": {
+      "title": "Message Sent!",
+      "description": "Thank you for contacting us. We'll get back to you soon."
+    },
+    "error": {
+      "title": "Error",
+      "description": "Failed to send message. Please try again."
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "subjectRequired": "Subject is required",
+      "messageRequired": "Message is required"
+    }
+  },
   "landing": {
     "hero": {
       "badge": "AI-Powered Image Editing",

@@ -10,6 +10,7 @@ import { GenerationTaskRepository } from '@infrastructure/database/repositories/
 import { GeneratedImageEntityRepository } from '@infrastructure/database/repositories/GeneratedImageEntityRepository';
 import { AdminRepository } from '@infrastructure/database/repositories/AdminRepository';
 import { StyleUsageRepository } from '@infrastructure/database/repositories/StyleUsageRepository';
+import { ContactMessageRepository } from '@infrastructure/database/repositories/ContactMessageRepository';
 
 // Services
 import { JwtService } from '@infrastructure/services/JwtService';
@@ -49,6 +50,10 @@ import { GenerateImageUseCase } from '@application/usecases/nanobanana/GenerateI
 import { EditImageUseCase } from '@application/usecases/nanobanana/EditImageUseCase';
 import { GetDashboardStatsUseCase } from '@application/usecases/dashboard/GetDashboardStatsUseCase';
 import { GetGeneratedImagesUseCase } from '@application/usecases/dashboard/GetGeneratedImagesUseCase';
+import { CreateContactMessageUseCase } from '@application/usecases/contact/CreateContactMessageUseCase';
+import { GetContactMessagesUseCase } from '@application/usecases/contact/GetContactMessagesUseCase';
+import { UpdateContactMessageStatusUseCase } from '@application/usecases/contact/UpdateContactMessageStatusUseCase';
+import { DeleteContactMessageUseCase } from '@application/usecases/contact/DeleteContactMessageUseCase';
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
 // Controllers
@@ -61,6 +66,7 @@ import { AdminTemplateController } from '@presentation/controllers/AdminTemplate
 import { EnhanceController } from '@presentation/controllers/EnhanceController';
 import { ImageGenerationController } from '@presentation/controllers/NanoBananaController';
 import { DashboardController } from '@presentation/controllers/DashboardController';
+import { ContactController } from '@presentation/controllers/ContactController';
 
 export class Container {
   // Repositories
@@ -75,6 +81,7 @@ export class Container {
   public generatedImageEntityRepository: GeneratedImageEntityRepository;
   public adminRepository: AdminRepository;
   public styleUsageRepository: StyleUsageRepository;
+  public contactMessageRepository: ContactMessageRepository;
 
   // Services
   public jwtService: JwtService;
@@ -114,6 +121,10 @@ export class Container {
   public editImageUseCase: EditImageUseCase;
   public getDashboardStatsUseCase: GetDashboardStatsUseCase;
   public getGeneratedImagesUseCase: GetGeneratedImagesUseCase;
+  public createContactMessageUseCase: CreateContactMessageUseCase;
+  public getContactMessagesUseCase: GetContactMessagesUseCase;
+  public updateContactMessageStatusUseCase: UpdateContactMessageStatusUseCase;
+  public deleteContactMessageUseCase: DeleteContactMessageUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -126,6 +137,7 @@ export class Container {
   public enhanceController: EnhanceController;
   public imageGenerationController: ImageGenerationController;
   public dashboardController: DashboardController;
+  public contactController: ContactController;
 
   constructor() {
     // Initialize Repositories
@@ -140,6 +152,7 @@ export class Container {
     this.generatedImageEntityRepository = new GeneratedImageEntityRepository();
     this.adminRepository = new AdminRepository();
     this.styleUsageRepository = new StyleUsageRepository();
+    this.contactMessageRepository = new ContactMessageRepository();
 
     // Initialize Services
     this.jwtService = new JwtService();
@@ -339,6 +352,29 @@ export class Container {
     this.dashboardController = new DashboardController(
       this.getDashboardStatsUseCase,
       this.getGeneratedImagesUseCase
+    );
+
+    this.createContactMessageUseCase = new CreateContactMessageUseCase(
+      this.contactMessageRepository
+    );
+
+    this.getContactMessagesUseCase = new GetContactMessagesUseCase(
+      this.contactMessageRepository
+    );
+
+    this.updateContactMessageStatusUseCase = new UpdateContactMessageStatusUseCase(
+      this.contactMessageRepository
+    );
+
+    this.deleteContactMessageUseCase = new DeleteContactMessageUseCase(
+      this.contactMessageRepository
+    );
+
+    this.contactController = new ContactController(
+      this.createContactMessageUseCase,
+      this.getContactMessagesUseCase,
+      this.updateContactMessageStatusUseCase,
+      this.deleteContactMessageUseCase
     );
   }
 }
