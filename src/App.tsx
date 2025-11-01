@@ -9,6 +9,7 @@ import { UpgradePage } from '@/features/upgrade';
 import { SubscriptionPage } from '@/features/subscription';
 import { LoginPage } from '@/features/auth';
 import { UpscalePage, ImageToPromptPage } from '@/features/enhance';
+import { PrivacyPage, TermsPage } from '@/features/legal';
 import { useAuthStore } from '@/shared/stores';
 import { useAuthInit, useAppInit, useFirebaseInit, useCharacterInit } from '@/shared/hooks';
 import { ReactNode } from 'react';
@@ -85,6 +86,8 @@ function App() {
           <Route path="/subscription" element={<SubscriptionPage />} />
           <Route path="/upscale" element={<UpscalePage />} />
           <Route path="/image-to-prompt" element={<ImageToPromptPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           
           {/* Protected Routes - Require authentication */}
           <Route 
