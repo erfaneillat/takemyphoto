@@ -72,12 +72,7 @@ export class ErrorLogService {
   async logGenerationError(
     error: Error,
     userId: string,
-    metadata: {
-      templateId?: string;
-      characterId?: string;
-      prompt?: string;
-      provider?: string;
-    }
+    metadata?: Record<string, any>
   ): Promise<void> {
     try {
       await this.createErrorLogUseCase.execute({
@@ -86,7 +81,15 @@ export class ErrorLogService {
         message: error.message,
         stack: error.stack,
         userId,
-        metadata
+        metadata: {
+          templateId: metadata?.templateId,
+          characterId: metadata?.characterId,
+          prompt: metadata?.prompt,
+          provider: metadata?.provider,
+          operation: metadata?.operation,
+          referenceImagesCount: metadata?.referenceImagesCount,
+          ...metadata
+        }
       });
     } catch (logError) {
       console.error('Failed to log generation error:', logError);

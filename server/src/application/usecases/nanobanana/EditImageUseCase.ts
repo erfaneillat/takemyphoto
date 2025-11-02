@@ -1,8 +1,11 @@
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
+import { IUserRepository } from '@core/domain/repositories/IUserRepository';
+import { ErrorLogService } from '@application/services/ErrorLogService';
 import { TemplateModel } from '@infrastructure/database/models/TemplateModel';
 import { StyleUsageModel } from '@infrastructure/database/models/StyleUsageModel';
+import { AppError } from '@presentation/middleware/errorHandler';
 
 export interface EditImageRequest {
   userId: string;
@@ -25,7 +28,9 @@ export class EditImageUseCase {
   constructor(
     private googleAIService: GoogleAIService,
     private fileUploadService: IFileUploadService,
-    private generatedImageRepository: IGeneratedImageEntityRepository
+    private generatedImageRepository: IGeneratedImageEntityRepository,
+    private userRepository: IUserRepository,
+    private errorLogService?: ErrorLogService
   ) {}
 
   async execute(request: EditImageRequest): Promise<EditImageResponse> {
@@ -35,6 +40,20 @@ export class EditImageUseCase {
     if (!uploadedImages || uploadedImages.length === 0) {
       throw new Error('At least one image is required for editing');
     }
+
+    // Check user's star balance
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(404, 'User not found');
+    }
+
+    if (user.stars <= 0) {
+      throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue editing images.');
+    }
+
+    // Decrement user's stars
+    await this.userRepository.decrementStars(userId, 1);
+    console.log(`⭐ User ${userId} consumed 1 star for editing. Remaining: ${user.stars - 1}`);
 
     // Prepare images as base64 for Google AI API
     const referenceImages: { mimeType: string; data: string }[] = [];
@@ -95,18 +114,51 @@ export class EditImageUseCase {
       characterImagesCount: characterImageUrls.length
     });
 
-    const response = await this.googleAIService.generateImage({
-      prompt,
-      referenceImages,
-      aspectRatio: imageSize as any,
-      responseModalities: ['Image'] // Only return image, no text
-    });
+    let response;
+    try {
+      response = await this.googleAIService.generateImage({
+        prompt,
+        referenceImages,
+        aspectRatio: imageSize as any,
+        responseModalities: ['Image'] // Only return image, no text
+      });
+    } catch (error: any) {
+      // Log Google AI API error
+      if (this.errorLogService) {
+        await this.errorLogService.logGenerationError(
+          error,
+          userId,
+          {
+            templateId,
+            prompt: prompt.substring(0, 200),
+            provider: 'Google AI',
+            operation: 'editImage',
+            referenceImagesCount: referenceImages.length
+          }
+        );
+      }
+      throw error;
+    }
 
     // Extract image data from response
     const imageResult = this.googleAIService.extractImageFromResponse(response);
     
     if (!imageResult) {
-      throw new Error('No image returned from Google AI API');
+      const error = new Error('No image returned from Google AI API');
+      if (this.errorLogService) {
+        await this.errorLogService.logGenerationError(
+          error,
+          userId,
+          {
+            templateId,
+            prompt: prompt.substring(0, 200),
+            provider: 'Google AI',
+            operation: 'extractImage',
+            referenceImagesCount: referenceImages.length
+          }
+        );
+      }
+      throw error;
     }
 
     // Save the edited image to local storage

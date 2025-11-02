@@ -338,13 +338,17 @@ export class Container {
     this.generateImageUseCase = new GenerateImageUseCase(
       this.googleAIService,
       this.fileUploadService,
-      this.generatedImageEntityRepository
+      this.generatedImageEntityRepository,
+      this.userRepository,
+      this.errorLogService
     );
 
     this.editImageUseCase = new EditImageUseCase(
       this.googleAIService,
       this.fileUploadService,
-      this.generatedImageEntityRepository
+      this.generatedImageEntityRepository,
+      this.userRepository,
+      this.errorLogService
     );
 
     // Initialize Controllers

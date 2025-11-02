@@ -8,7 +8,9 @@
     "confirm": "Confirm",
     "save": "Save",
     "delete": "Delete",
-    "tryNow": "Try it now"
+    "tryNow": "Try it now",
+    "insufficientStars": "You have run out of stars. Redirecting to subscription page...",
+    "insufficientStarsTitle": "Insufficient Stars"
   },
   "app": {
     "title": "Take My Photo",

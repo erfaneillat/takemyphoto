@@ -1,8 +1,11 @@
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
+import { IUserRepository } from '@core/domain/repositories/IUserRepository';
+import { ErrorLogService } from '@application/services/ErrorLogService';
 import { TemplateModel } from '@infrastructure/database/models/TemplateModel';
 import { StyleUsageModel } from '@infrastructure/database/models/StyleUsageModel';
+import { AppError } from '@presentation/middleware/errorHandler';
 
 export interface GenerateImageRequest {
   userId: string;
@@ -25,11 +28,27 @@ export class GenerateImageUseCase {
   constructor(
     private googleAIService: GoogleAIService,
     private fileUploadService: IFileUploadService,
-    private generatedImageRepository: IGeneratedImageEntityRepository
+    private generatedImageRepository: IGeneratedImageEntityRepository,
+    private userRepository: IUserRepository,
+    private errorLogService?: ErrorLogService
   ) {}
 
   async execute(request: GenerateImageRequest): Promise<GenerateImageResponse> {
     const { userId, prompt, imageSize = '1:1', uploadedImages = [], characterImageUrls = [], templateId } = request;
+
+    // Check user's star balance
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(404, 'User not found');
+    }
+
+    if (user.stars <= 0) {
+      throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue generating images.');
+    }
+
+    // Decrement user's stars
+    await this.userRepository.decrementStars(userId, 1);
+    console.log(`⭐ User ${userId} consumed 1 star. Remaining: ${user.stars - 1}`);
 
     // Note: Google AI currently generates one image at a time
     // For multiple images, we'd need to make multiple calls
@@ -95,18 +114,51 @@ export class GenerateImageUseCase {
       characterImagesCount: characterImageUrls.length
     });
 
-    const response = await this.googleAIService.generateImage({
-      prompt,
-      referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
-      aspectRatio: imageSize as any,
-      responseModalities: ['Image'] // Only return image, no text
-    });
+    let response;
+    try {
+      response = await this.googleAIService.generateImage({
+        prompt,
+        referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
+        aspectRatio: imageSize as any,
+        responseModalities: ['Image'] // Only return image, no text
+      });
+    } catch (error: any) {
+      // Log Google AI API error
+      if (this.errorLogService) {
+        await this.errorLogService.logGenerationError(
+          error,
+          userId,
+          {
+            templateId,
+            prompt: prompt.substring(0, 200),
+            provider: 'Google AI',
+            operation: 'generateImage',
+            referenceImagesCount: referenceImages.length
+          }
+        );
+      }
+      throw error;
+    }
 
     // Extract image data from response
     const imageResult = this.googleAIService.extractImageFromResponse(response);
     
     if (!imageResult) {
-      throw new Error('No image returned from Google AI API');
+      const error = new Error('No image returned from Google AI API');
+      if (this.errorLogService) {
+        await this.errorLogService.logGenerationError(
+          error,
+          userId,
+          {
+            templateId,
+            prompt: prompt.substring(0, 200),
+            provider: 'Google AI',
+            operation: 'extractImage',
+            referenceImagesCount: referenceImages.length
+          }
+        );
+      }
+      throw error;
     }
 
     // Save the generated image to local storage

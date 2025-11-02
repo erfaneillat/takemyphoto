@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { 
   GeneratedImage, 
   UploadedImage, 
@@ -10,6 +11,7 @@ import { nanoBananaApi } from '@/shared/services';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 
 export const useImageEditor = () => {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<EditMode>('generate');
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
@@ -98,12 +100,22 @@ export const useImageEditor = () => {
       return newImage;
     } catch (err: any) {
       console.error('Edit error:', err);
-      setError(err.message || 'Failed to edit image');
+      
+      // Check for insufficient stars error
+      if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
+        setError('You have run out of stars. Redirecting to subscription page...');
+        // Navigate to subscription page after showing error
+        setTimeout(() => {
+          navigate('/subscription');
+        }, 2000);
+      } else {
+        setError(err.message || 'Failed to edit image');
+      }
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, aspectRatio]);
+  }, [uploadedImages, aspectRatio, navigate]);
 
   const editImages = useCallback(async (params: ImageEditParams) => {
     setIsProcessing(true);
@@ -133,12 +145,22 @@ export const useImageEditor = () => {
       return newImage;
     } catch (err: any) {
       console.error('Edit error:', err);
-      setError(err.message || 'Failed to edit image');
+      
+      // Check for insufficient stars error
+      if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
+        setError('You have run out of stars. Redirecting to subscription page...');
+        // Navigate to subscription page after showing error
+        setTimeout(() => {
+          navigate('/subscription');
+        }, 2000);
+      } else {
+        setError(err.message || 'Failed to edit image');
+      }
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, []);
+  }, [navigate]);
 
   const editAgain = useCallback((image: GeneratedImage, newPrompt: string) => {
     const editParams: ImageEditParams = {

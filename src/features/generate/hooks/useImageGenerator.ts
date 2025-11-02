@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { GeneratedImage, ImageGenerationParams, UploadedImage } from '@/core/domain/entities/Image';
 import type { Character } from '@/core/domain/entities/Character';
 import { nanoBananaApi } from '@/shared/services';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 
 export const useImageGenerator = () => {
+  const navigate = useNavigate();
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -81,12 +83,22 @@ export const useImageGenerator = () => {
       return newImage;
     } catch (err: any) {
       console.error('Generation error:', err);
-      setError(err.message || 'Failed to generate image');
+      
+      // Check for insufficient stars error
+      if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
+        setError('You have run out of stars. Redirecting to subscription page...');
+        // Navigate to subscription page after showing error
+        setTimeout(() => {
+          navigate('/subscription');
+        }, 2000);
+      } else {
+        setError(err.message || 'Failed to generate image');
+      }
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, selectedCharacters, aspectRatio]);
+  }, [uploadedImages, selectedCharacters, aspectRatio, navigate]);
 
   const clearAll = useCallback(() => {
     setGeneratedImages([]);

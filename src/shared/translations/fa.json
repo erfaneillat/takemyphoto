@@ -8,7 +8,9 @@
     "confirm": "تایید",
     "save": "ذخیره",
     "delete": "حذف",
-    "tryNow": "اکنون امتحان کنید"
+    "tryNow": "اکنون امتحان کنید",
+    "insufficientStars": "ستاره‌های شما تمام شده است. در حال انتقال به صفحه اشتراک...",
+    "insufficientStarsTitle": "ستاره کافی نیست"
   },
   "app": {
     "title": "Take My Photo",
