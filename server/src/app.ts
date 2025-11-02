@@ -18,7 +18,8 @@ import { createImageGenerationRoutes } from '@presentation/routes/nanobananaRout
 import { createDashboardRoutes } from '@presentation/routes/dashboardRoutes';
 import { createContactRoutes } from '@presentation/routes/contactRoutes';
 import { createCheckoutRoutes } from '@presentation/routes/checkoutRoutes';
-import { errorHandler } from '@presentation/middleware/errorHandler';
+import { createErrorLogRoutes } from '@presentation/routes/errorLogRoutes';
+import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
   public app: Application;
@@ -27,6 +28,10 @@ export class App {
   constructor() {
     this.app = express();
     this.container = new Container();
+    
+    // Initialize error logging service
+    setErrorLogService(this.container.errorLogService);
+    
     this.setupMiddleware();
     this.setupRoutes();
     this.setupErrorHandling();
@@ -147,6 +152,7 @@ export class App {
     this.app.use(`${baseUrl}/dashboard`, createDashboardRoutes(this.container.dashboardController));
     this.app.use(`${baseUrl}/contact`, createContactRoutes(this.container.contactController));
     this.app.use(`${baseUrl}/checkout`, createCheckoutRoutes(this.container.checkoutController));
+    this.app.use(`${baseUrl}/error-logs`, createErrorLogRoutes(this.container.errorLogController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');

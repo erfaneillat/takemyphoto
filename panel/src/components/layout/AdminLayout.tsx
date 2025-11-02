@@ -9,7 +9,8 @@ import {
   Tag,
   Palette,
   Images,
-  Mail
+  Mail,
+  AlertCircle
 } from 'lucide-react'
 
 const AdminLayout = () => {
@@ -24,6 +25,7 @@ const AdminLayout = () => {
     { path: '/styles', icon: Palette, label: 'Styles' },
     { path: '/generated-images', icon: Images, label: 'Generated Images' },
     { path: '/contacts', icon: Mail, label: 'Contacts' },
+    { path: '/error-logs', icon: AlertCircle, label: 'Error Logs' },
   ]
 
   const isActive = (path: string) => {

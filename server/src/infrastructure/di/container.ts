@@ -12,6 +12,7 @@ import { AdminRepository } from '@infrastructure/database/repositories/AdminRepo
 import { StyleUsageRepository } from '@infrastructure/database/repositories/StyleUsageRepository';
 import { ContactMessageRepository } from '@infrastructure/database/repositories/ContactMessageRepository';
 import { CheckoutOrderRepository } from '@infrastructure/database/repositories/CheckoutOrderRepository';
+import { ErrorLogRepository } from '@infrastructure/database/repositories/ErrorLogRepository';
 
 // Services
 import { JwtService } from '@infrastructure/services/JwtService';
@@ -20,6 +21,7 @@ import { MockSmsService, ISmsService } from '@infrastructure/services/SmsService
 import { OpenAIService } from '@infrastructure/services/OpenAIService';
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { RemoteImageService } from '@infrastructure/services/RemoteImageService';
+import { ErrorLogService } from '@application/services/ErrorLogService';
 
 // Use Cases
 import { SendVerificationCodeUseCase } from '@application/usecases/auth/SendVerificationCodeUseCase';
@@ -59,6 +61,12 @@ import { CreateCheckoutOrderUseCase } from '@application/usecases/checkout/Creat
 import { GetCheckoutOrdersUseCase } from '@application/usecases/checkout/GetCheckoutOrdersUseCase';
 import { UpdateCheckoutOrderStatusUseCase } from '@application/usecases/checkout/UpdateCheckoutOrderStatusUseCase';
 import { DeleteCheckoutOrderUseCase } from '@application/usecases/checkout/DeleteCheckoutOrderUseCase';
+import { CreateErrorLogUseCase } from '@application/usecases/error-log/CreateErrorLogUseCase';
+import { GetErrorLogsUseCase } from '@application/usecases/error-log/GetErrorLogsUseCase';
+import { GetErrorLogStatsUseCase } from '@application/usecases/error-log/GetErrorLogStatsUseCase';
+import { UpdateErrorLogUseCase } from '@application/usecases/error-log/UpdateErrorLogUseCase';
+import { DeleteErrorLogUseCase } from '@application/usecases/error-log/DeleteErrorLogUseCase';
+import { DeleteManyErrorLogsUseCase } from '@application/usecases/error-log/DeleteManyErrorLogsUseCase';
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
 // Controllers
@@ -73,6 +81,7 @@ import { ImageGenerationController } from '@presentation/controllers/NanoBananaC
 import { DashboardController } from '@presentation/controllers/DashboardController';
 import { ContactController } from '@presentation/controllers/ContactController';
 import { CheckoutController } from '@presentation/controllers/CheckoutController';
+import { ErrorLogController } from '@presentation/controllers/ErrorLogController';
 
 export class Container {
   // Repositories
@@ -89,6 +98,7 @@ export class Container {
   public styleUsageRepository: StyleUsageRepository;
   public contactMessageRepository: ContactMessageRepository;
   public checkoutOrderRepository: CheckoutOrderRepository;
+  public errorLogRepository: ErrorLogRepository;
 
   // Services
   public jwtService: JwtService;
@@ -97,6 +107,7 @@ export class Container {
   public openAIService: OpenAIService;
   public googleAIService: GoogleAIService;
   public remoteImageService: RemoteImageService;
+  public errorLogService: ErrorLogService;
 
   // Use Cases
   public sendVerificationCodeUseCase: SendVerificationCodeUseCase;
@@ -136,6 +147,12 @@ export class Container {
   public getCheckoutOrdersUseCase: GetCheckoutOrdersUseCase;
   public updateCheckoutOrderStatusUseCase: UpdateCheckoutOrderStatusUseCase;
   public deleteCheckoutOrderUseCase: DeleteCheckoutOrderUseCase;
+  public createErrorLogUseCase: CreateErrorLogUseCase;
+  public getErrorLogsUseCase: GetErrorLogsUseCase;
+  public getErrorLogStatsUseCase: GetErrorLogStatsUseCase;
+  public updateErrorLogUseCase: UpdateErrorLogUseCase;
+  public deleteErrorLogUseCase: DeleteErrorLogUseCase;
+  public deleteManyErrorLogsUseCase: DeleteManyErrorLogsUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -150,6 +167,7 @@ export class Container {
   public dashboardController: DashboardController;
   public contactController: ContactController;
   public checkoutController: CheckoutController;
+  public errorLogController: ErrorLogController;
 
   constructor() {
     // Initialize Repositories
@@ -166,6 +184,7 @@ export class Container {
     this.styleUsageRepository = new StyleUsageRepository();
     this.contactMessageRepository = new ContactMessageRepository();
     this.checkoutOrderRepository = new CheckoutOrderRepository();
+    this.errorLogRepository = new ErrorLogRepository();
 
     // Initialize Services
     this.jwtService = new JwtService();
@@ -174,6 +193,12 @@ export class Container {
     this.googleAIService = new GoogleAIService();
     this.remoteImageService = new RemoteImageService();
     this.smsService = new MockSmsService();
+
+    // Initialize Error Logging
+    this.createErrorLogUseCase = new CreateErrorLogUseCase(
+      this.errorLogRepository
+    );
+    this.errorLogService = new ErrorLogService(this.createErrorLogUseCase);
 
     // Initialize Use Cases
     this.sendVerificationCodeUseCase = new SendVerificationCodeUseCase(
@@ -411,6 +436,34 @@ export class Container {
       this.getCheckoutOrdersUseCase,
       this.updateCheckoutOrderStatusUseCase,
       this.deleteCheckoutOrderUseCase
+    );
+
+    this.getErrorLogsUseCase = new GetErrorLogsUseCase(
+      this.errorLogRepository
+    );
+
+    this.getErrorLogStatsUseCase = new GetErrorLogStatsUseCase(
+      this.errorLogRepository
+    );
+
+    this.updateErrorLogUseCase = new UpdateErrorLogUseCase(
+      this.errorLogRepository
+    );
+
+    this.deleteErrorLogUseCase = new DeleteErrorLogUseCase(
+      this.errorLogRepository
+    );
+
+    this.deleteManyErrorLogsUseCase = new DeleteManyErrorLogsUseCase(
+      this.errorLogRepository
+    );
+
+    this.errorLogController = new ErrorLogController(
+      this.getErrorLogsUseCase,
+      this.getErrorLogStatsUseCase,
+      this.updateErrorLogUseCase,
+      this.deleteErrorLogUseCase,
+      this.deleteManyErrorLogsUseCase
     );
   }
 }
