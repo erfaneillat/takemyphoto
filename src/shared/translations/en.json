@@ -142,6 +142,50 @@
       "messageRequired": "Message is required"
     }
   },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete your order information",
+    "description": "Please fill out the form below to complete your order. All fields are required.",
+    "selectedPlan": "Selected Plan",
+    "price": "Price",
+    "month": "month",
+    "year": "year",
+    "form": {
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Your last name",
+      "email": "Email Address",
+      "emailPlaceholder": "your.email@example.com",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "address": "Address",
+      "addressPlaceholder": "Street address, city, state/province, country",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "12345",
+      "submit": "Complete Order",
+      "submitting": "Submitting..."
+    },
+    "success": {
+      "title": "Order Submitted!",
+      "description": "Thank you for your order. We'll process it and get back to you soon."
+    },
+    "error": {
+      "title": "Error",
+      "description": "Failed to submit order. Please try again."
+    },
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid phone number",
+      "addressRequired": "Address is required",
+      "postalCodeRequired": "Postal code is required",
+      "postalCodeInvalid": "Postal code must be at least 5 characters"
+    }
+  },
   "landing": {
     "hero": {
       "badge": "AI-Powered Image Editing",
@@ -286,7 +330,6 @@
       "removeImage": "Remove image",
       "editAgain": "Edit again"
     },
-    
     "results": {
       "title": "Generated Results",
       "editHistory": "Edit History"
@@ -425,7 +468,7 @@
     }
   },
   "upgrade": {
-    "title": "Go Pro with Nero",
+    "title": "Go Pro with Take My Photo",
     "upgradeNow": "Upgrade Now",
     "plans": {
       "free": {
@@ -563,7 +606,7 @@
   "auth": {
     "login": {
       "title": "Welcome Back",
-      "subtitle": "Sign in to continue to Nero",
+      "subtitle": "Sign in to continue to Take My Photo",
       "signingIn": "Signing in...",
       "googleInfo": "By signing in with Google, you agree to our Terms of Service and Privacy Policy",
       "phoneLabel": "Phone Number",

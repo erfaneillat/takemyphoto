@@ -17,7 +17,7 @@ const Contacts = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [page] = useState(1)
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null)
   const [filterStatus, setFilterStatus] = useState<string>('all')
 

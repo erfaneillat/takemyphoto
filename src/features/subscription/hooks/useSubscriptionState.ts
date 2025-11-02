@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export type PlanType = 'free' | 'pro' | 'premium';
 export type BillingCycle = 'monthly' | 'yearly';
@@ -26,6 +27,7 @@ export interface SubscriptionState {
 }
 
 export const useSubscriptionState = (): SubscriptionState => {
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,8 +54,8 @@ export const useSubscriptionState = (): SubscriptionState => {
       id: 'pro',
       name: 'Pro',
       translationKey: 'pro',
-      monthlyPrice: 4.99,
-      yearlyPrice: 23.88, // $1.99/month: 1.99 * 12 = 23.88 (~60% off)
+      monthlyPrice: 5.99,
+      yearlyPrice: 35.88, // €2.99/month: 2.99 * 12 = 35.88
       popular: true,
       features: [
         'unlimitedGenerations',
@@ -75,15 +77,17 @@ export const useSubscriptionState = (): SubscriptionState => {
   const subscribeToPlan = async (planId: PlanType) => {
     setIsProcessing(true);
     try {
-      // TODO: Implement actual subscription logic
-      console.log('Subscribing to plan:', planId, 'with billing cycle:', billingCycle);
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      
-      // Here you would call your backend API to create subscription
-      // const response = await subscriptionApi.subscribe({ planId, billingCycle });
-      
+      // Navigate to checkout page with plan and billing cycle info
+      const plan = plans.find(p => p.id === planId);
+      if (plan) {
+        // Encode plan data in URL params for checkout page
+        const checkoutParams = new URLSearchParams({
+          planId: planId,
+          billingCycle: billingCycle,
+          price: billingCycle === 'yearly' ? plan.yearlyPrice.toString() : plan.monthlyPrice.toString()
+        });
+        navigate(`/checkout?${checkoutParams.toString()}`);
+      }
       setSelectedPlan(null);
     } catch (error) {
       console.error('Subscription error:', error);

@@ -17,6 +17,7 @@ import { createEnhanceRoutes } from '@presentation/routes/enhanceRoutes';
 import { createImageGenerationRoutes } from '@presentation/routes/nanobananaRoutes';
 import { createDashboardRoutes } from '@presentation/routes/dashboardRoutes';
 import { createContactRoutes } from '@presentation/routes/contactRoutes';
+import { createCheckoutRoutes } from '@presentation/routes/checkoutRoutes';
 import { errorHandler } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -145,6 +146,7 @@ export class App {
     this.app.use(`${baseUrl}/nanobanana`, createImageGenerationRoutes(this.container.imageGenerationController));
     this.app.use(`${baseUrl}/dashboard`, createDashboardRoutes(this.container.dashboardController));
     this.app.use(`${baseUrl}/contact`, createContactRoutes(this.container.contactController));
+    this.app.use(`${baseUrl}/checkout`, createCheckoutRoutes(this.container.checkoutController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');

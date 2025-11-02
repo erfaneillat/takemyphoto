@@ -11,6 +11,7 @@ import { GeneratedImageEntityRepository } from '@infrastructure/database/reposit
 import { AdminRepository } from '@infrastructure/database/repositories/AdminRepository';
 import { StyleUsageRepository } from '@infrastructure/database/repositories/StyleUsageRepository';
 import { ContactMessageRepository } from '@infrastructure/database/repositories/ContactMessageRepository';
+import { CheckoutOrderRepository } from '@infrastructure/database/repositories/CheckoutOrderRepository';
 
 // Services
 import { JwtService } from '@infrastructure/services/JwtService';
@@ -54,6 +55,10 @@ import { CreateContactMessageUseCase } from '@application/usecases/contact/Creat
 import { GetContactMessagesUseCase } from '@application/usecases/contact/GetContactMessagesUseCase';
 import { UpdateContactMessageStatusUseCase } from '@application/usecases/contact/UpdateContactMessageStatusUseCase';
 import { DeleteContactMessageUseCase } from '@application/usecases/contact/DeleteContactMessageUseCase';
+import { CreateCheckoutOrderUseCase } from '@application/usecases/checkout/CreateCheckoutOrderUseCase';
+import { GetCheckoutOrdersUseCase } from '@application/usecases/checkout/GetCheckoutOrdersUseCase';
+import { UpdateCheckoutOrderStatusUseCase } from '@application/usecases/checkout/UpdateCheckoutOrderStatusUseCase';
+import { DeleteCheckoutOrderUseCase } from '@application/usecases/checkout/DeleteCheckoutOrderUseCase';
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
 // Controllers
@@ -67,6 +72,7 @@ import { EnhanceController } from '@presentation/controllers/EnhanceController';
 import { ImageGenerationController } from '@presentation/controllers/NanoBananaController';
 import { DashboardController } from '@presentation/controllers/DashboardController';
 import { ContactController } from '@presentation/controllers/ContactController';
+import { CheckoutController } from '@presentation/controllers/CheckoutController';
 
 export class Container {
   // Repositories
@@ -82,6 +88,7 @@ export class Container {
   public adminRepository: AdminRepository;
   public styleUsageRepository: StyleUsageRepository;
   public contactMessageRepository: ContactMessageRepository;
+  public checkoutOrderRepository: CheckoutOrderRepository;
 
   // Services
   public jwtService: JwtService;
@@ -125,6 +132,10 @@ export class Container {
   public getContactMessagesUseCase: GetContactMessagesUseCase;
   public updateContactMessageStatusUseCase: UpdateContactMessageStatusUseCase;
   public deleteContactMessageUseCase: DeleteContactMessageUseCase;
+  public createCheckoutOrderUseCase: CreateCheckoutOrderUseCase;
+  public getCheckoutOrdersUseCase: GetCheckoutOrdersUseCase;
+  public updateCheckoutOrderStatusUseCase: UpdateCheckoutOrderStatusUseCase;
+  public deleteCheckoutOrderUseCase: DeleteCheckoutOrderUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -138,6 +149,7 @@ export class Container {
   public imageGenerationController: ImageGenerationController;
   public dashboardController: DashboardController;
   public contactController: ContactController;
+  public checkoutController: CheckoutController;
 
   constructor() {
     // Initialize Repositories
@@ -153,6 +165,7 @@ export class Container {
     this.adminRepository = new AdminRepository();
     this.styleUsageRepository = new StyleUsageRepository();
     this.contactMessageRepository = new ContactMessageRepository();
+    this.checkoutOrderRepository = new CheckoutOrderRepository();
 
     // Initialize Services
     this.jwtService = new JwtService();
@@ -375,6 +388,29 @@ export class Container {
       this.getContactMessagesUseCase,
       this.updateContactMessageStatusUseCase,
       this.deleteContactMessageUseCase
+    );
+
+    this.createCheckoutOrderUseCase = new CreateCheckoutOrderUseCase(
+      this.checkoutOrderRepository
+    );
+
+    this.getCheckoutOrdersUseCase = new GetCheckoutOrdersUseCase(
+      this.checkoutOrderRepository
+    );
+
+    this.updateCheckoutOrderStatusUseCase = new UpdateCheckoutOrderStatusUseCase(
+      this.checkoutOrderRepository
+    );
+
+    this.deleteCheckoutOrderUseCase = new DeleteCheckoutOrderUseCase(
+      this.checkoutOrderRepository
+    );
+
+    this.checkoutController = new CheckoutController(
+      this.createCheckoutOrderUseCase,
+      this.getCheckoutOrdersUseCase,
+      this.updateCheckoutOrderStatusUseCase,
+      this.deleteCheckoutOrderUseCase
     );
   }
 }

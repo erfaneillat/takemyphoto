@@ -142,6 +142,50 @@
       "messageRequired": "پیام الزامی است"
     }
   },
+  "checkout": {
+    "title": "تسویه حساب",
+    "subtitle": "اطلاعات سفارش خود را تکمیل کنید",
+    "description": "لطفاً فرم زیر را برای تکمیل سفارش خود پر کنید. تمام فیلدها الزامی هستند.",
+    "selectedPlan": "پلن انتخاب شده",
+    "price": "قیمت",
+    "month": "ماه",
+    "year": "سال",
+    "form": {
+      "firstName": "نام",
+      "firstNamePlaceholder": "نام شما",
+      "lastName": "نام خانوادگی",
+      "lastNamePlaceholder": "نام خانوادگی شما",
+      "email": "آدرس ایمیل",
+      "emailPlaceholder": "your.email@example.com",
+      "phone": "شماره تلفن",
+      "phonePlaceholder": "09123456789",
+      "address": "آدرس",
+      "addressPlaceholder": "آدرس کامل: خیابان، شهر، استان، کشور",
+      "postalCode": "کد پستی",
+      "postalCodePlaceholder": "1234567890",
+      "submit": "تکمیل سفارش",
+      "submitting": "در حال ارسال..."
+    },
+    "success": {
+      "title": "سفارش ثبت شد!",
+      "description": "از سفارش شما متشکریم. ما سفارش شما را پردازش کرده و به زودی با شما تماس خواهیم گرفت."
+    },
+    "error": {
+      "title": "خطا",
+      "description": "ثبت سفارش ناموفق بود. لطفاً دوباره تلاش کنید."
+    },
+    "validation": {
+      "firstNameRequired": "نام الزامی است",
+      "lastNameRequired": "نام خانوادگی الزامی است",
+      "emailRequired": "ایمیل الزامی است",
+      "emailInvalid": "لطفاً یک ایمیل معتبر وارد کنید",
+      "phoneRequired": "شماره تلفن الزامی است",
+      "phoneInvalid": "لطفاً یک شماره تلفن معتبر وارد کنید",
+      "addressRequired": "آدرس الزامی است",
+      "postalCodeRequired": "کد پستی الزامی است",
+      "postalCodeInvalid": "کد پستی باید حداقل ۵ کاراکتر باشد"
+    }
+  },
   "landing": {
     "hero": {
       "badge": "ویرایش تصویر با هوش مصنوعی",

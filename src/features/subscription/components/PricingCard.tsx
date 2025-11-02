@@ -30,8 +30,8 @@ export const PricingCard = ({
   
   const monthlyPrice = plan.monthlyPrice;
   const yearlyMonthlyEquivalent = (plan.yearlyPrice / 12).toFixed(2);
-  const displayPrice = billingCycle === 'yearly' ? yearlyMonthlyEquivalent : monthlyPrice;
-  const yearlySavings = Math.max(0, plan.monthlyPrice * 12 - plan.yearlyPrice);
+  const displayPrice = billingCycle === 'yearly' ? yearlyMonthlyEquivalent : monthlyPrice.toFixed(2);
+  const yearlySavings = Math.max(0, plan.monthlyPrice * 12 - plan.yearlyPrice).toFixed(2);
   const isFree = plan.id === 'free';
 
   return (
@@ -69,7 +69,7 @@ export const PricingCard = ({
       {/* Price */}
       <div className="flex items-baseline justify-center gap-1 mb-1">
         <span className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-          ${displayPrice}
+          €{displayPrice}
         </span>
         <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
           {isFree ? '' : `/${t('subscription.month')}`}
@@ -84,9 +84,9 @@ export const PricingCard = ({
       )}
 
       {/* Billing Note */}
-      {billingCycle === 'yearly' && !isFree && yearlySavings > 0 && (
+      {billingCycle === 'yearly' && !isFree && parseFloat(yearlySavings) > 0 && (
         <p className="text-sm text-center text-green-600 dark:text-green-400 mb-6">
-          {t('subscription.saveYearly', { amount: `$${yearlySavings}` })}
+          {t('subscription.saveYearly', { amount: `€${yearlySavings}` })}
         </p>
       )}
 
