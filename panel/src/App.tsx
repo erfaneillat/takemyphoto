@@ -7,6 +7,7 @@ import Styles from './pages/Styles'
 import GeneratedImages from './pages/GeneratedImages'
 import Contacts from './pages/Contacts'
 import ErrorLogs from './pages/ErrorLogs'
+import Users from './pages/Users'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthDebugWidget } from './components/AuthDebugWidget'
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="categories" element={<Categories />} />
           <Route path="styles" element={<Styles />} />
           <Route path="generated-images" element={<GeneratedImages />} />
+          <Route path="users" element={<Users />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="error-logs" element={<ErrorLogs />} />
         </Route>

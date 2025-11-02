@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Users, Activity, TrendingUp, FileText, User, Loader2 } from 'lucide-react'
+import { Users, Activity, TrendingUp, FileText, User, Loader2, Image } from 'lucide-react'
 import { dashboardService, DashboardStats } from '../services/dashboardService'
 
 const Dashboard = () => {
@@ -33,6 +33,8 @@ const Dashboard = () => {
         return FileText
       case 'User':
         return User
+      case 'Image':
+        return Image
       default:
         return Activity
     }
@@ -106,6 +108,14 @@ const Dashboard = () => {
       color: 'bg-orange-500',
       positive: stats.totalCharactersChange >= 0,
     },
+    {
+      title: 'Generated Images',
+      value: stats.totalGeneratedImages.toLocaleString(),
+      change: `${stats.totalGeneratedImagesChange >= 0 ? '+' : ''}${stats.totalGeneratedImagesChange}%`,
+      icon: Image,
+      color: 'bg-pink-500',
+      positive: stats.totalGeneratedImagesChange >= 0,
+    },
   ]
 
   return (
@@ -116,7 +126,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {statCards.map((stat) => {
           const Icon = stat.icon
           return (

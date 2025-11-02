@@ -1,4 +1,4 @@
-import { IUserRepository } from '@core/domain/repositories/IUserRepository';
+import { IUserRepository, PaginatedUsers, GetUsersFilters } from '@core/domain/repositories/IUserRepository';
 import { User, CreateUserDTO, UpdateUserDTO } from '@core/domain/entities/User';
 import { UserModel } from '../models/UserModel';
 
@@ -54,5 +54,81 @@ export class UserRepository implements IUserRepository {
       { new: true }
     );
     return user ? (user.toJSON() as User) : null;
+  }
+
+  async findAll(page: number, limit: number, filters?: GetUsersFilters): Promise<PaginatedUsers> {
+    const query: any = {};
+
+    if (filters?.role) {
+      query.role = filters.role;
+    }
+
+    if (filters?.subscription) {
+      query.subscription = filters.subscription;
+    }
+
+    if (filters?.search) {
+      query.$or = [
+        { name: { $regex: filters.search, $options: 'i' } },
+        { firstName: { $regex: filters.search, $options: 'i' } },
+        { lastName: { $regex: filters.search, $options: 'i' } },
+        { email: { $regex: filters.search, $options: 'i' } },
+        { phoneNumber: { $regex: filters.search, $options: 'i' } }
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await Promise.all([
+      UserModel.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      UserModel.countDocuments(query)
+    ]);
+
+    return {
+      users: users as User[],
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    };
+  }
+
+  async getStats(): Promise<{
+    total: number;
+    byRole: Record<string, number>;
+    bySubscription: Record<string, number>;
+    verified: number;
+  }> {
+    const [total, byRole, bySubscription, verified] = await Promise.all([
+      UserModel.countDocuments(),
+      UserModel.aggregate([
+        { $group: { _id: '$role', count: { $sum: 1 } } }
+      ]),
+      UserModel.aggregate([
+        { $group: { _id: '$subscription', count: { $sum: 1 } } }
+      ]),
+      UserModel.countDocuments({ isVerified: true })
+    ]);
+
+    const roleStats: Record<string, number> = {};
+    byRole.forEach((item: any) => {
+      roleStats[item._id] = item.count;
+    });
+
+    const subscriptionStats: Record<string, number> = {};
+    bySubscription.forEach((item: any) => {
+      subscriptionStats[item._id] = item.count;
+    });
+
+    return {
+      total,
+      byRole: roleStats,
+      bySubscription: subscriptionStats,
+      verified
+    };
   }
 }

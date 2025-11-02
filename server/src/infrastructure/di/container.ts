@@ -47,6 +47,10 @@ import { GetCategoriesUseCase } from '@application/usecases/category/GetCategori
 import { UpdateCategoryUseCase } from '@application/usecases/category/UpdateCategoryUseCase';
 import { DeleteCategoryUseCase } from '@application/usecases/category/DeleteCategoryUseCase';
 import { GetUserProfileUseCase } from '@application/usecases/user/GetUserProfileUseCase';
+import { GetUsersUseCase } from '@application/usecases/user/GetUsersUseCase';
+import { GetUserStatsUseCase } from '@application/usecases/user/GetUserStatsUseCase';
+import { UpdateUserUseCase } from '@application/usecases/user/UpdateUserUseCase';
+import { DeleteUserUseCase } from '@application/usecases/user/DeleteUserUseCase';
 import { UpscaleImageUseCase } from '@application/usecases/enhance/UpscaleImageUseCase';
 import { ImageToPromptUseCase } from '@application/usecases/enhance/ImageToPromptUseCase';
 import { GenerateImageUseCase } from '@application/usecases/nanobanana/GenerateImageUseCase';
@@ -133,6 +137,10 @@ export class Container {
   public updateCategoryUseCase: UpdateCategoryUseCase;
   public deleteCategoryUseCase: DeleteCategoryUseCase;
   public getUserProfileUseCase: GetUserProfileUseCase;
+  public getUsersUseCase: GetUsersUseCase;
+  public getUserStatsUseCase: GetUserStatsUseCase;
+  public updateUserUseCase: UpdateUserUseCase;
+  public deleteUserUseCase: DeleteUserUseCase;
   public upscaleImageUseCase: UpscaleImageUseCase;
   public imageToPromptUseCase: ImageToPromptUseCase;
   public generateImageUseCase: GenerateImageUseCase;
@@ -266,6 +274,22 @@ export class Container {
       this.favoriteTemplateRepository
     );
 
+    this.getUsersUseCase = new GetUsersUseCase(
+      this.userRepository
+    );
+
+    this.getUserStatsUseCase = new GetUserStatsUseCase(
+      this.userRepository
+    );
+
+    this.updateUserUseCase = new UpdateUserUseCase(
+      this.userRepository
+    );
+
+    this.deleteUserUseCase = new DeleteUserUseCase(
+      this.userRepository
+    );
+
     this.createTemplateUseCase = new CreateTemplateUseCase(
       this.templateRepository
     );
@@ -349,6 +373,10 @@ export class Container {
 
     this.userController = new UserController(
       this.getUserProfileUseCase,
+      this.getUsersUseCase,
+      this.getUserStatsUseCase,
+      this.updateUserUseCase,
+      this.deleteUserUseCase,
       this.userRepository
     );
 

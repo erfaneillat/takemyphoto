@@ -9,6 +9,7 @@ import {
   Tag,
   Palette,
   Images,
+  Users,
   Mail,
   AlertCircle
 } from 'lucide-react'
@@ -24,6 +25,7 @@ const AdminLayout = () => {
     { path: '/categories', icon: Tag, label: 'Categories' },
     { path: '/styles', icon: Palette, label: 'Styles' },
     { path: '/generated-images', icon: Images, label: 'Generated Images' },
+    { path: '/users', icon: Users, label: 'Users' },
     { path: '/contacts', icon: Mail, label: 'Contacts' },
     { path: '/error-logs', icon: AlertCircle, label: 'Error Logs' },
   ]

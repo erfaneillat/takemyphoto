@@ -1,6 +1,7 @@
 import { UserModel } from '@infrastructure/database/models/UserModel';
 import { TemplateModel } from '@infrastructure/database/models/TemplateModel';
 import { CharacterModel } from '@infrastructure/database/models/CharacterModel';
+import { GeneratedImageEntityModel } from '@infrastructure/database/models/GeneratedImageEntityModel';
 
 export interface PopularStyle {
   id: string;
@@ -18,6 +19,8 @@ export interface DashboardStats {
   totalTemplatesChange: number;
   totalCharacters: number;
   totalCharactersChange: number;
+  totalGeneratedImages: number;
+  totalGeneratedImagesChange: number;
   recentActivity: ActivityItem[];
   popularStyles: PopularStyle[];
 }
@@ -43,12 +46,15 @@ export class GetDashboardStatsUseCase {
       totalUsers,
       totalTemplates,
       totalCharacters,
+      totalGeneratedImages,
       usersThisMonth,
       usersLastMonth,
       templatesThisMonth,
       templatesLastMonth,
       charactersThisMonth,
       charactersLastMonth,
+      generatedImagesThisMonth,
+      generatedImagesLastMonth,
       recentUsers,
       recentTemplates,
       recentCharacters
@@ -56,12 +62,15 @@ export class GetDashboardStatsUseCase {
       UserModel.countDocuments(),
       TemplateModel.countDocuments(),
       CharacterModel.countDocuments(),
+      GeneratedImageEntityModel.countDocuments(),
       UserModel.countDocuments({ createdAt: { $gte: startOfMonth, $lte: now } }),
       UserModel.countDocuments({ createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } }),
       TemplateModel.countDocuments({ createdAt: { $gte: startOfMonth, $lte: now } }),
       TemplateModel.countDocuments({ createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } }),
       CharacterModel.countDocuments({ createdAt: { $gte: startOfMonth, $lte: now } }),
       CharacterModel.countDocuments({ createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } }),
+      GeneratedImageEntityModel.countDocuments({ createdAt: { $gte: startOfMonth, $lte: now } }),
+      GeneratedImageEntityModel.countDocuments({ createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } }),
       UserModel.find().sort({ createdAt: -1 }).limit(5).lean(),
       TemplateModel.find().sort({ createdAt: -1 }).limit(5).lean(),
       CharacterModel.find().sort({ createdAt: -1 }).limit(5).lean()
@@ -72,6 +81,7 @@ export class GetDashboardStatsUseCase {
     const activeUsersChange = this.calculatePercentageChange(usersThisMonth, usersLastMonth);
     const totalTemplatesChange = this.calculatePercentageChange(templatesThisMonth, templatesLastMonth);
     const totalCharactersChange = this.calculatePercentageChange(charactersThisMonth, charactersLastMonth);
+    const totalGeneratedImagesChange = this.calculatePercentageChange(generatedImagesThisMonth, generatedImagesLastMonth);
 
     // Combine and sort recent activity
     const recentActivity: ActivityItem[] = [
@@ -123,6 +133,8 @@ export class GetDashboardStatsUseCase {
       totalTemplatesChange,
       totalCharacters,
       totalCharactersChange,
+      totalGeneratedImages,
+      totalGeneratedImagesChange,
       recentActivity,
       popularStyles
     };

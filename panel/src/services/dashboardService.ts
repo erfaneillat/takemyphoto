@@ -16,6 +16,8 @@ export interface DashboardStats {
   totalTemplatesChange: number
   totalCharacters: number
   totalCharactersChange: number
+  totalGeneratedImages: number
+  totalGeneratedImagesChange: number
   recentActivity: ActivityItem[]
   popularStyles: PopularStyle[]
 }
