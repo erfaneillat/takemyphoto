@@ -510,6 +510,8 @@
     "subtitle": "Unlock the full power of AI-driven creativity with our flexible pricing options",
     "popular": "Most Popular",
     "month": "month",
+    "year": "year",
+    "perMonth": "month",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "save60": "Save 60%",

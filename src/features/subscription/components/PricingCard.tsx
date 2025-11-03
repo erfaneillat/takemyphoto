@@ -29,8 +29,10 @@ export const PricingCard = ({
   const Icon = iconMap[plan.icon as keyof typeof iconMap];
   
   const monthlyPrice = plan.monthlyPrice;
+  const yearlyPrice = plan.yearlyPrice;
   const yearlyMonthlyEquivalent = (plan.yearlyPrice / 12).toFixed(2);
-  const displayPrice = billingCycle === 'yearly' ? yearlyMonthlyEquivalent : monthlyPrice.toFixed(2);
+  const originalYearlyPrice = (plan.monthlyPrice * 12).toFixed(2);
+  const displayPrice = billingCycle === 'yearly' ? yearlyPrice.toFixed(2) : monthlyPrice.toFixed(2);
   const yearlySavings = Math.max(0, plan.monthlyPrice * 12 - plan.yearlyPrice).toFixed(2);
   const isFree = plan.id === 'free';
 
@@ -67,20 +69,43 @@ export const PricingCard = ({
       </h3>
 
       {/* Price */}
-      <div className="flex items-baseline justify-center gap-1 mb-1">
-        <span className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-          €{displayPrice}
-        </span>
-        <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-          {isFree ? '' : `/${t('subscription.month')}`}
-        </span>
-      </div>
-      
-      {/* Billing Period Note */}
-      {billingCycle === 'yearly' && !isFree && (
-        <p className="text-xs text-center text-gray-500 dark:text-gray-500 mb-4">
-          {t('subscription.billedYearly')}
-        </p>
+      {billingCycle === 'monthly' ? (
+        <div className="flex items-baseline justify-center gap-1 mb-4">
+          <span className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+            €{displayPrice}
+          </span>
+          <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            {isFree ? '' : `/${t('subscription.month')}`}
+          </span>
+        </div>
+      ) : (
+        <div className="mb-4">
+          {/* Yearly Total Price */}
+          <div className="flex items-baseline justify-center gap-1 mb-1">
+            <span className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+              €{displayPrice}
+            </span>
+            <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+              {isFree ? '' : `/${t('subscription.year')}`}
+            </span>
+          </div>
+          
+          {/* Monthly Equivalent Subtitle */}
+          {!isFree && (
+            <p className="text-sm text-center text-gray-600 dark:text-gray-400 mb-2">
+              (€{yearlyMonthlyEquivalent}/{t('subscription.perMonth')})
+            </p>
+          )}
+          
+          {/* Original Price with Strikethrough */}
+          {!isFree && parseFloat(yearlySavings) > 0 && (
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-base sm:text-lg text-gray-500 dark:text-gray-500 line-through">
+                €{originalYearlyPrice}
+              </span>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Billing Note */}

@@ -28,7 +28,7 @@ export interface SubscriptionState {
 
 export const useSubscriptionState = (): SubscriptionState => {
   const navigate = useNavigate();
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
