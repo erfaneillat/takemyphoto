@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AlertCircle, Search, Trash2, Eye, CheckCircle, AlertTriangle, XCircle, Info, Code, Database, Shield, Zap, Server } from 'lucide-react'
 import axios from 'axios'
+import { resolveApiBase } from '../utils/api'
 
 interface ErrorLog {
   id: string
@@ -48,7 +49,7 @@ const ErrorLogs = () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       const params = new URLSearchParams({
         page: page.toString(),
@@ -77,7 +78,7 @@ const ErrorLogs = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       const response = await axios.get(`${apiBase}/error-logs/stats`, {
         headers: {
@@ -102,7 +103,7 @@ const ErrorLogs = () => {
   const updateLogResolved = async (id: string, resolved: boolean, notes?: string) => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       await axios.patch(
         `${apiBase}/error-logs/${id}`,
@@ -133,7 +134,7 @@ const ErrorLogs = () => {
     
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       await axios.delete(`${apiBase}/error-logs/${id}`, {
         headers: {

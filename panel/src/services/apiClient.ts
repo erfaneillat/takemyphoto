@@ -1,33 +1,6 @@
 import axios from 'axios'
 import { getAccessToken } from './tokenStore'
-
-const resolveApiBase = () => {
-  const raw = import.meta.env.VITE_API_URL as string | undefined
-  // Prefer explicit env if provided
-  if (raw) {
-    // If page is https but env uses http, upgrade to https to avoid mixed content
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && raw.startsWith('http://')) {
-      try {
-        const u = new URL(raw)
-        u.protocol = 'https:'
-        let upgraded = u.toString()
-        // If points to /api without version, append /v1
-        if (upgraded.endsWith('/api')) upgraded += '/v1'
-        if (upgraded.endsWith('/api/')) upgraded += 'v1'
-        return upgraded
-      } catch {
-        // fall through to raw
-      }
-    }
-    let url = raw
-    // If points to /api without version, append /v1
-    if (url.endsWith('/api')) url += '/v1'
-    if (url.endsWith('/api/')) url += 'v1'
-    return url
-  }
-  // Default to same-origin relative path
-  return '/api/v1'
-}
+import { resolveApiBase } from '../utils/api'
 
 const API_URL = resolveApiBase()
 const PANEL_BASE = import.meta.env.BASE_URL || '/'

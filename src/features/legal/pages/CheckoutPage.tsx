@@ -74,32 +74,43 @@ export const CheckoutPage = () => {
 
     try {
       const apiBase = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+      
+      // Prepare payment data
+      const paymentData = {
+        ...formData,
+        amount: parseFloat(planInfo?.price || '0'),
+        planId: planInfo?.planId,
+        billingCycle: planInfo?.billingCycle,
+        fromCurrencyCode: 364, // IRR
+        toCurrencyCode: 978, // EUR
+        country: 'Iran',
+        city: 'Tehran',
+        description: `Subscription Payment - ${planInfo?.planId || 'Plan'}`
+      };
+
       const response = await fetch(`${apiBase}/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(paymentData),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit checkout form');
+      const result = await response.json();
+
+      if (!response.ok || result.status !== 'success') {
+        throw new Error(result.message || 'Failed to initiate payment');
       }
 
-      setStatus('success');
-      setFormData({ 
-        firstName: '', 
-        lastName: '', 
-        email: '', 
-        phone: '', 
-        address: '', 
-        postalCode: '' 
-      });
-      setErrors({});
-    } catch (error) {
+      // Redirect to Yekpay payment gateway
+      if (result.data?.paymentUrl) {
+        window.location.href = result.data.paymentUrl;
+      } else {
+        throw new Error('Payment URL not received');
+      }
+    } catch (error: any) {
       console.error('Checkout form error:', error);
       setStatus('error');
-    } finally {
       setLoading(false);
     }
   };

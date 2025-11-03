@@ -188,6 +188,32 @@
       "postalCodeInvalid": "Postal code must be at least 5 characters"
     }
   },
+  "payment": {
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Your payment has been processed successfully. Thank you for your subscription!",
+      "reference": "Reference Number",
+      "orderId": "Order ID",
+      "info": "A confirmation email has been sent to your email address with your order details.",
+      "goHome": "Go to Home"
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "description": "We couldn't process your payment. Please try again.",
+      "reason": "Reason",
+      "orderId": "Order ID",
+      "help": "If you continue to experience issues, please contact our support team.",
+      "retry": "Try Again",
+      "goHome": "Go to Home"
+    },
+    "cancelled": {
+      "title": "Payment Cancelled",
+      "description": "You cancelled the payment process. No charges were made to your account.",
+      "info": "You can try again anytime by completing the checkout form.",
+      "retry": "Try Again",
+      "goHome": "Go to Home"
+    }
+  },
   "landing": {
     "hero": {
       "badge": "AI-Powered Image Editing",

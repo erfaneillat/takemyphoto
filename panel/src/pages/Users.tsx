@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Search, Users as UsersIcon, Crown, Star, Shield, CheckCircle, X, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
 import axios from 'axios'
+import { resolveApiBase } from '../utils/api'
 
 interface User {
   id: string
@@ -43,7 +44,7 @@ const Users = () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       const params = new URLSearchParams({
         page: page.toString(),
@@ -72,7 +73,7 @@ const Users = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       const response = await axios.get(`${apiBase}/users/admin/stats`, {
         headers: {
@@ -94,7 +95,7 @@ const Users = () => {
   const updateUser = async (id: string, data: Partial<User>) => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       await axios.patch(
         `${apiBase}/users/admin/${id}`,
@@ -127,7 +128,7 @@ const Users = () => {
     
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       await axios.delete(`${apiBase}/users/admin/${id}`, {
         headers: {

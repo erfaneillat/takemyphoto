@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Mail, Search, Trash2, Eye, CheckCircle, Clock, MessageCircle, Archive } from 'lucide-react'
 import axios from 'axios'
+import { resolveApiBase } from '../utils/api'
 
 interface ContactMessage {
   id: string
@@ -25,7 +26,7 @@ const Contacts = () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       const response = await axios.get(`${apiBase}/contact/admin?page=${page}&limit=20`, {
         headers: {
@@ -49,7 +50,7 @@ const Contacts = () => {
   const updateStatus = async (id: string, status: string) => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       await axios.patch(
         `${apiBase}/contact/admin/${id}/status`,
@@ -79,7 +80,7 @@ const Contacts = () => {
     
     try {
       const token = localStorage.getItem('accessToken')
-      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:2000/api/v1'
+      const apiBase = resolveApiBase()
       
       await axios.delete(`${apiBase}/contact/admin/${id}`, {
         headers: {

@@ -1,7 +1,8 @@
 import { CheckoutOrder, CreateCheckoutOrderDTO, UpdateCheckoutOrderDTO } from '@core/domain/entities/CheckoutOrder';
+import { ICheckoutOrderRepository } from '@core/domain/repositories/ICheckoutOrderRepository';
 import { CheckoutOrderModel } from '../models/CheckoutOrderModel';
 
-export class CheckoutOrderRepository {
+export class CheckoutOrderRepository implements ICheckoutOrderRepository {
   async create(dto: CreateCheckoutOrderDTO): Promise<CheckoutOrder> {
     const order = new CheckoutOrderModel(dto);
     await order.save();
@@ -44,6 +45,10 @@ export class CheckoutOrderRepository {
       { new: true, runValidators: true }
     );
     return order ? (order.toJSON() as CheckoutOrder) : null;
+  }
+
+  async updateStatus(id: string, dto: UpdateCheckoutOrderDTO): Promise<CheckoutOrder | null> {
+    return this.update(id, dto);
   }
 
   async delete(id: string): Promise<boolean> {

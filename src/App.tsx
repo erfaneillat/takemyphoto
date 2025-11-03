@@ -9,7 +9,7 @@ import { UpgradePage } from '@/features/upgrade';
 import { SubscriptionPage } from '@/features/subscription';
 import { LoginPage } from '@/features/auth';
 import { UpscalePage, ImageToPromptPage } from '@/features/enhance';
-import { PrivacyPage, TermsPage, AboutPage, ContactPage, CheckoutPage } from '@/features/legal';
+import { PrivacyPage, TermsPage, AboutPage, ContactPage, CheckoutPage, PaymentSuccessPage, PaymentFailedPage, PaymentCancelledPage } from '@/features/legal';
 import { useAuthStore } from '@/shared/stores';
 import { useAuthInit, useAppInit, useFirebaseInit, useCharacterInit } from '@/shared/hooks';
 import { ReactNode } from 'react';
@@ -91,6 +91,9 @@ function App() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment/success" element={<PaymentSuccessPage />} />
+          <Route path="/payment/failed" element={<PaymentFailedPage />} />
+          <Route path="/payment/cancelled" element={<PaymentCancelledPage />} />
           
           {/* Protected Routes - Require authentication */}
           <Route 

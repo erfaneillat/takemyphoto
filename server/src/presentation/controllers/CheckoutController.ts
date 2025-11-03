@@ -4,17 +4,37 @@ import { CreateCheckoutOrderUseCase } from '@application/usecases/checkout/Creat
 import { GetCheckoutOrdersUseCase } from '@application/usecases/checkout/GetCheckoutOrdersUseCase';
 import { UpdateCheckoutOrderStatusUseCase } from '@application/usecases/checkout/UpdateCheckoutOrderStatusUseCase';
 import { DeleteCheckoutOrderUseCase } from '@application/usecases/checkout/DeleteCheckoutOrderUseCase';
+import { InitiatePaymentUseCase } from '@application/usecases/payment/InitiatePaymentUseCase';
+import { VerifyPaymentUseCase } from '@application/usecases/payment/VerifyPaymentUseCase';
+import { Currency } from '@core/domain/entities/Payment';
 
 export class CheckoutController {
   constructor(
     private createCheckoutOrderUseCase: CreateCheckoutOrderUseCase,
     private getCheckoutOrdersUseCase: GetCheckoutOrdersUseCase,
     private updateCheckoutOrderStatusUseCase: UpdateCheckoutOrderStatusUseCase,
-    private deleteCheckoutOrderUseCase: DeleteCheckoutOrderUseCase
+    private deleteCheckoutOrderUseCase: DeleteCheckoutOrderUseCase,
+    private initiatePaymentUseCase: InitiatePaymentUseCase,
+    private verifyPaymentUseCase: VerifyPaymentUseCase
   ) {}
 
   submitCheckoutForm = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, email, phone, address, postalCode } = req.body;
+    const { 
+      firstName, 
+      lastName, 
+      email, 
+      phone, 
+      address, 
+      postalCode,
+      amount,
+      fromCurrencyCode = Currency.EUR,
+      toCurrencyCode = Currency.EUR,
+      country = 'Iran',
+      city = 'Tehran',
+      description = 'Subscription Payment',
+      planId,
+      billingCycle
+    } = req.body;
 
     // Validation
     if (!firstName || !lastName || !email || !phone || !address || !postalCode) {
@@ -54,7 +74,16 @@ export class CheckoutController {
       return;
     }
 
-    // Save to database
+    // Amount validation
+    if (!amount || amount <= 0) {
+      res.status(400).json({
+        status: 'error',
+        message: 'Invalid payment amount'
+      });
+      return;
+    }
+
+    // Save checkout order to database
     const checkoutOrder = await this.createCheckoutOrderUseCase.execute({
       firstName,
       lastName,
@@ -66,14 +95,42 @@ export class CheckoutController {
 
     console.log('Checkout form submission saved:', checkoutOrder.id);
 
-    // TODO: Implement order processing logic here
-    // Example: await this.orderProcessingService.processOrder(checkoutOrder);
+    try {
+      // Get callback URL from environment or request
+      const apiBaseUrl = process.env.API_BASE_URL || `${req.protocol}://${req.get('host')}`;
+      const callbackUrl = `${apiBaseUrl}/api/v1/checkout/verify`;
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Checkout form submitted successfully',
-      data: checkoutOrder
-    });
+      // Initiate payment with Yekpay
+      const paymentResult = await this.initiatePaymentUseCase.execute({
+        orderId: checkoutOrder.id,
+        amount: parseFloat(amount),
+        fromCurrencyCode,
+        toCurrencyCode,
+        country,
+        city,
+        description: `${description} - ${planId || 'Order'} - ${billingCycle || ''}`,
+        callbackUrl,
+        userId: (req as any).user?.id
+      });
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Payment initiated successfully',
+        data: {
+          orderId: checkoutOrder.id,
+          paymentId: paymentResult.paymentId,
+          authority: paymentResult.authority,
+          paymentUrl: paymentResult.paymentUrl
+        }
+      });
+    } catch (error: any) {
+      console.error('Payment initiation error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: error.message || 'Failed to initiate payment',
+        data: { orderId: checkoutOrder.id }
+      });
+    }
   });
 
   getCheckoutOrders = asyncHandler(async (req: Request, res: Response) => {
@@ -133,5 +190,39 @@ export class CheckoutController {
       status: 'success',
       message: 'Checkout order deleted successfully'
     });
+  });
+
+  verifyPayment = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { success, authority } = req.query;
+
+    if (!authority || typeof authority !== 'string') {
+      res.status(400).json({
+        status: 'error',
+        message: 'Authority parameter is required'
+      });
+      return;
+    }
+
+    // Check if payment was cancelled by user
+    if (success === '0') {
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/cancelled?authority=${authority}`);
+      return;
+    }
+
+    try {
+      // Verify payment with Yekpay
+      const result = await this.verifyPaymentUseCase.execute({ authority });
+
+      if (result.success) {
+        // Redirect to success page
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/success?reference=${result.reference}&orderId=${result.orderId}`);
+      } else {
+        // Redirect to failure page
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/failed?message=${encodeURIComponent(result.message)}&orderId=${result.orderId}`);
+      }
+    } catch (error: any) {
+      console.error('Payment verification error:', error);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/failed?message=${encodeURIComponent(error.message)}`);
+    }
   });
 }

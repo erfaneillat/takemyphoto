@@ -12,6 +12,7 @@ import { AdminRepository } from '@infrastructure/database/repositories/AdminRepo
 import { StyleUsageRepository } from '@infrastructure/database/repositories/StyleUsageRepository';
 import { ContactMessageRepository } from '@infrastructure/database/repositories/ContactMessageRepository';
 import { CheckoutOrderRepository } from '@infrastructure/database/repositories/CheckoutOrderRepository';
+import { PaymentRepository } from '@infrastructure/database/repositories/PaymentRepository';
 import { ErrorLogRepository } from '@infrastructure/database/repositories/ErrorLogRepository';
 
 // Services
@@ -22,6 +23,7 @@ import { OpenAIService } from '@infrastructure/services/OpenAIService';
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { RemoteImageService } from '@infrastructure/services/RemoteImageService';
 import { ErrorLogService } from '@application/services/ErrorLogService';
+import { YekpayService } from '@application/services/YekpayService';
 
 // Use Cases
 import { SendVerificationCodeUseCase } from '@application/usecases/auth/SendVerificationCodeUseCase';
@@ -65,6 +67,10 @@ import { CreateCheckoutOrderUseCase } from '@application/usecases/checkout/Creat
 import { GetCheckoutOrdersUseCase } from '@application/usecases/checkout/GetCheckoutOrdersUseCase';
 import { UpdateCheckoutOrderStatusUseCase } from '@application/usecases/checkout/UpdateCheckoutOrderStatusUseCase';
 import { DeleteCheckoutOrderUseCase } from '@application/usecases/checkout/DeleteCheckoutOrderUseCase';
+import { CreatePaymentUseCase } from '@application/usecases/payment/CreatePaymentUseCase';
+import { InitiatePaymentUseCase } from '@application/usecases/payment/InitiatePaymentUseCase';
+import { VerifyPaymentUseCase } from '@application/usecases/payment/VerifyPaymentUseCase';
+import { GetPaymentsUseCase } from '@application/usecases/payment/GetPaymentsUseCase';
 import { CreateErrorLogUseCase } from '@application/usecases/error-log/CreateErrorLogUseCase';
 import { GetErrorLogsUseCase } from '@application/usecases/error-log/GetErrorLogsUseCase';
 import { GetErrorLogStatsUseCase } from '@application/usecases/error-log/GetErrorLogStatsUseCase';
@@ -102,6 +108,7 @@ export class Container {
   public styleUsageRepository: StyleUsageRepository;
   public contactMessageRepository: ContactMessageRepository;
   public checkoutOrderRepository: CheckoutOrderRepository;
+  public paymentRepository: PaymentRepository;
   public errorLogRepository: ErrorLogRepository;
 
   // Services
@@ -112,6 +119,7 @@ export class Container {
   public googleAIService: GoogleAIService;
   public remoteImageService: RemoteImageService;
   public errorLogService: ErrorLogService;
+  public yekpayService: YekpayService;
 
   // Use Cases
   public sendVerificationCodeUseCase: SendVerificationCodeUseCase;
@@ -155,6 +163,10 @@ export class Container {
   public getCheckoutOrdersUseCase: GetCheckoutOrdersUseCase;
   public updateCheckoutOrderStatusUseCase: UpdateCheckoutOrderStatusUseCase;
   public deleteCheckoutOrderUseCase: DeleteCheckoutOrderUseCase;
+  public createPaymentUseCase: CreatePaymentUseCase;
+  public initiatePaymentUseCase: InitiatePaymentUseCase;
+  public verifyPaymentUseCase: VerifyPaymentUseCase;
+  public getPaymentsUseCase: GetPaymentsUseCase;
   public createErrorLogUseCase: CreateErrorLogUseCase;
   public getErrorLogsUseCase: GetErrorLogsUseCase;
   public getErrorLogStatsUseCase: GetErrorLogStatsUseCase;
@@ -192,6 +204,7 @@ export class Container {
     this.styleUsageRepository = new StyleUsageRepository();
     this.contactMessageRepository = new ContactMessageRepository();
     this.checkoutOrderRepository = new CheckoutOrderRepository();
+    this.paymentRepository = new PaymentRepository();
     this.errorLogRepository = new ErrorLogRepository();
 
     // Initialize Services
@@ -201,6 +214,11 @@ export class Container {
     this.googleAIService = new GoogleAIService();
     this.remoteImageService = new RemoteImageService();
     this.smsService = new MockSmsService();
+
+    // Initialize Yekpay Service
+    const yekpayMerchantId = process.env.YEKPAY_MERCHANT_ID || '';
+    const yekpayIsSandbox = process.env.YEKPAY_SANDBOX === 'true';
+    this.yekpayService = new YekpayService(yekpayMerchantId, yekpayIsSandbox);
 
     // Initialize Error Logging
     this.createErrorLogUseCase = new CreateErrorLogUseCase(
@@ -463,11 +481,34 @@ export class Container {
       this.checkoutOrderRepository
     );
 
+    // Initialize Payment Use Cases
+    this.createPaymentUseCase = new CreatePaymentUseCase(
+      this.paymentRepository
+    );
+
+    this.initiatePaymentUseCase = new InitiatePaymentUseCase(
+      this.paymentRepository,
+      this.checkoutOrderRepository,
+      this.yekpayService
+    );
+
+    this.verifyPaymentUseCase = new VerifyPaymentUseCase(
+      this.paymentRepository,
+      this.checkoutOrderRepository,
+      this.yekpayService
+    );
+
+    this.getPaymentsUseCase = new GetPaymentsUseCase(
+      this.paymentRepository
+    );
+
     this.checkoutController = new CheckoutController(
       this.createCheckoutOrderUseCase,
       this.getCheckoutOrdersUseCase,
       this.updateCheckoutOrderStatusUseCase,
-      this.deleteCheckoutOrderUseCase
+      this.deleteCheckoutOrderUseCase,
+      this.initiatePaymentUseCase,
+      this.verifyPaymentUseCase
     );
 
     this.getErrorLogsUseCase = new GetErrorLogsUseCase(
