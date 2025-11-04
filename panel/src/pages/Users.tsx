@@ -573,7 +573,12 @@ const Users = () => {
               </button>
               <button
                 onClick={() => {
-                  if (!selectedUser?.id) return
+                  if (!selectedUser?.id) {
+                    console.error('Save Changes: selectedUser.id is undefined')
+                    return
+                  }
+                  console.log('Save Changes: selectedUser.id:', selectedUser.id)
+                  console.log('Save Changes: selectedUser:', selectedUser)
                   updateUser(selectedUser.id, {
                     role: selectedUser.role,
                     subscription: selectedUser.subscription,
