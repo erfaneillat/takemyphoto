@@ -61,7 +61,7 @@ export class InitiatePaymentUseCase {
         city: input.city,
         description: input.description,
         amount: input.amount.toFixed(2),
-        orderNumber: input.orderId,
+        orderNumber: payment.id,
         callback: input.callbackUrl
       });
 
