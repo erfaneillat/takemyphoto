@@ -478,7 +478,6 @@ const Users = () => {
                     onClick={() => {
                       const newStars = Math.max(0, selectedUser.stars - 1)
                       setSelectedUser({ ...selectedUser, stars: newStars })
-                      updateUser(selectedUser.id, { stars: newStars })
                     }}
                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={selectedUser.stars === 0}
@@ -494,7 +493,6 @@ const Users = () => {
                     onClick={() => {
                       const newStars = selectedUser.stars + 1
                       setSelectedUser({ ...selectedUser, stars: newStars })
-                      updateUser(selectedUser.id, { stars: newStars })
                     }}
                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     title="Increase stars"
@@ -507,12 +505,18 @@ const Users = () => {
                     onChange={(e) => {
                       const newStars = Math.max(0, parseInt(e.target.value) || 0)
                       setSelectedUser({ ...selectedUser, stars: newStars })
-                      updateUser(selectedUser.id, { stars: newStars })
                     }}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Set exact value"
                     min="0"
                   />
+                  <button
+                    onClick={() => updateUser(selectedUser.id, { stars: selectedUser.stars })}
+                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                    title="Save changes"
+                  >
+                    Save
+                  </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">Use buttons to adjust by 1, or enter an exact value</p>
               </div>
