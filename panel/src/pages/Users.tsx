@@ -475,7 +475,11 @@ const Users = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Stars</label>
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => updateUser(selectedUser.id, { stars: Math.max(0, selectedUser.stars - 1) })}
+                    onClick={() => {
+                      const newStars = Math.max(0, selectedUser.stars - 1)
+                      setSelectedUser({ ...selectedUser, stars: newStars })
+                      updateUser(selectedUser.id, { stars: newStars })
+                    }}
                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={selectedUser.stars === 0}
                     title="Decrease stars"
@@ -487,7 +491,11 @@ const Users = () => {
                     <span className="text-lg font-semibold text-gray-900">{selectedUser.stars}</span>
                   </div>
                   <button
-                    onClick={() => updateUser(selectedUser.id, { stars: selectedUser.stars + 1 })}
+                    onClick={() => {
+                      const newStars = selectedUser.stars + 1
+                      setSelectedUser({ ...selectedUser, stars: newStars })
+                      updateUser(selectedUser.id, { stars: newStars })
+                    }}
                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     title="Increase stars"
                   >
@@ -496,7 +504,11 @@ const Users = () => {
                   <input
                     type="number"
                     value={selectedUser.stars}
-                    onChange={(e) => updateUser(selectedUser.id, { stars: Math.max(0, parseInt(e.target.value) || 0) })}
+                    onChange={(e) => {
+                      const newStars = Math.max(0, parseInt(e.target.value) || 0)
+                      setSelectedUser({ ...selectedUser, stars: newStars })
+                      updateUser(selectedUser.id, { stars: newStars })
+                    }}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Set exact value"
                     min="0"
