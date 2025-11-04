@@ -34,7 +34,22 @@ export interface GoogleUserData {
   profilePicture?: string;
 }
 
+export interface GetCurrentUserResponse {
+  status: string;
+  data: {
+    user: User;
+  };
+}
+
 export const authService = {
+  /**
+   * Get current authenticated user
+   */
+  getCurrentUser: async (): Promise<GetCurrentUserResponse> => {
+    const response = await apiClient.get<GetCurrentUserResponse>('/users/me');
+    return response.data;
+  },
+
   /**
    * Send verification code to phone number
    */

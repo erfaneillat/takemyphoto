@@ -7,7 +7,7 @@ import { userService } from '@/shared/services';
  * Validates stored tokens and fetches current user
  */
 export const useAuthInit = () => {
-  const { setUser, setLoading, logout, user } = useAuthStore();
+  const { setUser, setLoading, logout } = useAuthStore();
 
   useEffect(() => {
     const initAuth = async () => {
@@ -22,13 +22,7 @@ export const useAuthInit = () => {
         return;
       }
 
-      // Token exists and user already in store (e.g., just logged in); skip fetch
-      if (user) {
-        setLoading(false);
-        return;
-      }
-
-      // Token exists but user not loaded: validate by fetching current user
+      // Always fetch fresh user data from server to ensure stars and other fields are up-to-date
       try {
         const me = await userService.getMe();
         setUser(me);

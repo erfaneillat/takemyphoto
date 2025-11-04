@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Search, Users as UsersIcon, Crown, Star, Shield, CheckCircle, X, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, Users as UsersIcon, Crown, Star, Shield, CheckCircle, X, Edit2, Trash2, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react'
 import axios from 'axios'
 import { resolveApiBase } from '../utils/api'
 
@@ -473,12 +473,36 @@ const Users = () => {
               {/* Stars */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Stars</label>
-                <input
-                  type="number"
-                  value={selectedUser.stars}
-                  onChange={(e) => updateUser(selectedUser.id, { stars: parseInt(e.target.value) || 0 })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => updateUser(selectedUser.id, { stars: Math.max(0, selectedUser.stars - 1) })}
+                    className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={selectedUser.stars === 0}
+                    title="Decrease stars"
+                  >
+                    <Minus size={20} className="text-gray-600" />
+                  </button>
+                  <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 min-w-[100px] justify-center">
+                    <Star size={20} className="text-yellow-500 fill-yellow-500" />
+                    <span className="text-lg font-semibold text-gray-900">{selectedUser.stars}</span>
+                  </div>
+                  <button
+                    onClick={() => updateUser(selectedUser.id, { stars: selectedUser.stars + 1 })}
+                    className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    title="Increase stars"
+                  >
+                    <Plus size={20} className="text-gray-600" />
+                  </button>
+                  <input
+                    type="number"
+                    value={selectedUser.stars}
+                    onChange={(e) => updateUser(selectedUser.id, { stars: Math.max(0, parseInt(e.target.value) || 0) })}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Set exact value"
+                    min="0"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Use buttons to adjust by 1, or enter an exact value</p>
               </div>
 
               {/* Verified Status */}

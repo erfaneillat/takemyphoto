@@ -10,6 +10,7 @@ interface AuthStore extends AuthState {
   login: (phoneNumber: string) => Promise<void>;
   verifyCode: (phoneNumber: string, code: string) => Promise<void>;
   googleLogin: (googleUserData: GoogleUserData) => Promise<void>;
+  refreshUser: () => Promise<void>;
   logout: () => void;
   clearError: () => void;
 }
@@ -93,6 +94,30 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
           });
           throw error;
+        }
+      },
+
+      refreshUser: async () => {
+        try {
+          const response = await authService.getCurrentUser();
+          const user = response.data.user;
+          
+          set({
+            user,
+            isAuthenticated: true,
+            error: null,
+          });
+        } catch (error: any) {
+          // If refresh fails (e.g., token expired), logout
+          console.error('Failed to refresh user:', error);
+          if (error.response?.status === 401) {
+            authService.logout();
+            set({
+              user: null,
+              isAuthenticated: false,
+              error: null,
+            });
+          }
         }
       },
 
