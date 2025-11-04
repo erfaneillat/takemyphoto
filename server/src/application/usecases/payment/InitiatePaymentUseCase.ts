@@ -47,6 +47,16 @@ export class InitiatePaymentUseCase {
     });
 
     try {
+      // Generate numeric order number for Yekpay (must be unique per request)
+      const yekpayOrderNumber = `${Date.now()}${Math.floor(Math.random() * 1000)
+        .toString()
+        .padStart(3, '0')}`;
+
+      // Persist order number for traceability
+      await this.paymentRepository.update(payment.id, {
+        metadata: { yekpayOrderNumber }
+      });
+
       // Request payment from Yekpay
       const yekpayResponse = await this.yekpayService.requestPayment({
         fromCurrencyCode: input.fromCurrencyCode,
@@ -61,7 +71,7 @@ export class InitiatePaymentUseCase {
         city: input.city,
         description: input.description,
         amount: input.amount.toFixed(2),
-        orderNumber: payment.id,
+        orderNumber: yekpayOrderNumber,
         callback: input.callbackUrl
       });
 
