@@ -60,7 +60,12 @@ const Users = () => {
         }
       })
 
-      setUsers(response.data.data.users)
+      // Normalize IDs: ensure each user has an 'id' field (fallback to Mongo '_id')
+      const normalizedUsers = (response.data.data.users || []).map((u: any) => ({
+        ...u,
+        id: u?.id || u?._id,
+      }))
+      setUsers(normalizedUsers)
       setTotal(response.data.data.total)
       setTotalPages(response.data.data.totalPages)
     } catch (error) {
@@ -94,6 +99,10 @@ const Users = () => {
 
   const updateUser = async (id: string, data: Partial<User>) => {
     try {
+      if (!id) {
+        console.error('updateUser called without a valid id')
+        return
+      }
       const token = localStorage.getItem('accessToken')
       const apiBase = resolveApiBase()
       
@@ -127,6 +136,10 @@ const Users = () => {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return
     
     try {
+      if (!id) {
+        console.error('deleteUser called without a valid id')
+        return
+      }
       const token = localStorage.getItem('accessToken')
       const apiBase = resolveApiBase()
       
@@ -292,8 +305,8 @@ const Users = () => {
               <tbody className="divide-y divide-gray-200">
                 {filteredUsers.map((user) => (
                   <tr
-                    key={user.id}
-                    onClick={() => setSelectedUser(user)}
+                    key={user.id || (user as any)?._id}
+                    onClick={() => setSelectedUser({ ...user, id: user.id || (user as any)?._id })}
                     className="hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -351,7 +364,7 @@ const Users = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
-                            setSelectedUser(user)
+                            setSelectedUser({ ...user, id: user.id || (user as any)?._id })
                           }}
                           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                           title="Edit user"
@@ -448,7 +461,7 @@ const Users = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
                 <select
                   value={selectedUser.role}
-                  onChange={(e) => updateUser(selectedUser.id, { role: e.target.value as 'admin' | 'user' })}
+                  onChange={(e) => setSelectedUser({ ...selectedUser, role: e.target.value as 'admin' | 'user' })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="user">User</option>
@@ -461,7 +474,7 @@ const Users = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Subscription</label>
                 <select
                   value={selectedUser.subscription}
-                  onChange={(e) => updateUser(selectedUser.id, { subscription: e.target.value as 'free' | 'pro' | 'premium' })}
+                  onChange={(e) => setSelectedUser({ ...selectedUser, subscription: e.target.value as 'free' | 'pro' | 'premium' })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="free">Free</option>
@@ -510,13 +523,6 @@ const Users = () => {
                     placeholder="Set exact value"
                     min="0"
                   />
-                  <button
-                    onClick={() => updateUser(selectedUser.id, { stars: selectedUser.stars })}
-                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
-                    title="Save changes"
-                  >
-                    Save
-                  </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">Use buttons to adjust by 1, or enter an exact value</p>
               </div>
@@ -527,7 +533,7 @@ const Users = () => {
                   <input
                     type="checkbox"
                     checked={selectedUser.isVerified}
-                    onChange={(e) => updateUser(selectedUser.id, { isVerified: e.target.checked })}
+                    onChange={(e) => setSelectedUser({ ...selectedUser, isVerified: e.target.checked })}
                     className="w-4 h-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
                   />
                   <span className="text-sm font-medium text-gray-700">Verified User</span>
@@ -564,6 +570,20 @@ const Users = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Close
+              </button>
+              <button
+                onClick={() => {
+                  if (!selectedUser?.id) return
+                  updateUser(selectedUser.id, {
+                    role: selectedUser.role,
+                    subscription: selectedUser.subscription,
+                    stars: selectedUser.stars,
+                    isVerified: selectedUser.isVerified,
+                  })
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Save Changes
               </button>
               <button
                 onClick={() => {
