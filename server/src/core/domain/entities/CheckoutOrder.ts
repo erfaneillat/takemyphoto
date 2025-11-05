@@ -13,6 +13,8 @@ export interface CheckoutOrder {
   phone: string;
   address: string;
   postalCode: string;
+  planId?: string;
+  billingCycle?: string;
   status: OrderStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -25,6 +27,8 @@ export interface CreateCheckoutOrderDTO {
   phone: string;
   address: string;
   postalCode: string;
+  planId?: string;
+  billingCycle?: string;
 }
 
 export interface UpdateCheckoutOrderDTO {

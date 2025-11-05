@@ -27,8 +27,6 @@ export class CheckoutController {
       address, 
       postalCode,
       amount,
-      fromCurrencyCode = Currency.EUR,
-      toCurrencyCode = Currency.EUR,
       country = 'Iran',
       city = 'Tehran',
       description = 'Subscription Payment',
@@ -90,7 +88,9 @@ export class CheckoutController {
       email,
       phone,
       address,
-      postalCode
+      postalCode,
+      planId,
+      billingCycle
     });
 
     console.log('Checkout form submission saved:', checkoutOrder.id);
@@ -104,8 +104,8 @@ export class CheckoutController {
       const paymentResult = await this.initiatePaymentUseCase.execute({
         orderId: checkoutOrder.id,
         amount: parseFloat(amount),
-        fromCurrencyCode,
-        toCurrencyCode,
+        fromCurrencyCode: Currency.EUR,
+        toCurrencyCode: Currency.EUR,
         country,
         city,
         description: `${description} - ${planId || 'Order'} - ${billingCycle || ''}`,
@@ -193,7 +193,9 @@ export class CheckoutController {
   });
 
   verifyPayment = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { success, authority } = req.query;
+    // Accept both 'authority' and 'Authority' from gateway callback
+    const rawAuthority = (req.query.authority ?? (req.query as any).Authority) as string | string[] | undefined;
+    const authority = Array.isArray(rawAuthority) ? rawAuthority[0] : rawAuthority;
 
     if (!authority || typeof authority !== 'string') {
       res.status(400).json({
@@ -203,11 +205,7 @@ export class CheckoutController {
       return;
     }
 
-    // Check if payment was cancelled by user
-    if (success === '0') {
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/cancelled?authority=${authority}`);
-      return;
-    }
+    // Always verify with Yekpay rather than trusting the 'success' query flag
 
     try {
       // Verify payment with Yekpay

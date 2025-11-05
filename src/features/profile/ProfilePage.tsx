@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { Button, ImageCard } from '@/shared/components';
-import { LogOut, Moon, Sun, Mail, Crown, Settings, Heart, X, User, Users } from 'lucide-react';
+import { LogOut, Moon, Sun, Mail, Crown, Settings, Heart, X, User, Users, Infinity } from 'lucide-react';
 import { useFavorites, useGeneratedImages } from './hooks';
 import { useThemeStore, useAuthStore } from '@/shared/stores';
 import { CharacterForm } from './components/CharacterForm';
@@ -88,13 +88,18 @@ export const ProfilePage = () => {
                   </label>
                   <p className="text-sm sm:text-base text-gray-900 dark:text-white mt-1 break-all">{user.email}</p>
                 </div>
-                <div className="p-3 sm:p-4 bg-gray-50 dark:bg-surface rounded-lg">
+                <div className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                   <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                     {t('profile.subscription')}
                   </label>
                   <div className="flex items-center gap-2 mt-1">
-                    {user.subscription !== 'free' && <Crown size={16} className="text-yellow-600 dark:text-yellow-500" />}
-                    <p className="text-sm sm:text-base text-gray-900 dark:text-white font-medium capitalize">
+                    {user.subscription === 'premium' && <Infinity size={16} className="text-purple-600 dark:text-purple-400 animate-pulse" />}
+                    {user.subscription === 'pro' && <Crown size={16} className="text-yellow-600 dark:text-yellow-500" />}
+                    <p className={`text-sm sm:text-base font-medium capitalize ${
+                      user.subscription === 'premium' ? 'text-purple-600 dark:text-purple-400' :
+                      user.subscription === 'pro' ? 'text-yellow-600 dark:text-yellow-500' :
+                      'text-gray-900 dark:text-white'
+                    }`}>
                       {t(`profile.subscriptionStatus.${user.subscription}`)}
                     </p>
                   </div>
@@ -342,13 +347,18 @@ export const ProfilePage = () => {
                 </label>
                 <p className="text-sm text-gray-900 dark:text-white mt-1 break-all">{user.email}</p>
               </div>
-              <div className="p-3 bg-gray-50 dark:bg-surface rounded-lg">
+              <div className="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                   {t('profile.subscription')}
                 </label>
                 <div className="flex items-center gap-2 mt-1">
-                  {user.subscription !== 'free' && <Crown size={16} className="text-yellow-600 dark:text-yellow-500" />}
-                  <p className="text-sm text-gray-900 dark:text-white font-medium capitalize">
+                  {user.subscription === 'premium' && <Infinity size={16} className="text-purple-600 dark:text-purple-400 animate-pulse" />}
+                  {user.subscription === 'pro' && <Crown size={16} className="text-yellow-600 dark:text-yellow-500" />}
+                  <p className={`text-sm font-medium capitalize ${
+                    user.subscription === 'premium' ? 'text-purple-600 dark:text-purple-400' :
+                    user.subscription === 'pro' ? 'text-yellow-600 dark:text-yellow-500' :
+                    'text-gray-900 dark:text-white'
+                  }`}>
                     {t(`profile.subscriptionStatus.${user.subscription}`)}
                   </p>
                 </div>

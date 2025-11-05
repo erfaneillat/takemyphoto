@@ -1,8 +1,10 @@
 import { IPaymentRepository } from '@core/domain/repositories/IPaymentRepository';
 import { ICheckoutOrderRepository } from '@core/domain/repositories/ICheckoutOrderRepository';
+import { IUserRepository } from '@core/domain/repositories/IUserRepository';
 import { YekpayService } from '@application/services/YekpayService';
 import { PaymentStatus } from '@core/domain/entities/Payment';
 import { OrderStatus } from '@core/domain/entities/CheckoutOrder';
+import { SubscriptionTier } from '@core/domain/entities/User';
 
 export interface VerifyPaymentInput {
   authority: string;
@@ -21,6 +23,7 @@ export class VerifyPaymentUseCase {
   constructor(
     private paymentRepository: IPaymentRepository,
     private checkoutOrderRepository: ICheckoutOrderRepository,
+    private userRepository: IUserRepository,
     private yekpayService: YekpayService
   ) {}
 
@@ -82,6 +85,42 @@ export class VerifyPaymentUseCase {
       await this.checkoutOrderRepository.updateStatus(payment.orderId, {
         status: OrderStatus.COMPLETED
       });
+
+      // Update user subscription (prefer payment.userId, fallback to order email)
+      const checkoutOrder = await this.checkoutOrderRepository.findById(payment.orderId);
+      if (checkoutOrder?.planId) {
+        // Map planId to SubscriptionTier
+        let subscriptionTier: SubscriptionTier;
+        const planIdLower = checkoutOrder.planId.toLowerCase();
+
+        if (planIdLower === 'pro') {
+          subscriptionTier = SubscriptionTier.PRO;
+        } else if (planIdLower === 'premium') {
+          subscriptionTier = SubscriptionTier.PREMIUM;
+        } else {
+          subscriptionTier = SubscriptionTier.FREE;
+        }
+
+        // Determine target userId
+        let targetUserId = payment.userId;
+        if (!targetUserId && checkoutOrder.email) {
+          const userByEmail = await this.userRepository.findByEmail(checkoutOrder.email);
+          if (userByEmail) {
+            targetUserId = userByEmail.id;
+          }
+        }
+        if (!targetUserId && checkoutOrder.phone) {
+          const userByPhone = await this.userRepository.findByPhoneNumber(checkoutOrder.phone);
+          if (userByPhone) {
+            targetUserId = userByPhone.id;
+          }
+        }
+
+        if (targetUserId) {
+          await this.userRepository.update(targetUserId, { subscription: subscriptionTier });
+          console.log(`Updated user ${targetUserId} subscription to ${subscriptionTier}`);
+        }
+      }
 
       return {
         success: true,

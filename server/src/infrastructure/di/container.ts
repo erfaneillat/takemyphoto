@@ -495,6 +495,7 @@ export class Container {
     this.verifyPaymentUseCase = new VerifyPaymentUseCase(
       this.paymentRepository,
       this.checkoutOrderRepository,
+      this.userRepository,
       this.yekpayService
     );
 

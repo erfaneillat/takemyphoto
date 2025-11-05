@@ -10,6 +10,7 @@ export const createCheckoutRoutes = (checkoutController: CheckoutController): Ro
 
   // Public route - Verify payment callback
   router.get('/verify', checkoutController.verifyPayment);
+  router.post('/verify', checkoutController.verifyPayment);
 
   // Admin routes - Protected
   router.get('/admin', authMiddleware, checkoutController.getCheckoutOrders);

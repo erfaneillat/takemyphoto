@@ -1,12 +1,34 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
+import { useAuthStore } from '@/shared/stores';
 import { ShoppingCart, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 export const CheckoutPage = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const { user } = useAuthStore();
   const [planInfo, setPlanInfo] = useState<{ planId?: string; billingCycle?: string; price?: string } | null>(null);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    postalCode: '',
+  });
+
+  // Auto-fill form with user data on mount
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        firstName: user.firstName || user.name?.split(' ')[0] || '',
+        lastName: user.lastName || user.name?.split(' ').slice(1).join(' ') || '',
+        email: user.email || '',
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     // Extract plan info from URL params
@@ -18,14 +40,7 @@ export const CheckoutPage = () => {
       setPlanInfo({ planId, billingCycle: billingCycle || 'monthly', price: price || '0' });
     }
   }, [searchParams]);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    postalCode: '',
-  });
+
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});

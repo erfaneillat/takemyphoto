@@ -36,6 +36,14 @@ const CheckoutOrderSchema = new Schema<ICheckoutOrderDocument>(
       required: true,
       trim: true
     },
+    planId: {
+      type: String,
+      trim: true
+    },
+    billingCycle: {
+      type: String,
+      trim: true
+    },
     status: {
       type: String,
       enum: Object.values(OrderStatus),

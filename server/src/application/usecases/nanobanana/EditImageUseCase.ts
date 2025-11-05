@@ -41,19 +41,22 @@ export class EditImageUseCase {
       throw new Error('At least one image is required for editing');
     }
 
-    // Check user's star balance
+    // Check user's plan and star balance
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new AppError(404, 'User not found');
     }
 
-    if (user.stars <= 0) {
-      throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue editing images.');
+    const isUnlimited = user.subscription && user.subscription !== 'free';
+    if (!isUnlimited) {
+      if (user.stars <= 0) {
+        throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue editing images.');
+      }
+      await this.userRepository.decrementStars(userId, 1);
+      console.log(`⭐ User ${userId} consumed 1 star for editing. Remaining: ${user.stars - 1}`);
+    } else {
+      console.log(`♾️ Unlimited editing for ${user.subscription} user ${userId}`);
     }
-
-    // Decrement user's stars
-    await this.userRepository.decrementStars(userId, 1);
-    console.log(`⭐ User ${userId} consumed 1 star for editing. Remaining: ${user.stars - 1}`);
 
     // Prepare images as base64 for Google AI API
     const referenceImages: { mimeType: string; data: string }[] = [];

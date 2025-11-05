@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { useThemeStore, useAuthStore } from '@/shared/stores';
 import { Logo } from './Logo';
-import { Menu, X, Compass, User, Star, Moon, Sun, Wand2, ImagePlus, Wrench, LogIn, CreditCard } from 'lucide-react';
+import { Menu, X, Compass, User, Star, Moon, Sun, Wand2, ImagePlus, Wrench, LogIn, CreditCard, Infinity } from 'lucide-react';
 
 export const Header = () => {
   const { t } = useTranslation();
@@ -77,11 +77,23 @@ export const Header = () => {
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/subscription')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                title="View pricing"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                  user?.subscription === 'premium'
+                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800'
+                }`}
+                title={user?.subscription === 'premium' ? 'Unlimited' : 'View pricing'}
               >
                 <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-semibold">{userStars}</span>
+                <span className="text-sm font-semibold">
+                  {user?.subscription && user.subscription !== 'free' ? (
+                    <span className="flex items-center gap-1">
+                      <Infinity size={14} className="animate-pulse" />
+                    </span>
+                  ) : (
+                    userStars
+                  )}
+                </span>
               </button>
             ) : (
               <button
@@ -179,10 +191,23 @@ export const Header = () => {
                 <a
                   href="/subscription"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+                  className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg transition-colors ${
+                    user?.subscription === 'premium'
+                      ? 'bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50'
+                      : 'bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800'
+                  }`}
                 >
                   <Star size={18} className="fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white">{userStars} {t('header.stars')}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {user?.subscription && user.subscription !== 'free' ? (
+                      <span className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+                        <Infinity size={16} className="animate-pulse" />
+                        {t('header.stars')}
+                      </span>
+                    ) : (
+                      `${userStars} ${t('header.stars')}`
+                    )}
+                  </span>
                 </a>
               ) : (
                 <button

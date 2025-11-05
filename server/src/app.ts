@@ -58,6 +58,8 @@ export class App {
       origin: (origin, callback) => {
         // Allow REST tools or same-origin server-to-server (no origin header)
         if (!origin) return callback(null, true);
+        // Some environments send the literal string 'null' as origin (e.g., sandboxed iframes, file://)
+        if (origin === 'null') return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
         return callback(new Error(`CORS origin not allowed: ${origin}`));
       },
