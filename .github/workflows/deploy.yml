@@ -209,33 +209,45 @@ jobs:
           fi
 
           # Write server .env file from GitHub secret
-          echo "📝 Writing server environment file to server/.env"
+          echo "📝 Ensuring server/.env exists"
           mkdir -p server
-          echo "$ENV_FILE" > server/.env
-          chmod 600 server/.env
-          echo "✅ Server .env written"
-          
-          # Write web .env file for frontend build
-          echo "📝 Writing web environment file to .env"
-          if [ -n "$WEB_ENV_FILE" ]; then
-            echo "$WEB_ENV_FILE" > .env
-            chmod 600 .env
-            echo "✅ Web .env written"
+          if [ -f "server/.env" ] && [ -s "server/.env" ]; then
+            echo "ℹ️ server/.env already exists, skipping overwrite"
           else
-            echo "⚠️  WEB_ENV_FILE not set, creating default .env"
-            printf "%s\n" \
-              "VITE_API_URL=${{ steps.env.outputs.api_url }}/api" \
-              "VITE_GOOGLE_CLIENT_ID=${{ secrets.DEV_GOOGLE_CLIENT_ID || secrets.GOOGLE_CLIENT_ID }}" \
-              "VITE_FIREBASE_API_KEY=AIzaSyB_xb9MsTagBJY0XmFIgr9H-6Jcz_mPjPw" \
-              "VITE_FIREBASE_AUTH_DOMAIN=nero-d9eec.firebaseapp.com" \
-              "VITE_FIREBASE_PROJECT_ID=nero-d9eec" \
-              "VITE_FIREBASE_STORAGE_BUCKET=nero-d9eec.firebasestorage.app" \
-              "VITE_FIREBASE_MESSAGING_SENDER_ID=448577746795" \
-              "VITE_FIREBASE_APP_ID=1:448577746795:web:a9368454f2b7864ccefe2e" \
-              "VITE_FIREBASE_MEASUREMENT_ID=G-TN1ZGWZLQ1" \
-              > .env
-            chmod 600 .env
-            echo "✅ Default web .env created"
+            if [ -n "$ENV_FILE" ]; then
+              echo "$ENV_FILE" > server/.env
+              chmod 600 server/.env
+              echo "✅ Server .env written"
+            else
+              echo "⚠️ ENV_FILE not provided; leaving server/.env unchanged"
+            fi
+          fi
+          
+          # Write web .env file for frontend build (do not overwrite if exists)
+          echo "📝 Ensuring .env exists"
+          if [ -f ".env" ] && [ -s ".env" ]; then
+            echo "ℹ️ .env already exists, skipping overwrite"
+          else
+            if [ -n "$WEB_ENV_FILE" ]; then
+              echo "$WEB_ENV_FILE" > .env
+              chmod 600 .env
+              echo "✅ Web .env written"
+            else
+              echo "⚠️  WEB_ENV_FILE not set, creating default .env"
+              printf "%s\n" \
+                "VITE_API_URL=${{ steps.env.outputs.api_url }}/api" \
+                "VITE_GOOGLE_CLIENT_ID=${{ secrets.DEV_GOOGLE_CLIENT_ID || secrets.GOOGLE_CLIENT_ID }}" \
+                "VITE_FIREBASE_API_KEY=AIzaSyB_xb9MsTagBJY0XmFIgr9H-6Jcz_mPjPw" \
+                "VITE_FIREBASE_AUTH_DOMAIN=nero-d9eec.firebaseapp.com" \
+                "VITE_FIREBASE_PROJECT_ID=nero-d9eec" \
+                "VITE_FIREBASE_STORAGE_BUCKET=nero-d9eec.firebasestorage.app" \
+                "VITE_FIREBASE_MESSAGING_SENDER_ID=448577746795" \
+                "VITE_FIREBASE_APP_ID=1:448577746795:web:a9368454f2b7864ccefe2e" \
+                "VITE_FIREBASE_MEASUREMENT_ID=G-TN1ZGWZLQ1" \
+                > .env
+              chmod 600 .env
+              echo "✅ Default web .env created"
+            fi
           fi
           
           echo "📦 Installing server dependencies..."
