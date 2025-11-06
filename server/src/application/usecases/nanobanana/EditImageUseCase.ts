@@ -3,6 +3,7 @@ import { IFileUploadService } from '@infrastructure/services/LocalFileUploadServ
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
 import { IUserRepository } from '@core/domain/repositories/IUserRepository';
 import { ErrorLogService } from '@application/services/ErrorLogService';
+import { applyPromptPolicy } from '@application/services/PromptPolicy';
 import { TemplateModel } from '@infrastructure/database/models/TemplateModel';
 import { StyleUsageModel } from '@infrastructure/database/models/StyleUsageModel';
 import { AppError } from '@presentation/middleware/errorHandler';
@@ -119,8 +120,9 @@ export class EditImageUseCase {
 
     let response;
     try {
+      const finalPrompt = applyPromptPolicy(prompt);
       response = await this.googleAIService.generateImage({
-        prompt,
+        prompt: finalPrompt,
         referenceImages,
         aspectRatio: imageSize as any,
         responseModalities: ['Image'] // Only return image, no text
