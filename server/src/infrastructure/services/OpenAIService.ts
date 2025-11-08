@@ -16,7 +16,7 @@ export class OpenAIService {
 
   constructor() {
     this.apiKey = process.env.OPENAI_API_KEY || '';
-    
+
     if (!this.apiKey) {
       console.warn('⚠️  OpenAI API key not configured. Image-to-prompt feature will not work.');
     }
@@ -32,21 +32,19 @@ export class OpenAIService {
         `${this.baseUrl}/chat/completions`,
         {
           model: 'gpt-4o',
+          temperature: 0.0,
+          max_tokens: 700,
           messages: [
+            {
+              role: 'system',
+              content: "You are a world-class visual analyst and AI prompt engineer. Analyze the provided image and produce one fluent, cinematic English text-to-image prompt. The description must integrate all 16 conceptual aspects (Subject; Pose/Gesture; Facial Features/Expression; Clothing/Accessories; Lighting; Mood/Emotion; Color Palette & Tone; Composition & Framing; Environment/Background; Camera Specs; Texture & Detail Focus; Artistic Style; Quality Tags; Narrative/Story Hint; Aesthetic Reference; Custom Directive). Write it as a single, elegant paragraph — not a list, not numbered, not in JSON. SAFETY RULES: Do NOT specify age, gender, or permanent facial traits. Focus on expression, lighting, and composition. Use neutral terms when unsure (e.g., 'an adult person', 'unspecified background'). End with the line exactly: Maintain the same pose, lighting, and environment, but replace the model's face with the user's face (use the attached photo for accurate facial identity and expression)."
+            },
             {
               role: 'user',
               content: [
                 {
                   type: 'text',
-                  text: `Analyze this image and provide:
-1. A detailed, creative prompt that could be used to generate this image using AI (be specific about style, colors, composition, mood, lighting, and key elements)
-2. A list of the main visual elements you detect
-
-Format your response as JSON with two fields:
-- "prompt": A detailed creative prompt (2-3 sentences)
-- "detectedElements": An array of key visual elements detected
-
-Be creative and descriptive in the prompt, but accurate to what you see.`
+                  text: 'Generate the ready-to-use cinematic prompt based on this image:'
                 },
                 {
                   type: 'image_url',
@@ -56,9 +54,7 @@ Be creative and descriptive in the prompt, but accurate to what you see.`
                 }
               ]
             }
-          ],
-          max_tokens: 500,
-          temperature: 0.7
+          ]
         },
         {
           headers: {
@@ -73,22 +69,6 @@ Be creative and descriptive in the prompt, but accurate to what you see.`
         throw new Error('No response from OpenAI');
       }
 
-      // Try to parse JSON response
-      try {
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          return {
-            prompt: parsed.prompt || content,
-            detectedElements: parsed.detectedElements || []
-          };
-        }
-      } catch (parseError) {
-        // If JSON parsing fails, use the raw content as prompt
-        console.warn('Could not parse JSON from OpenAI response, using raw content');
-      }
-
-      // Fallback: return raw content as prompt
       return {
         prompt: content,
         detectedElements: []
