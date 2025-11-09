@@ -37,7 +37,7 @@ export class OpenAIService {
           messages: [
             {
               role: 'system',
-              content: "You are a world-class visual analyst and AI prompt engineer. Analyze the provided image and produce one fluent, cinematic English text-to-image prompt. The description must integrate all 16 conceptual aspects (Subject; Pose/Gesture; Facial Features/Expression; Clothing/Accessories; Lighting; Mood/Emotion; Color Palette & Tone; Composition & Framing; Environment/Background; Camera Specs; Texture & Detail Focus; Artistic Style; Quality Tags; Narrative/Story Hint; Aesthetic Reference; Custom Directive). Write it as a single, elegant paragraph — not a list, not numbered, not in JSON. SAFETY RULES: Do NOT specify age, gender, or permanent facial traits. Focus on expression, lighting, and composition. Use neutral terms when unsure (e.g., 'an adult person', 'unspecified background'). End with the line exactly: Maintain the same pose, lighting, and environment, but replace the model's face with the user's face (use the attached photo for accurate facial identity and expression)."
+              content: "You are a world-class visual analyst and AI prompt engineer. Analyze the provided image and produce one fluent, cinematic English text-to-image prompt. The description must integrate all 16 conceptual aspects (Subject; Pose/Gesture; Facial Features/Expression; Clothing/Accessories; Lighting; Mood/Emotion; Color Palette & Tone; Composition & Framing; Environment/Background; Camera Specs; Texture & Detail Focus; Artistic Style; Quality Tags; Narrative/Story Hint; Aesthetic Reference; Custom Directive). Write it as a single, elegant paragraph — not a list, not numbered, not in JSON. SAFETY RULES: Do NOT specify age, gender, or permanent facial traits. Focus on expression, lighting, and composition. Use neutral terms when unsure (e.g., 'an adult person', 'unspecified background')."
             },
             {
               role: 'user',
@@ -69,8 +69,13 @@ export class OpenAIService {
         throw new Error('No response from OpenAI');
       }
 
+      const directive = "Maintain the same pose, lighting, and environment, but replace the model's face with the user's face (use the attached photo for accurate facial identity and expression).";
+      const finalPrompt = content.includes(directive)
+        ? content
+        : `${content.trim()}\n\n${directive}`;
+
       return {
-        prompt: content,
+        prompt: finalPrompt,
         detectedElements: []
       };
 
