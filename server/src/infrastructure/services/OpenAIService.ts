@@ -33,19 +33,15 @@ export class OpenAIService {
         {
           model: 'gpt-4o',
           temperature: 0.0,
-          max_tokens: 700,
+          max_tokens: 1000,
           messages: [
             {
               role: 'system',
-              content: "You are a world-class visual analyst and AI prompt engineer. Analyze the provided image and produce one fluent, cinematic English text-to-image prompt. The description must integrate all 16 conceptual aspects (Subject; Pose/Gesture; Facial Features/Expression; Clothing/Accessories; Lighting; Mood/Emotion; Color Palette & Tone; Composition & Framing; Environment/Background; Camera Specs; Texture & Detail Focus; Artistic Style; Quality Tags; Narrative/Story Hint; Aesthetic Reference; Custom Directive). Write it as a single, elegant paragraph — not a list, not numbered, not in JSON. SAFETY RULES: Do NOT specify age, gender, or permanent facial traits. Focus on expression, lighting, and composition. Use neutral terms when unsure (e.g., 'an adult person', 'unspecified background')."
+              content: "You are a world-class visual analyst and AI prompt engineer. Analyze the provided image and produce one fluent, cinematic English text-to-image prompt written as if the scene was captured by a professional portrait photographer. The final prompt must naturally include a phrase such as 'captured by a professional photographer with visible skin texture and natural facial details.' The description must integrate all 16 conceptual aspects (Subject; Pose/Gesture; Facial Features/Expression; Clothing/Accessories; Lighting; Mood/Emotion; Color Palette & Tone; Composition & Framing; Environment/Background; Camera Specs; Texture & Detail Focus; Artistic Style; Quality Tags; Narrative/Story Hint; Aesthetic Reference; Custom Directive). Emphasize realism, expert lighting, lifelike textures, and cinematic composition. Write it as a single, elegant paragraph — not a list, not numbered, not in JSON. SAFETY RULES: Do NOT specify age, gender, or permanent facial traits. Focus on expression, lighting, and composition. Use neutral terms when unsure (e.g., 'an adult person', 'unspecified background'). Generate the ready-to-use cinematic prompt based on this image:"
             },
             {
               role: 'user',
               content: [
-                {
-                  type: 'text',
-                  text: 'Generate the ready-to-use cinematic prompt based on this image:'
-                },
                 {
                   type: 'image_url',
                   image_url: {
@@ -69,7 +65,7 @@ export class OpenAIService {
         throw new Error('No response from OpenAI');
       }
 
-      const directive = "Maintain the same pose, lighting, and environment, but replace the model's face with the user's face (use the attached photo for accurate facial identity and expression).";
+      const directive = "Do not change the person's face, body proportions, size, or height. Preserve facial features exactly and maintain body proportions as shown in the reference image.";
       const finalPrompt = content.includes(directive)
         ? content
         : `${content.trim()}\n\n${directive}`;
