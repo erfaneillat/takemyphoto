@@ -63,7 +63,7 @@ export const InstagramCoverGeneratorPage = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Input Section */}
-                    <div className="space-y-6 bg-white dark:bg-surface-paper p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 order-2 lg:order-1">
+                    <div className="space-y-6 bg-white dark:bg-surface-card p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 order-2 lg:order-1">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {t('instagramCoverGenerator.contentDescription')}
@@ -169,7 +169,7 @@ export const InstagramCoverGeneratorPage = () => {
                     </div>
 
                     {/* Result Section - Order 1 on mobile (top), Order 2 on desktop */}
-                    <div className="bg-white dark:bg-surface-paper p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col h-full min-h-[400px] order-1 lg:order-2">
+                    <div className="bg-white dark:bg-surface-card p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col h-full min-h-[400px] order-1 lg:order-2">
                         {result ? (
                             <div className="flex-1 flex flex-col gap-4">
                                 <div className="relative rounded-xl overflow-hidden shadow-lg group flex-1 bg-gray-900 flex items-center justify-center">
@@ -189,7 +189,7 @@ export const InstagramCoverGeneratorPage = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-gray-400 dark:text-gray-600">
+                            <div className="flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
                                 <div className="w-20 h-20 mb-4 rounded-2xl bg-gray-50 dark:bg-surface-hover flex items-center justify-center">
                                     <ImageIcon size={40} className="opacity-50" />
                                 </div>
