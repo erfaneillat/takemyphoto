@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { Button, ImageCard, FeatureCard } from '@/shared/components';
-import { 
-  Wand2, 
-  FileText, 
-  Image, 
-  Upload, 
-  Play, 
-  Zap, 
+import {
+  Wand2,
+  FileText,
+  Image,
+  Upload,
+  Play,
+  Zap,
   Palette,
   Sparkles,
   Crown,
@@ -38,16 +38,23 @@ export const LandingPage = () => {
             <Sparkles size={16} className="animate-pulse" />
             <span>{t('landing.hero.badge')}</span>
           </div>
-          
+
           <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-tight">
             {t('landing.hero.title')}
           </h1>
+
+          <div className="flex justify-center animate-pulse py-2">
+            <span className="text-2xl md:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-red-600 to-yellow-500 drop-shadow-sm">
+              🔥 Nano Banana Pro is here! 🔥
+            </span>
+          </div>
+
           <p className="text-xl md:text-2xl text-foreground-secondary max-w-3xl mx-auto">
             {t('landing.hero.description')}
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-            <Button 
+            <Button
               size="lg"
               leftIcon={<Upload size={20} />}
               onClick={() => navigate('/edit')}
@@ -55,7 +62,7 @@ export const LandingPage = () => {
             >
               {t('landing.hero.uploadPhoto')}
             </Button>
-            <Button 
+            <Button
               size="lg"
               variant="outline"
               leftIcon={<Play size={20} />}
@@ -65,7 +72,7 @@ export const LandingPage = () => {
               {t('landing.hero.tryDemo')}
             </Button>
           </div>
-          
+
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-3 pt-8">
             <div className="flex items-center gap-2 px-4 py-2 bg-background-secondary border border-border rounded-full text-sm text-foreground-secondary">
@@ -95,7 +102,7 @@ export const LandingPage = () => {
           </h2>
           <p className="text-foreground-secondary text-lg">{t('landing.trending.subtitle')}</p>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {trendingImages.map((image) => (
             <ImageCard
@@ -118,7 +125,7 @@ export const LandingPage = () => {
           </h2>
           <p className="text-foreground-secondary text-lg">{t('landing.features.subtitle')}</p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FeatureCard
             icon={
