@@ -36,18 +36,18 @@ export interface GoogleAIGenerateResponse {
 export class GoogleAIService {
   private apiKey: string;
   private baseUrl: string = 'https://generativelanguage.googleapis.com/v1beta';
-  private model: string = 'gemini-2.5-flash-image';
+  private model: string = 'gemini-3-pro-image-preview';
 
   constructor() {
     this.apiKey = process.env.GOOGLE_AI_API_KEY || '';
-    
+
     if (!this.apiKey) {
       console.warn('⚠️  Google AI API key not configured. Image generation will not work.');
     }
   }
 
   /**
-   * Generate or edit image using Google AI Gemini 2.5 Flash Image model
+   * Generate or edit image using Google AI Gemini 3 Pro Image Preview model
    * This is a synchronous operation that returns the image immediately
    */
   async generateImage(request: GoogleAIGenerateRequest): Promise<GoogleAIGenerateResponse> {
@@ -84,13 +84,13 @@ export class GoogleAIService {
       // Add generation config if needed
       if (request.aspectRatio || request.responseModalities) {
         requestBody.generationConfig = {};
-        
+
         if (request.aspectRatio) {
           requestBody.generationConfig.imageConfig = {
             aspectRatio: request.aspectRatio
           };
         }
-        
+
         if (request.responseModalities) {
           requestBody.generationConfig.responseModalities = request.responseModalities;
         }
