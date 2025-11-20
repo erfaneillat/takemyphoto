@@ -3,7 +3,7 @@ import { MainLayout, AuthLayout } from '@/shared/layouts';
 import { ExplorePage } from '@/features/explore';
 import { EditPage, BrushEditPage } from '@/features/edit';
 import { GeneratePage } from '@/features/generate';
-import { ToolsPage } from '@/features/tools';
+import { ToolsPage, ThumbnailGeneratorPage, InstagramCoverGeneratorPage } from '@/features/tools';
 import { ProfilePage } from '@/features/profile';
 import { UpgradePage } from '@/features/upgrade';
 import { SubscriptionPage } from '@/features/subscription';
@@ -18,38 +18,38 @@ import { ReactNode } from 'react';
 function EditModeWrapper() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
-  
+
   if (mode === 'brush') {
     return <BrushEditPage />;
   }
-  
+
   return <EditPage />;
 }
 
 // Protected Route wrapper - redirects to login if not authenticated
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuthStore();
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return <>{children}</>;
 }
 
 function App() {
   // Initialize app settings (theme and language) from system/browser preferences
   useAppInit();
-  
+
   // Initialize authentication state from localStorage
   useAuthInit();
-  
+
   // Initialize Firebase
   useFirebaseInit();
-  
+
   // Initialize characters from server
   useCharacterInit();
-  
+
   const { isLoading, isAuthenticated } = useAuthStore();
 
   // Show loading screen while checking authentication
@@ -84,8 +84,6 @@ function App() {
           <Route path="/explore" element={<Navigate to="/" replace />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/subscription" element={<SubscriptionPage />} />
-          <Route path="/upscale" element={<UpscalePage />} />
-          <Route path="/image-to-prompt" element={<ImageToPromptPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
@@ -94,39 +92,71 @@ function App() {
           <Route path="/payment/success" element={<PaymentSuccessPage />} />
           <Route path="/payment/failed" element={<PaymentFailedPage />} />
           <Route path="/payment/cancelled" element={<PaymentCancelledPage />} />
-          
+
           {/* Protected Routes - Require authentication */}
-          <Route 
-            path="/generate" 
+          <Route
+            path="/tools/thumbnail-generator"
+            element={
+              <ProtectedRoute>
+                <ThumbnailGeneratorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tools/instagram-cover-generator"
+            element={
+              <ProtectedRoute>
+                <InstagramCoverGeneratorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/upscale"
+            element={
+              <ProtectedRoute>
+                <UpscalePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/image-to-prompt"
+            element={
+              <ProtectedRoute>
+                <ImageToPromptPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/generate"
             element={
               <ProtectedRoute>
                 <GeneratePage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/edit" 
+          <Route
+            path="/edit"
             element={
               <ProtectedRoute>
                 <EditModeWrapper />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/profile" 
+          <Route
+            path="/profile"
             element={
               <ProtectedRoute>
                 <ProfilePage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/upgrade" 
+          <Route
+            path="/upgrade"
             element={
               <ProtectedRoute>
                 <UpgradePage />
               </ProtectedRoute>
-            } 
+            }
           />
         </Route>
       </Routes>

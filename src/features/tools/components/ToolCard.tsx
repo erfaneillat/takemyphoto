@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ImagePlus, Wand2, Compass, Paintbrush, Maximize2, Lightbulb, ArrowRight } from 'lucide-react';
+import { ImagePlus, Wand2, Compass, Paintbrush, Maximize2, Lightbulb, ArrowRight, Video, Smartphone } from 'lucide-react';
 import { useTranslation } from '@/shared/hooks';
 import { Tool } from '../hooks';
 
@@ -13,7 +13,9 @@ const iconMap = {
   Paintbrush: Paintbrush,
   Maximize2: Maximize2,
   Compass: Compass,
-  Lightbulb: Lightbulb
+  Lightbulb: Lightbulb,
+  Video: Video,
+  Smartphone: Smartphone
 };
 
 export const ToolCard = ({ tool }: ToolCardProps) => {
@@ -39,7 +41,7 @@ export const ToolCard = ({ tool }: ToolCardProps) => {
     >
       {/* Background Gradient */}
       <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-      
+
       {/* Badge */}
       {(tool.badge || tool.badgeKey) && (
         <div className="absolute top-4 right-4">
@@ -69,9 +71,9 @@ export const ToolCard = ({ tool }: ToolCardProps) => {
         <div className="flex items-center gap-2 text-gray-900 dark:text-white font-medium text-sm">
           <span>{tool.disabled ? t('tools.comingSoon') : t('common.tryNow')}</span>
           {!tool.disabled && (
-            <ArrowRight 
-              size={16} 
-              className="transform group-hover:translate-x-2 transition-transform duration-300" 
+            <ArrowRight
+              size={16}
+              className="transform group-hover:translate-x-2 transition-transform duration-300"
             />
           )}
         </div>

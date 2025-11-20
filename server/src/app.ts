@@ -19,6 +19,7 @@ import { createDashboardRoutes } from '@presentation/routes/dashboardRoutes';
 import { createContactRoutes } from '@presentation/routes/contactRoutes';
 import { createCheckoutRoutes } from '@presentation/routes/checkoutRoutes';
 import { createErrorLogRoutes } from '@presentation/routes/errorLogRoutes';
+import { createThumbnailRoutes } from '@presentation/routes/thumbnailRoutes';
 import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -28,10 +29,10 @@ export class App {
   constructor() {
     this.app = express();
     this.container = new Container();
-    
+
     // Initialize error logging service
     setErrorLogService(this.container.errorLogService);
-    
+
     this.setupMiddleware();
     this.setupRoutes();
     this.setupErrorHandling();
@@ -151,6 +152,7 @@ export class App {
     this.app.use(`${baseUrl}/enhance`, createEnhanceRoutes(this.container.enhanceController));
     // Image generation routes (Google AI) - kept as /nanobanana for backwards compatibility
     this.app.use(`${baseUrl}/nanobanana`, createImageGenerationRoutes(this.container.imageGenerationController));
+    this.app.use(`${baseUrl}/tools/thumbnail`, createThumbnailRoutes(this.container.thumbnailController));
     this.app.use(`${baseUrl}/dashboard`, createDashboardRoutes(this.container.dashboardController));
     this.app.use(`${baseUrl}/contact`, createContactRoutes(this.container.contactController));
     this.app.use(`${baseUrl}/checkout`, createCheckoutRoutes(this.container.checkoutController));
@@ -159,7 +161,7 @@ export class App {
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');
     this.app.use('/panel', express.static(panelPath));
-    
+
     // Serve index.html for /panel root
     this.app.get('/panel', (_req, res) => {
       res.sendFile(path.join(panelPath, 'index.html'));

@@ -276,6 +276,14 @@
       "title": "تصویر به پرامپت",
       "description": "پرامپت‌های خلاقانه از تصاویر خود با بینایی هوش مصنوعی تولید کنید"
     },
+    "thumbnailGenerator": {
+      "title": "تولیدکننده تامنیل یوتیوب",
+      "description": "تامنیل‌های جذاب یوتیوب را از توضیحات ویدیو خود بسازید"
+    },
+    "instagramCoverGenerator": {
+      "title": "ساخت کاور اینستاگرام",
+      "description": "کاورهای جذاب ۹:۱۶ برای ریلز و استوری اینستاگرام بسازید"
+    },
     "moreComingSoon": {
       "title": "ابزارهای بیشتر به زودی",
       "description": "ما به طور مداوم ابزارهای جدید هوش مصنوعی اضافه می‌کنیم تا گردش کار خلاقانه شما را بهبود بخشیم"
@@ -636,6 +644,52 @@
     "preview": {
       "noImage": "هنوز تصویری آپلود نشده است",
       "uploadToStart": "برای تحلیل، تصویری آپلود کنید"
+    }
+  },
+  "thumbnailGenerator": {
+    "videoDescription": "توضیحات ویدیو",
+    "videoDescriptionPlaceholder": "محتوای ویدیو، حال و هوا و عناصر کلیدی را توصیف کنید...",
+    "visualDescription": "توضیحات بصری (اختیاری)",
+    "visualDescriptionPlaceholder": "سبک بصری، رنگ‌ها یا عناصر خاص برای تصویر را توصیف کنید...",
+    "visualDescriptionHint": "این توضیحات مستقیماً برای راهنمایی تولید تصویر استفاده می‌شود.",
+    "textLanguage": "زبان متن",
+    "textLanguagePlaceholder": "مثلاً انگلیسی، فارسی...",
+    "referenceImages": "تصاویر مرجع (حداکثر ۶)",
+    "upload": "آپلود",
+    "generateButton": "تولید تامنیل",
+    "generating": "در حال تولید...",
+    "download": "دانلود",
+    "preview": {
+      "loading": "در حال خلق شاهکار شما...",
+      "placeholder": "تامنیل تولید شده شما اینجا نمایش داده می‌شود"
+    },
+    "error": {
+      "maxImages": "حداکثر ۶ تصویر مجاز است",
+      "descriptionRequired": "توضیحات الزامی است",
+      "failed": "تولید تامنیل با خطا مواجه شد"
+    }
+  },
+  "instagramCoverGenerator": {
+    "contentDescription": "توضیحات محتوا",
+    "contentDescriptionPlaceholder": "محتوای اینستاگرام، حال و هوا و عناصر کلیدی را توصیف کنید...",
+    "visualDescription": "توضیحات بصری (اختیاری)",
+    "visualDescriptionPlaceholder": "سبک بصری، رنگ‌ها یا عناصر خاص برای تصویر را توصیف کنید...",
+    "visualDescriptionHint": "این توضیحات مستقیماً برای راهنمایی تولید تصویر استفاده می‌شود.",
+    "textLanguage": "زبان متن",
+    "textLanguagePlaceholder": "مثلاً انگلیسی، فارسی...",
+    "referenceImages": "تصاویر مرجع (حداکثر ۶)",
+    "upload": "آپلود",
+    "generateButton": "تولید کاور",
+    "generating": "در حال تولید...",
+    "download": "دانلود",
+    "preview": {
+      "loading": "در حال خلق شاهکار شما...",
+      "placeholder": "کاور تولید شده شما اینجا نمایش داده می‌شود"
+    },
+    "error": {
+      "maxImages": "حداکثر ۶ تصویر مجاز است",
+      "descriptionRequired": "توضیحات الزامی است",
+      "failed": "تولید کاور با خطا مواجه شد"
     }
   },
   "auth": {

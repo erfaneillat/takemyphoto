@@ -59,6 +59,22 @@ export const useToolsState = () => {
       icon: 'Lightbulb',
       path: '/image-to-prompt',
       color: 'from-purple-500 to-pink-500'
+    },
+    {
+      id: 'thumbnailGenerator',
+      translationKey: 'thumbnailGenerator',
+      icon: 'Video',
+      path: '/tools/thumbnail-generator',
+      color: 'from-red-500 to-orange-500',
+      badge: 'New'
+    },
+    {
+      id: 'instagramCoverGenerator',
+      translationKey: 'instagramCoverGenerator',
+      icon: 'Smartphone', // Changed to something mobile-related or just use Image/Instagram-like icon if available. 'Instagram' might be in lucide-react as a logo, but let's stick to generic icons. 'Smartphone' or 'LayoutTemplate' or 'Grid'
+      path: '/tools/instagram-cover-generator',
+      color: 'from-purple-500 to-pink-500',
+      badge: 'New'
     }
   ];
 

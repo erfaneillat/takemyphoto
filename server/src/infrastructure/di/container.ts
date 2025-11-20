@@ -77,6 +77,8 @@ import { GetErrorLogStatsUseCase } from '@application/usecases/error-log/GetErro
 import { UpdateErrorLogUseCase } from '@application/usecases/error-log/UpdateErrorLogUseCase';
 import { DeleteErrorLogUseCase } from '@application/usecases/error-log/DeleteErrorLogUseCase';
 import { DeleteManyErrorLogsUseCase } from '@application/usecases/error-log/DeleteManyErrorLogsUseCase';
+import { GenerateThumbnailUseCase } from '@application/usecases/tools/GenerateThumbnailUseCase';
+
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
 // Controllers
@@ -88,6 +90,7 @@ import { CategoryController } from '@presentation/controllers/CategoryController
 import { AdminTemplateController } from '@presentation/controllers/AdminTemplateController';
 import { EnhanceController } from '@presentation/controllers/EnhanceController';
 import { ImageGenerationController } from '@presentation/controllers/NanoBananaController';
+import { ThumbnailController } from '@presentation/controllers/ThumbnailController';
 import { DashboardController } from '@presentation/controllers/DashboardController';
 import { ContactController } from '@presentation/controllers/ContactController';
 import { CheckoutController } from '@presentation/controllers/CheckoutController';
@@ -173,6 +176,7 @@ export class Container {
   public updateErrorLogUseCase: UpdateErrorLogUseCase;
   public deleteErrorLogUseCase: DeleteErrorLogUseCase;
   public deleteManyErrorLogsUseCase: DeleteManyErrorLogsUseCase;
+  public generateThumbnailUseCase: GenerateThumbnailUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -184,6 +188,7 @@ export class Container {
   public adminTemplateController: AdminTemplateController;
   public enhanceController: EnhanceController;
   public imageGenerationController: ImageGenerationController;
+  public thumbnailController: ThumbnailController;
   public dashboardController: DashboardController;
   public contactController: ContactController;
   public checkoutController: CheckoutController;
@@ -532,12 +537,21 @@ export class Container {
       this.errorLogRepository
     );
 
+    this.generateThumbnailUseCase = new GenerateThumbnailUseCase(
+      this.openAIService,
+      this.googleAIService
+    );
+
     this.errorLogController = new ErrorLogController(
       this.getErrorLogsUseCase,
       this.getErrorLogStatsUseCase,
       this.updateErrorLogUseCase,
       this.deleteErrorLogUseCase,
       this.deleteManyErrorLogsUseCase
+    );
+
+    this.thumbnailController = new ThumbnailController(
+      this.generateThumbnailUseCase
     );
   }
 }

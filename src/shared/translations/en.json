@@ -276,6 +276,14 @@
       "title": "Image to Prompt",
       "description": "Generate creative prompts from your images using AI vision"
     },
+    "thumbnailGenerator": {
+      "title": "YouTube Thumbnail Generator",
+      "description": "Create catchy YouTube thumbnails from your video description"
+    },
+    "instagramCoverGenerator": {
+      "title": "Instagram Cover Generator",
+      "description": "Create stunning 9:16 covers for your Instagram Reels and Stories"
+    },
     "moreComingSoon": {
       "title": "More Tools Coming Soon",
       "description": "We're constantly adding new AI tools to enhance your creative workflow"
@@ -631,6 +639,52 @@
     "preview": {
       "noImage": "No image uploaded yet",
       "uploadToStart": "Upload an image to analyze"
+    }
+  },
+  "thumbnailGenerator": {
+    "videoDescription": "Video Description",
+    "videoDescriptionPlaceholder": "Describe your video content, mood, and key elements...",
+    "visualDescription": "Visual Description (Optional)",
+    "visualDescriptionPlaceholder": "Describe the visual style, colors, or specific elements for the image...",
+    "visualDescriptionHint": "This description will be used to guide the image generation directly.",
+    "textLanguage": "Text Language",
+    "textLanguagePlaceholder": "e.g. English, Spanish...",
+    "referenceImages": "Reference Images (Max 6)",
+    "upload": "Upload",
+    "generateButton": "Generate Thumbnail",
+    "generating": "Generating...",
+    "download": "Download",
+    "preview": {
+      "loading": "Creating your masterpiece...",
+      "placeholder": "Your generated thumbnail will appear here"
+    },
+    "error": {
+      "maxImages": "Maximum 6 images allowed",
+      "descriptionRequired": "Description is required",
+      "failed": "Failed to generate thumbnail"
+    }
+  },
+  "instagramCoverGenerator": {
+    "contentDescription": "Content Description",
+    "contentDescriptionPlaceholder": "Describe your Instagram content, mood, and key elements...",
+    "visualDescription": "Visual Description (Optional)",
+    "visualDescriptionPlaceholder": "Describe the visual style, colors, or specific elements for the image...",
+    "visualDescriptionHint": "This description will be used to guide the image generation directly.",
+    "textLanguage": "Text Language",
+    "textLanguagePlaceholder": "e.g. English, Spanish...",
+    "referenceImages": "Reference Images (Max 6)",
+    "upload": "Upload",
+    "generateButton": "Generate Cover",
+    "generating": "Generating...",
+    "download": "Download",
+    "preview": {
+      "loading": "Creating your masterpiece...",
+      "placeholder": "Your generated cover will appear here"
+    },
+    "error": {
+      "maxImages": "Maximum 6 images allowed",
+      "descriptionRequired": "Description is required",
+      "failed": "Failed to generate cover"
     }
   },
   "auth": {
