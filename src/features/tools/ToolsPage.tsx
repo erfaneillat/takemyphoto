@@ -18,18 +18,18 @@ export const ToolsPage = () => {
               {t('tools.badge')}
             </span>
           </div>
-          
+
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             {t('tools.title')}
           </h1>
-          
+
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             {t('tools.subtitle')}
           </p>
         </div>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {tools.map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
