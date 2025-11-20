@@ -36,36 +36,27 @@ export class TemplateRepository implements ITemplateRepository {
 
   async findTrending(
     limit: number = 20,
-    period: 'week' | 'month' = 'week',
+    _period: 'week' | 'month' = 'week',
     offset: number = 0,
     category?: string
   ): Promise<Template[]> {
-    // Calculate dynamic trending based on recent activity
-    const now = new Date();
-    const daysAgo = period === 'week' ? 7 : 30;
-    const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+    // Temporarily return popular items regardless of date since there isn't enough recent activity
 
-    // Build query: recent activity within period, optional category filter
-    const query: any = {
-      $or: [
-        { createdAt: { $gte: startDate } },
-        { updatedAt: { $gte: startDate } }
-      ]
-    };
+    const query: any = {};
     if (category) {
       query.category = category;
     }
 
-    // Get templates created or updated within the period, sorted by engagement
+    // Get templates sorted by engagement
     const templates = await TemplateModel.find(query)
-      .sort({ 
+      .sort({
         usageCount: -1,
-        likeCount: -1, 
-        viewCount: -1 
+        likeCount: -1,
+        viewCount: -1
       })
       .skip(offset)
       .limit(limit);
-    
+
     return templates.map(t => t.toJSON() as Template);
   }
 
