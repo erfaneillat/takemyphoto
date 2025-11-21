@@ -10,7 +10,7 @@ export const BottomNavigation = () => {
   const isToolsActive = isActive('/tools');
 
   const sideNavItems = [
-    { path: '/', label: t('bottomNav.explore'), icon: Compass },
+    { path: '/explore', label: t('bottomNav.explore'), icon: Compass },
     { path: '/profile', label: t('bottomNav.profile'), icon: User },
   ];
 
@@ -33,8 +33,8 @@ export const BottomNavigation = () => {
           `}
         >
           <div className="relative">
-            <LeftIcon 
-              size={24} 
+            <LeftIcon
+              size={24}
               strokeWidth={isActive(sideNavItems[0].path) ? 2.5 : 2}
               className={`transition-all duration-200 ${isActive(sideNavItems[0].path) ? 'scale-110' : ''}`}
             />
@@ -60,8 +60,8 @@ export const BottomNavigation = () => {
               : 'bg-gradient-to-br from-gray-800 to-gray-900 dark:from-gray-700 dark:to-gray-800 scale-95 hover:scale-100 active:scale-90'
             }
           `}>
-            <Wrench 
-              size={20} 
+            <Wrench
+              size={20}
               className="text-white"
               strokeWidth={2.5}
             />
@@ -71,8 +71,8 @@ export const BottomNavigation = () => {
           </div>
           <span className={`
             absolute -bottom-5 text-xs font-semibold whitespace-nowrap transition-all duration-200
-            ${isToolsActive 
-              ? 'text-blue-600 dark:text-cyan-400 scale-100' 
+            ${isToolsActive
+              ? 'text-blue-600 dark:text-cyan-400 scale-100'
               : 'text-gray-600 dark:text-gray-400 scale-90'
             }
           `}>
@@ -93,8 +93,8 @@ export const BottomNavigation = () => {
           `}
         >
           <div className="relative">
-            <RightIcon 
-              size={24} 
+            <RightIcon
+              size={24}
               strokeWidth={isActive(sideNavItems[1].path) ? 2.5 : 2}
               className={`transition-all duration-200 ${isActive(sideNavItems[1].path) ? 'scale-110' : ''}`}
             />

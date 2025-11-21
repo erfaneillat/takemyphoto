@@ -12,6 +12,7 @@ export interface GenerateThumbnailRequest {
     images?: Express.Multer.File[];
     aspectRatio?: string;
     visualDescription?: string;
+    resolution?: string;
 }
 
 export interface GenerateThumbnailResponse {
@@ -82,7 +83,8 @@ export class GenerateThumbnailUseCase {
         const googleAIRequest = {
             prompt: prompt,
             referenceImages: referenceImages,
-            aspectRatio: (request.aspectRatio as any) || '16:9'
+            aspectRatio: (request.aspectRatio as any) || '16:9',
+            resolution: request.resolution || '2K'
         };
 
         const aiResponse = await this.googleAIService.generateImage(googleAIRequest);

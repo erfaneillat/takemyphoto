@@ -1,14 +1,15 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { 
-  GeneratedImage, 
-  UploadedImage, 
+import type {
+  GeneratedImage,
+  UploadedImage,
   EditMode,
   ImageGenerationParams,
-  ImageEditParams 
+  ImageEditParams
 } from '@/core/domain/entities/Image';
 import { nanoBananaApi } from '@/shared/services';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
+import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 
 export const useImageEditor = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export const useImageEditor = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>('1:1');
+  const [resolution, setResolution] = useState<ResolutionValue>('1K');
   const [error, setError] = useState<string | null>(null);
 
   const addUploadedImage = useCallback((file: File) => {
@@ -35,7 +37,7 @@ export const useImageEditor = () => {
       setUploadedImages(prev => [...prev, newImage]);
     };
     reader.readAsDataURL(file);
-    
+
     return { success: true };
   }, [uploadedImages.length]);
 
@@ -46,12 +48,12 @@ export const useImageEditor = () => {
   const generateImage = useCallback(async (params: ImageGenerationParams & { templateId?: string, characterImageUrls?: string[] }) => {
     setIsProcessing(true);
     setError(null);
-    
+
     try {
       // Validate that we have either uploaded images or character images
       const hasUploadedImages = uploadedImages.length > 0;
       const hasCharacterImages = params.characterImageUrls && params.characterImageUrls.length > 0;
-      
+
       if (!hasUploadedImages && !hasCharacterImages) {
         throw new Error('Please upload images or select a character');
       }
@@ -69,20 +71,22 @@ export const useImageEditor = () => {
       // If no uploaded images, use text-to-image generate endpoint with characterImageUrls
       const response = hasUploadedImages
         ? await nanoBananaApi.editImage({
-            prompt: params.prompt,
-            numImages: 1,
-            imageSize: aspectRatio,
-            images: uploadedImages.map(img => img.file),
-            characterImageUrls: resolvedCharacterUrls.length > 0 ? resolvedCharacterUrls : undefined,
-            templateId: params.templateId,
-          })
+          prompt: params.prompt,
+          numImages: 1,
+          imageSize: aspectRatio,
+          resolution: resolution,
+          images: uploadedImages.map(img => img.file),
+          characterImageUrls: resolvedCharacterUrls.length > 0 ? resolvedCharacterUrls : undefined,
+          templateId: params.templateId,
+        })
         : await nanoBananaApi.generateImage({
-            prompt: params.prompt,
-            numImages: 1,
-            imageSize: aspectRatio,
-            characterImageUrls: resolvedCharacterUrls.length > 0 ? resolvedCharacterUrls : undefined,
-            templateId: params.templateId,
-          });
+          prompt: params.prompt,
+          numImages: 1,
+          imageSize: aspectRatio,
+          resolution: resolution,
+          characterImageUrls: resolvedCharacterUrls.length > 0 ? resolvedCharacterUrls : undefined,
+          templateId: params.templateId,
+        });
 
       // Resolve returned image URL to absolute path
       const resolvedUrl = response.imageUrl.startsWith('http')
@@ -100,7 +104,7 @@ export const useImageEditor = () => {
       return newImage;
     } catch (err: any) {
       console.error('Edit error:', err);
-      
+
       // Check for insufficient stars error
       if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
         setError('You have run out of stars. Redirecting to subscription page...');
@@ -115,17 +119,18 @@ export const useImageEditor = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, aspectRatio, navigate]);
+  }, [uploadedImages, aspectRatio, resolution, navigate]);
 
   const editImages = useCallback(async (params: ImageEditParams) => {
     setIsProcessing(true);
     setError(null);
-    
+
     try {
       const response = await nanoBananaApi.editImage({
         prompt: params.prompt,
         numImages: 1,
         imageSize: aspectRatio,
+        resolution: resolution,
         images: params.images.map(img => img.file),
       });
 
@@ -145,7 +150,7 @@ export const useImageEditor = () => {
       return newImage;
     } catch (err: any) {
       console.error('Edit error:', err);
-      
+
       // Check for insufficient stars error
       if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
         setError('You have run out of stars. Redirecting to subscription page...');
@@ -171,7 +176,7 @@ export const useImageEditor = () => {
         preview: image.url,
       }],
     };
-    
+
     return editImages(editParams);
   }, [editImages]);
 
@@ -192,6 +197,8 @@ export const useImageEditor = () => {
     setPrompt,
     aspectRatio,
     setAspectRatio,
+    resolution,
+    setResolution,
     addUploadedImage,
     removeUploadedImage,
     generateImage,

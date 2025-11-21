@@ -13,6 +13,7 @@ export interface EditImageRequest {
   prompt: string;
   numImages?: number;
   imageSize?: string;
+  resolution?: string;
   uploadedImages: Express.Multer.File[];
   characterImageUrls?: string[];
   templateId?: string;
@@ -32,10 +33,10 @@ export class EditImageUseCase {
     private generatedImageRepository: IGeneratedImageEntityRepository,
     private userRepository: IUserRepository,
     private errorLogService?: ErrorLogService
-  ) {}
+  ) { }
 
   async execute(request: EditImageRequest): Promise<EditImageResponse> {
-    const { userId, prompt, imageSize = '1:1', uploadedImages, characterImageUrls = [], templateId } = request;
+    const { userId, prompt, imageSize = '1:1', resolution = '2K', uploadedImages, characterImageUrls = [], templateId } = request;
 
     // Validate that at least one image is provided for editing
     if (!uploadedImages || uploadedImages.length === 0) {
@@ -62,7 +63,7 @@ export class EditImageUseCase {
     // Prepare images as base64 for Google AI API
     const referenceImages: { mimeType: string; data: string }[] = [];
     const referenceImageUrls: string[] = [];
-    
+
     for (const file of uploadedImages) {
       // Convert to base64 for Google AI API
       const base64Data = file.buffer.toString('base64');
@@ -87,19 +88,19 @@ export class EditImageUseCase {
             console.error(`Failed to download character image from ${imageUrl}`);
             continue;
           }
-          
+
           const arrayBuffer = await response.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
           const base64Data = buffer.toString('base64');
-          
+
           // Determine mime type from response or URL
           const contentType = response.headers.get('content-type') || 'image/jpeg';
-          
+
           referenceImages.push({
             mimeType: contentType,
             data: base64Data
           });
-          
+
           // Track the URL for reference
           referenceImageUrls.push(imageUrl);
         } catch (error) {
@@ -110,9 +111,9 @@ export class EditImageUseCase {
     }
 
     // Call Google AI API for image editing (synchronous)
-    console.log('🚀 Calling Google AI API for editing:', { 
-      prompt: prompt.substring(0, 100) + '...', 
-      imageSize, 
+    console.log('🚀 Calling Google AI API for editing:', {
+      prompt: prompt.substring(0, 100) + '...',
+      imageSize,
       totalReferenceImages: referenceImages.length,
       uploadedImagesCount: uploadedImages.length,
       characterImagesCount: characterImageUrls.length
@@ -125,7 +126,8 @@ export class EditImageUseCase {
         prompt: finalPrompt,
         referenceImages,
         aspectRatio: imageSize as any,
-        responseModalities: ['Image'] // Only return image, no text
+        responseModalities: ['Image'], // Only return image, no text
+        resolution: resolution
       });
     } catch (error: any) {
       // Log Google AI API error
@@ -147,7 +149,7 @@ export class EditImageUseCase {
 
     // Extract image data from response
     const imageResult = this.googleAIService.extractImageFromResponse(response);
-    
+
     if (!imageResult) {
       const error = new Error('No image returned from Google AI API');
       if (this.errorLogService) {

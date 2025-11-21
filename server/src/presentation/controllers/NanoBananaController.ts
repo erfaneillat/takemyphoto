@@ -10,16 +10,16 @@ export class ImageGenerationController {
     private generateImageUseCase: GenerateImageUseCase,
     private editImageUseCase: EditImageUseCase,
     private generatedImageRepository: IGeneratedImageEntityRepository
-  ) {}
+  ) { }
 
   generateImage = asyncHandler(async (req: AuthRequest, res: Response) => {
     const userId = req.user?.userId;
-    
+
     if (!userId) {
       throw new AppError(401, 'Authentication required');
     }
 
-    const { prompt, numImages, imageSize, characterImageUrls, templateId } = req.body;
+    const { prompt, numImages, imageSize, resolution, characterImageUrls, templateId } = req.body;
 
     if (!prompt || typeof prompt !== 'string') {
       throw new AppError(400, 'Prompt is required');
@@ -43,6 +43,7 @@ export class ImageGenerationController {
       prompt,
       numImages: numImages ? parseInt(numImages) : 1,
       imageSize,
+      resolution,
       uploadedImages,
       characterImageUrls: normalizedCharacterUrls,
       templateId
@@ -57,12 +58,12 @@ export class ImageGenerationController {
 
   editImage = asyncHandler(async (req: AuthRequest, res: Response) => {
     const userId = req.user?.userId;
-    
+
     if (!userId) {
       throw new AppError(401, 'Authentication required');
     }
 
-    const { prompt, numImages, imageSize, characterImageUrls, templateId } = req.body;
+    const { prompt, numImages, imageSize, resolution, characterImageUrls, templateId } = req.body;
     const uploadedImages = req.files as Express.Multer.File[] | undefined;
 
     if (!prompt || typeof prompt !== 'string') {
@@ -89,6 +90,7 @@ export class ImageGenerationController {
       prompt,
       numImages: numImages ? parseInt(numImages) : 1,
       imageSize,
+      resolution,
       uploadedImages,
       characterImageUrls: normalizedCharacterUrls,
       templateId
@@ -105,7 +107,7 @@ export class ImageGenerationController {
 
   getUserGeneratedImages = asyncHandler(async (req: AuthRequest, res: Response) => {
     const userId = req.user?.userId;
-    
+
     if (!userId) {
       throw new AppError(401, 'Authentication required');
     }

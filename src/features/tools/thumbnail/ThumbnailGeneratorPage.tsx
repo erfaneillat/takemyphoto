@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { thumbnailApi, GenerateThumbnailResponse } from '@/shared/services';
+import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 import { Upload, X, Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react';
 
 export const ThumbnailGeneratorPage = () => {
@@ -9,6 +11,7 @@ export const ThumbnailGeneratorPage = () => {
     const [visualDescription, setVisualDescription] = useState('');
     const [language, setLanguage] = useState('English');
     const [images, setImages] = useState<File[]>([]);
+    const [resolution, setResolution] = useState<ResolutionValue>('1K');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<GenerateThumbnailResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -38,7 +41,7 @@ export const ThumbnailGeneratorPage = () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await thumbnailApi.generate(description, language, images, undefined, visualDescription);
+            const data = await thumbnailApi.generate(description, language, images, undefined, visualDescription, resolution);
             setResult(data);
         } catch (err: any) {
             console.error(err);
@@ -102,6 +105,12 @@ export const ThumbnailGeneratorPage = () => {
                                 placeholder={t('thumbnailGenerator.textLanguagePlaceholder')}
                             />
                         </div>
+
+                        <ResolutionSelector
+                            value={resolution}
+                            onChange={setResolution}
+                            className="mb-4"
+                        />
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

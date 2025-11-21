@@ -5,6 +5,7 @@ export interface GoogleAIGenerateRequest {
   referenceImages?: { mimeType: string; data: string }[]; // base64 encoded images
   aspectRatio?: '1:1' | '9:16' | '16:9' | '3:4' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '21:9';
   responseModalities?: ('Text' | 'Image')[];
+  resolution?: string;
 }
 
 export interface GoogleAIGenerateResponse {
@@ -47,6 +48,35 @@ export class GoogleAIService {
   }
 
   /**
+   * Check if an error is retryable (transient errors that might succeed on retry)
+   */
+  private isRetryableError(error: any): boolean {
+    if (!axios.isAxiosError(error)) {
+      return false;
+    }
+
+    const message = (error.response?.data?.error?.message || error.message || '').toLowerCase();
+    const retryableMessages = [
+      'overloaded',
+      'rate limit',
+      'quota exceeded',
+      'too many requests',
+      'service unavailable',
+      'internal error',
+      'timeout'
+    ];
+
+    return retryableMessages.some(retryableMsg => message.includes(retryableMsg));
+  }
+
+  /**
+   * Sleep for a given number of milliseconds
+   */
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
    * Generate or edit image using Google AI Gemini 3 Pro Image Preview model
    * This is a synchronous operation that returns the image immediately
    */
@@ -55,91 +85,68 @@ export class GoogleAIService {
       throw new Error('Google AI API key is not configured');
     }
 
-    try {
-      // Build parts array - text prompt always comes first
-      const parts: any[] = [
-        { text: request.prompt }
-      ];
+    const maxRetries = 3;
+    let lastError: any = null;
 
-      // Add reference images if provided (for image-to-image editing)
-      if (request.referenceImages && request.referenceImages.length > 0) {
-        for (const image of request.referenceImages) {
-          parts.push({
-            inline_data: {
-              mime_type: image.mimeType,
-              data: image.data
-            }
-          });
-        }
-      }
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        // Build parts array - text prompt always comes first
+        const parts: any[] = [
+          { text: request.prompt }
+        ];
 
-      // Build request body
-      const requestBody: any = {
-        contents: [{
-          role: 'user',
-          parts
-        }]
-      };
-
-      // Add generation config if needed
-      if (request.aspectRatio || request.responseModalities) {
-        requestBody.generationConfig = {};
-
-        if (request.aspectRatio) {
-          requestBody.generationConfig.imageConfig = {
-            aspectRatio: request.aspectRatio
-          };
-        }
-
-        if (request.responseModalities) {
-          requestBody.generationConfig.responseModalities = request.responseModalities;
-        }
-      }
-
-      console.log('🚀 Calling Google AI API:', {
-        model: this.model,
-        prompt: request.prompt.substring(0, 100) + '...',
-        hasImages: request.referenceImages && request.referenceImages.length > 0,
-        aspectRatio: request.aspectRatio
-      });
-
-      const response = await axios.post<GoogleAIGenerateResponse>(
-        `${this.baseUrl}/models/${this.model}:generateContent`,
-        requestBody,
-        {
-          headers: {
-            'x-goog-api-key': this.apiKey,
-            'Content-Type': 'application/json'
+        // Add reference images if provided (for image-to-image editing)
+        if (request.referenceImages && request.referenceImages.length > 0) {
+          for (const image of request.referenceImages) {
+            parts.push({
+              inline_data: {
+                mime_type: image.mimeType,
+                data: image.data
+              }
+            });
           }
         }
-      );
 
-      if (!response.data || !response.data.candidates || response.data.candidates.length === 0) {
-        throw new Error('No response from Google AI API');
-      }
-
-      const firstHasImage = this.extractImageFromResponse(response.data) !== null;
-      console.log('✅ Google AI API response received:', {
-        candidates: response.data.candidates.length,
-        hasImage: firstHasImage,
-        finishReasons: response.data.candidates.map(c => c.finishReason)
-      });
-
-      // Fallback: if no image was returned, retry without forcing responseModalities
-      if (!firstHasImage) {
-        console.warn('⚠️  No image in first response. Retrying without responseModalities...');
-        const fallbackBody: any = {
-          contents: [{ role: 'user', parts }]
+        // Build request body
+        const requestBody: any = {
+          contents: [{
+            role: 'user',
+            parts
+          }]
         };
-        if (request.aspectRatio) {
-          fallbackBody.generationConfig = {
-            imageConfig: { aspectRatio: request.aspectRatio }
-          };
+
+        // Add generation config if needed
+        if (request.aspectRatio || request.resolution || request.responseModalities) {
+          requestBody.generationConfig = {};
+
+          if (request.aspectRatio || request.resolution) {
+            requestBody.generationConfig.imageConfig = {};
+
+            if (request.aspectRatio) {
+              requestBody.generationConfig.imageConfig.aspectRatio = request.aspectRatio;
+            }
+
+            if (request.resolution) {
+              requestBody.generationConfig.imageConfig.imageSize = request.resolution;
+            }
+          }
+
+          if (request.responseModalities) {
+            requestBody.generationConfig.responseModalities = request.responseModalities;
+          }
         }
 
-        const fallbackResponse = await axios.post<GoogleAIGenerateResponse>(
+        console.log('🚀 Calling Google AI API:', {
+          model: this.model,
+          prompt: request.prompt.substring(0, 100) + '...',
+          hasImages: request.referenceImages && request.referenceImages.length > 0,
+          aspectRatio: request.aspectRatio,
+          resolution: request.resolution
+        });
+
+        const response = await axios.post<GoogleAIGenerateResponse>(
           `${this.baseUrl}/models/${this.model}:generateContent`,
-          fallbackBody,
+          requestBody,
           {
             headers: {
               'x-goog-api-key': this.apiKey,
@@ -148,28 +155,41 @@ export class GoogleAIService {
           }
         );
 
-        let fallbackHasImage = this.extractImageFromResponse(fallbackResponse.data) !== null;
-        console.log('🔁 Fallback response received:', {
-          candidates: fallbackResponse.data.candidates?.length,
-          hasImage: fallbackHasImage
+        if (!response.data || !response.data.candidates || response.data.candidates.length === 0) {
+          throw new Error('No response from Google AI API');
+        }
+
+        const firstHasImage = this.extractImageFromResponse(response.data) !== null;
+        console.log('✅ Google AI API response received:', {
+          candidates: response.data.candidates.length,
+          hasImage: firstHasImage,
+          finishReasons: response.data.candidates.map(c => c.finishReason)
         });
 
-        // Second fallback: try allowing text+image explicitly
-        if (!fallbackHasImage) {
-          console.warn('⚠️  Still no image. Retrying with responseModalities = ["Text", "Image"]');
-          const secondBody: any = {
-            contents: [{ role: 'user', parts }],
-            generationConfig: {
-              responseModalities: ['Text', 'Image']
-            }
+        // Fallback: if no image was returned, retry without forcing responseModalities
+        if (!firstHasImage) {
+          console.warn('⚠️  No image in first response. Retrying without responseModalities...');
+          const fallbackBody: any = {
+            contents: [{ role: 'user', parts }]
           };
-          if (request.aspectRatio) {
-            secondBody.generationConfig.imageConfig = { aspectRatio: request.aspectRatio };
+
+          if (request.aspectRatio || request.resolution) {
+            fallbackBody.generationConfig = {
+              imageConfig: {}
+            };
+
+            if (request.aspectRatio) {
+              fallbackBody.generationConfig.imageConfig.aspectRatio = request.aspectRatio;
+            }
+
+            if (request.resolution) {
+              fallbackBody.generationConfig.imageConfig.imageSize = request.resolution;
+            }
           }
 
-          const secondResponse = await axios.post<GoogleAIGenerateResponse>(
+          const fallbackResponse = await axios.post<GoogleAIGenerateResponse>(
             `${this.baseUrl}/models/${this.model}:generateContent`,
-            secondBody,
+            fallbackBody,
             {
               headers: {
                 'x-goog-api-key': this.apiKey,
@@ -178,28 +198,93 @@ export class GoogleAIService {
             }
           );
 
-          fallbackHasImage = this.extractImageFromResponse(secondResponse.data) !== null;
-          console.log('🔁 Second fallback response received:', {
-            candidates: secondResponse.data.candidates?.length,
+          let fallbackHasImage = this.extractImageFromResponse(fallbackResponse.data) !== null;
+          console.log('🔁 Fallback response received:', {
+            candidates: fallbackResponse.data.candidates?.length,
             hasImage: fallbackHasImage
           });
 
-          return secondResponse.data;
+          // Second fallback: try allowing text+image explicitly
+          if (!fallbackHasImage) {
+            console.warn('⚠️  Still no image. Retrying with responseModalities = ["Text", "Image"]');
+            const secondBody: any = {
+              contents: [{ role: 'user', parts }],
+              generationConfig: {
+                responseModalities: ['Text', 'Image']
+              }
+            };
+
+            if (request.aspectRatio || request.resolution) {
+              secondBody.generationConfig.imageConfig = {};
+
+              if (request.aspectRatio) {
+                secondBody.generationConfig.imageConfig.aspectRatio = request.aspectRatio;
+              }
+
+              if (request.resolution) {
+                secondBody.generationConfig.imageConfig.imageSize = request.resolution;
+              }
+            }
+
+            const secondResponse = await axios.post<GoogleAIGenerateResponse>(
+              `${this.baseUrl}/models/${this.model}:generateContent`,
+              secondBody,
+              {
+                headers: {
+                  'x-goog-api-key': this.apiKey,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+
+            fallbackHasImage = this.extractImageFromResponse(secondResponse.data) !== null;
+            console.log('🔁 Second fallback response received:', {
+              candidates: secondResponse.data.candidates?.length,
+              hasImage: fallbackHasImage
+            });
+
+            return secondResponse.data;
+          }
+
+          return fallbackResponse.data;
         }
 
-        return fallbackResponse.data;
-      }
+        return response.data;
 
-      return response.data;
+      } catch (error: any) {
+        lastError = error;
 
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.error?.message || error.message;
-        console.error('❌ Google AI API error:', message);
-        throw new Error(`Google AI API error: ${message}`);
+        if (this.isRetryableError(error) && attempt < maxRetries) {
+          const message = axios.isAxiosError(error)
+            ? (error.response?.data?.error?.message || error.message)
+            : error.message;
+
+          const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 1s, 2s, 4s
+          console.warn(`⚠️  Retryable error (attempt ${attempt + 1}/${maxRetries + 1}): ${message}. Retrying in ${delay}ms...`);
+
+          await this.sleep(delay);
+          continue;
+        }
+
+        // Non-retryable error or max retries reached
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.error?.message || error.message;
+          console.error('❌ Google AI API error:', message);
+          throw new Error(`Google AI API error: ${message}`);
+        }
+        throw error;
       }
-      throw error;
     }
+
+    // If we get here, all retries failed
+    if (lastError) {
+      const message = axios.isAxiosError(lastError)
+        ? (lastError.response?.data?.error?.message || lastError.message)
+        : lastError.message;
+      throw new Error(`Google AI API error after ${maxRetries + 1} attempts: ${message}`);
+    }
+
+    throw new Error('Google AI API error: Unknown error');
   }
 
   /**

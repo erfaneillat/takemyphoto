@@ -7,7 +7,7 @@ export interface GenerateThumbnailResponse {
 }
 
 export const thumbnailApi = {
-    generate: async (description: string, language: string, images: File[], aspectRatio?: string, visualDescription?: string): Promise<GenerateThumbnailResponse> => {
+    generate: async (description: string, language: string, images: File[], aspectRatio?: string, visualDescription?: string, resolution?: string): Promise<GenerateThumbnailResponse> => {
         const formData = new FormData();
         formData.append('description', description);
         formData.append('language', language);
@@ -16,6 +16,9 @@ export const thumbnailApi = {
         }
         if (aspectRatio) {
             formData.append('aspectRatio', aspectRatio);
+        }
+        if (resolution) {
+            formData.append('resolution', resolution);
         }
         images.forEach(image => {
             formData.append('images', image);

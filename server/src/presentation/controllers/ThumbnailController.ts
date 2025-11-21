@@ -9,7 +9,7 @@ export class ThumbnailController {
     ) { }
 
     generate = asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { description, language, aspectRatio, visualDescription } = req.body;
+        const { description, language, aspectRatio, visualDescription, resolution } = req.body;
         const files = req.files as Express.Multer.File[];
 
         if (!req.user || !req.user.userId) {
@@ -31,7 +31,8 @@ export class ThumbnailController {
             language,
             images: files,
             aspectRatio,
-            visualDescription
+            visualDescription,
+            resolution
         });
 
         res.status(200).json({

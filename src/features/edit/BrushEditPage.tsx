@@ -2,7 +2,9 @@ import { useRef, useState } from 'react';
 import { useTranslation } from '@/shared/hooks';
 import { InlineBrushCanvas } from './components/InlineBrushCanvas';
 import { nanoBananaApi } from '@/shared/services/nanoBananaApi';
-import { 
+import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
+import {
   Image as ImageIcon,
   Upload,
   Sparkles,
@@ -17,6 +19,7 @@ export const BrushEditPage = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [maskDataUrl, setMaskDataUrl] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
+  const [resolution, setResolution] = useState<ResolutionValue>('1K');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
@@ -70,32 +73,32 @@ export const BrushEditPage = () => {
 
       const originalImg = new Image();
       originalImg.crossOrigin = 'anonymous';
-      
+
       originalImg.onload = () => {
         canvas.width = originalImg.width;
         canvas.height = originalImg.height;
-        
+
         // Draw original image
         ctx.drawImage(originalImg, 0, 0);
-        
+
         // Draw mask overlay
         const maskImg = new Image();
         maskImg.crossOrigin = 'anonymous';
-        
+
         maskImg.onload = () => {
           // Draw mask with semi-transparency to show the brushed areas
           ctx.globalAlpha = 0.5;
           ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 1.0;
-          
+
           // Convert to data URL
           resolve(canvas.toDataURL('image/png'));
         };
-        
+
         maskImg.onerror = () => reject(new Error('Failed to load mask image'));
         maskImg.src = maskDataUrl;
       };
-      
+
       originalImg.onerror = () => reject(new Error('Failed to load original image'));
       originalImg.src = originalDataUrl;
     });
@@ -103,7 +106,7 @@ export const BrushEditPage = () => {
 
   const handleGenerate = async () => {
     if (!prompt.trim() || !uploadedImage) return;
-    
+
     // Check if user has drawn any mask
     if (!maskDataUrl) {
       setError('Please draw on the image to indicate which areas you want to edit');
@@ -112,26 +115,27 @@ export const BrushEditPage = () => {
 
     setIsProcessing(true);
     setError(null);
-    
+
     try {
       // Create composite image (original + red mask overlay)
       const compositeDataUrl = await createCompositeImage(uploadedImage, maskDataUrl);
-      
+
       // Convert to File
       const compositeFile = dataURLtoFile(compositeDataUrl, 'brushed-image.png');
-      
+
       // Call API with the composite image
       const result = await nanoBananaApi.editImage({
         prompt: prompt.trim(),
         images: [compositeFile],
         numImages: 1,
+        resolution: resolution,
       });
-      
+
       // Add generated image to history
-      const generatedImageUrl = result.imageUrl.startsWith('http') 
-        ? result.imageUrl 
+      const generatedImageUrl = result.imageUrl.startsWith('http')
+        ? result.imageUrl
         : `${import.meta.env.VITE_API_BASE_URL || ''}${result.imageUrl}`;
-      
+
       setGeneratedImages(prev => [...prev, generatedImageUrl]);
       setSelectedHistoryImage(generatedImageUrl);
       // Set the generated image as the new uploaded image for next edit
@@ -239,11 +243,10 @@ export const BrushEditPage = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedHistoryImage(image)}
-                    className={`flex-shrink-0 w-12 h-12 rounded-md overflow-hidden border-2 transition-all ${
-                      selectedHistoryImage === image || (!selectedHistoryImage && index === generatedImages.length - 1)
-                        ? 'border-blue-500 dark:border-blue-400 shadow-md'
-                        : 'border-gray-200 dark:border-border-light hover:border-gray-400 dark:hover:border-gray-600'
-                    }`}
+                    className={`flex-shrink-0 w-12 h-12 rounded-md overflow-hidden border-2 transition-all ${selectedHistoryImage === image || (!selectedHistoryImage && index === generatedImages.length - 1)
+                      ? 'border-blue-500 dark:border-blue-400 shadow-md'
+                      : 'border-gray-200 dark:border-border-light hover:border-gray-400 dark:hover:border-gray-600'
+                      }`}
                   >
                     <img
                       src={image}
@@ -318,7 +321,16 @@ export const BrushEditPage = () => {
                 />
               </div>
             )}
-            
+
+            {/* Resolution Selector */}
+            {uploadedImage && (
+              <ResolutionSelector
+                value={resolution}
+                onChange={setResolution}
+                className="mb-4 md:mb-6"
+              />
+            )}
+
             {/* Error Message */}
             {error && (
               <div className="mb-4 md:mb-6 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">

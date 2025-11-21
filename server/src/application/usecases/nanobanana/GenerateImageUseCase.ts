@@ -13,6 +13,7 @@ export interface GenerateImageRequest {
   prompt: string;
   numImages?: number;
   imageSize?: string;
+  resolution?: string;
   uploadedImages?: Express.Multer.File[];
   characterImageUrls?: string[];
   templateId?: string;
@@ -32,10 +33,10 @@ export class GenerateImageUseCase {
     private generatedImageRepository: IGeneratedImageEntityRepository,
     private userRepository: IUserRepository,
     private errorLogService?: ErrorLogService
-  ) {}
+  ) { }
 
   async execute(request: GenerateImageRequest): Promise<GenerateImageResponse> {
-    const { userId, prompt, imageSize = '1:1', uploadedImages = [], characterImageUrls = [], templateId } = request;
+    const { userId, prompt, imageSize = '1:1', resolution = '2K', uploadedImages = [], characterImageUrls = [], templateId } = request;
 
     const user = await this.userRepository.findById(userId);
     if (!user) {
@@ -58,7 +59,7 @@ export class GenerateImageUseCase {
     // Prepare reference images as base64 if provided
     const referenceImages: { mimeType: string; data: string }[] = [];
     const referenceImageUrls: string[] = [];
-    
+
     if (uploadedImages && uploadedImages.length > 0) {
       for (const file of uploadedImages) {
         // Convert to base64 for Google AI API
@@ -85,19 +86,19 @@ export class GenerateImageUseCase {
             console.error(`Failed to download character image from ${imageUrl}`);
             continue;
           }
-          
+
           const arrayBuffer = await response.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
           const base64Data = buffer.toString('base64');
-          
+
           // Determine mime type from response or URL
           const contentType = response.headers.get('content-type') || 'image/jpeg';
-          
+
           referenceImages.push({
             mimeType: contentType,
             data: base64Data
           });
-          
+
           // Track the URL for reference
           referenceImageUrls.push(imageUrl);
         } catch (error) {
@@ -108,9 +109,9 @@ export class GenerateImageUseCase {
     }
 
     // Call Google AI API (synchronous)
-    console.log('🚀 Calling Google AI API for generation:', { 
-      prompt: prompt.substring(0, 100) + '...', 
-      imageSize, 
+    console.log('🚀 Calling Google AI API for generation:', {
+      prompt: prompt.substring(0, 100) + '...',
+      imageSize,
       totalReferenceImages: referenceImages.length,
       uploadedImagesCount: uploadedImages.length,
       characterImagesCount: characterImageUrls.length
@@ -123,7 +124,8 @@ export class GenerateImageUseCase {
         prompt: finalPrompt,
         referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
         aspectRatio: imageSize as any,
-        responseModalities: ['Image'] // Only return image, no text
+        responseModalities: ['Image'], // Only return image, no text
+        resolution: resolution
       });
     } catch (error: any) {
       // Log Google AI API error
@@ -145,7 +147,7 @@ export class GenerateImageUseCase {
 
     // Extract image data from response
     const imageResult = this.googleAIService.extractImageFromResponse(response);
-    
+
     if (!imageResult) {
       const error = new Error('No image returned from Google AI API');
       if (this.errorLogService) {

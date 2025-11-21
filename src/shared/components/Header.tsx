@@ -17,10 +17,10 @@ export const Header = () => {
     return location.pathname === path;
   };
 
-  
+
 
   const navLinks = [
-    { path: '/', label: t('header.explore'), icon: Compass },
+    { path: '/explore', label: t('header.explore'), icon: Compass },
     { path: '/tools', label: t('header.tools'), icon: Wrench },
     { path: '/generate', label: t('header.generate'), icon: ImagePlus },
     { path: '/edit', label: t('header.edit'), icon: Wand2 },
@@ -35,8 +35,8 @@ export const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center gap-2 group"
           >
             <div className="relative transition-transform group-hover:scale-110 group-hover:rotate-12 duration-300">
@@ -77,11 +77,10 @@ export const Header = () => {
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/subscription')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                  user?.subscription === 'premium'
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${user?.subscription === 'premium'
                     ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50'
                     : 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800'
-                }`}
+                  }`}
                 title={user?.subscription === 'premium' ? 'Unlimited' : 'View pricing'}
               >
                 <Star size={16} className="fill-yellow-400 text-yellow-400" />
@@ -111,21 +110,19 @@ export const Header = () => {
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               <div className="relative w-5 h-5">
-                <Sun 
-                  size={20} 
-                  className={`absolute inset-0 transition-all duration-300 ${
-                    theme === 'light' 
-                      ? 'rotate-0 scale-100 opacity-100' 
+                <Sun
+                  size={20}
+                  className={`absolute inset-0 transition-all duration-300 ${theme === 'light'
+                      ? 'rotate-0 scale-100 opacity-100'
                       : 'rotate-90 scale-0 opacity-0'
-                  }`}
+                    }`}
                 />
-                <Moon 
-                  size={20} 
-                  className={`absolute inset-0 transition-all duration-300 ${
-                    theme === 'dark' 
-                      ? 'rotate-0 scale-100 opacity-100' 
+                <Moon
+                  size={20}
+                  className={`absolute inset-0 transition-all duration-300 ${theme === 'dark'
+                      ? 'rotate-0 scale-100 opacity-100'
                       : '-rotate-90 scale-0 opacity-0'
-                  }`}
+                    }`}
                 />
               </div>
             </button>
@@ -136,13 +133,13 @@ export const Header = () => {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              try { navigate('/subscription'); } catch {}
-              setTimeout(() => { try { navigate('/subscription'); } catch {} }, 0);
+              try { navigate('/subscription'); } catch { }
+              setTimeout(() => { try { navigate('/subscription'); } catch { } }, 0);
               setTimeout(() => { if (window.location.pathname !== '/subscription') { window.location.assign('/subscription'); } }, 50);
             }}
             onTouchStart={() => {
               setMobileMenuOpen(false);
-              try { navigate('/subscription'); } catch {}
+              try { navigate('/subscription'); } catch { }
               setTimeout(() => { if (window.location.pathname !== '/subscription') { window.location.assign('/subscription'); } }, 0);
             }}
             className="md:hidden h-10 w-10 flex items-center justify-center rounded-lg text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors active:scale-95 relative z-[300] select-none touch-manipulation"
@@ -191,11 +188,10 @@ export const Header = () => {
                 <a
                   href="/subscription"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg transition-colors ${
-                    user?.subscription === 'premium'
+                  className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg transition-colors ${user?.subscription === 'premium'
                       ? 'bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50'
                       : 'bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800'
-                  }`}
+                    }`}
                 >
                   <Star size={18} className="fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">

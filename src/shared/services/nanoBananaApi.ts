@@ -4,6 +4,7 @@ export interface GenerateImageRequest {
   prompt: string;
   numImages?: number;
   imageSize?: string;
+  resolution?: string;
   images?: File[];
   characterImageUrls?: string[];
   templateId?: string;
@@ -13,6 +14,7 @@ export interface EditImageRequest {
   prompt: string;
   numImages?: number;
   imageSize?: string;
+  resolution?: string;
   images: File[];
   characterImageUrls?: string[];
   templateId?: string;
@@ -52,15 +54,15 @@ class NanoBananaApi {
   async generateImage(request: GenerateImageRequest): Promise<GenerateImageResponse> {
     const formData = new FormData();
     formData.append('prompt', request.prompt);
-    
+
     if (request.numImages) {
       formData.append('numImages', request.numImages.toString());
     }
-    
+
     if (request.imageSize) {
       formData.append('imageSize', request.imageSize);
     }
-    
+
     if (request.characterImageUrls && request.characterImageUrls.length > 0) {
       formData.append('characterImageUrls', JSON.stringify(request.characterImageUrls));
     }
@@ -68,7 +70,7 @@ class NanoBananaApi {
     if (request.templateId) {
       formData.append('templateId', request.templateId);
     }
-    
+
     if (request.images) {
       request.images.forEach((image) => {
         formData.append('images', image);
@@ -95,15 +97,19 @@ class NanoBananaApi {
   async editImage(request: EditImageRequest): Promise<GenerateImageResponse> {
     const formData = new FormData();
     formData.append('prompt', request.prompt);
-    
+
     if (request.numImages) {
       formData.append('numImages', request.numImages.toString());
     }
-    
+
     if (request.imageSize) {
       formData.append('imageSize', request.imageSize);
     }
-    
+
+    if (request.resolution) {
+      formData.append('resolution', request.resolution);
+    }
+
     if (request.characterImageUrls && request.characterImageUrls.length > 0) {
       formData.append('characterImageUrls', JSON.stringify(request.characterImageUrls));
     }
@@ -111,7 +117,7 @@ class NanoBananaApi {
     if (request.templateId) {
       formData.append('templateId', request.templateId);
     }
-    
+
     request.images.forEach((image) => {
       formData.append('images', image);
     });

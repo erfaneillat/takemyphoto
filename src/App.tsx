@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { MainLayout, AuthLayout } from '@/shared/layouts';
+import { LandingPage } from '@/features/landing';
 import { ExplorePage } from '@/features/explore';
 import { EditPage, BrushEditPage } from '@/features/edit';
 import { GeneratePage } from '@/features/generate';
@@ -80,8 +81,8 @@ function App() {
         {/* Main Routes - Public and Protected */}
         <Route element={<MainLayout />}>
           {/* Public Routes - Accessible without authentication */}
-          <Route path="/" element={<ExplorePage />} />
-          <Route path="/explore" element={<Navigate to="/" replace />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/subscription" element={<SubscriptionPage />} />
           <Route path="/about" element={<AboutPage />} />

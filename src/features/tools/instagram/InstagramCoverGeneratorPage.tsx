@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { thumbnailApi, GenerateThumbnailResponse } from '@/shared/services';
+import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 import { Upload, X, Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react';
 
 export const InstagramCoverGeneratorPage = () => {
@@ -9,6 +11,7 @@ export const InstagramCoverGeneratorPage = () => {
     const [visualDescription, setVisualDescription] = useState('');
     const [language, setLanguage] = useState('English');
     const [images, setImages] = useState<File[]>([]);
+    const [resolution, setResolution] = useState<ResolutionValue>('1K');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<GenerateThumbnailResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -39,7 +42,7 @@ export const InstagramCoverGeneratorPage = () => {
         setError(null);
         try {
             // Pass 9:16 aspect ratio for Instagram Cover
-            const data = await thumbnailApi.generate(description, language, images, '9:16', visualDescription);
+            const data = await thumbnailApi.generate(description, language, images, '9:16', visualDescription, resolution);
             setResult(data);
         } catch (err: any) {
             console.error(err);
@@ -103,6 +106,12 @@ export const InstagramCoverGeneratorPage = () => {
                                 placeholder={t('instagramCoverGenerator.textLanguagePlaceholder')}
                             />
                         </div>
+
+                        <ResolutionSelector
+                            value={resolution}
+                            onChange={setResolution}
+                            className="mb-4"
+                        />
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

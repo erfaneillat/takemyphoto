@@ -4,6 +4,7 @@ import type { GeneratedImage, ImageGenerationParams, UploadedImage } from '@/cor
 import type { Character } from '@/core/domain/entities/Character';
 import { nanoBananaApi } from '@/shared/services';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
+import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 
 export const useImageGenerator = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export const useImageGenerator = () => {
   const [prompt, setPrompt] = useState('');
   const [selectedCharacters, setSelectedCharacters] = useState<Character[]>([]);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>('1:1');
+  const [resolution, setResolution] = useState<ResolutionValue>('1K');
   const [error, setError] = useState<string | null>(null);
 
   const MAX_IMAGES = 3;
@@ -32,7 +34,7 @@ export const useImageGenerator = () => {
       setUploadedImages(prev => [...prev, newImage]);
     };
     reader.readAsDataURL(file);
-    
+
     return { success: true };
   }, [uploadedImages.length]);
 
@@ -43,7 +45,7 @@ export const useImageGenerator = () => {
   const generateImage = useCallback(async (params: ImageGenerationParams) => {
     setIsProcessing(true);
     setError(null);
-    
+
     try {
       // Resolve server origin from VITE_API_BASE_URL (strip /api path)
       const serverOrigin = (() => {
@@ -63,6 +65,7 @@ export const useImageGenerator = () => {
         prompt: params.prompt,
         numImages: 1,
         imageSize: aspectRatio,
+        resolution: resolution,
         images: uploadedImages.map(img => img.file),
         characterImageUrls
       });
@@ -83,7 +86,7 @@ export const useImageGenerator = () => {
       return newImage;
     } catch (err: any) {
       console.error('Generation error:', err);
-      
+
       // Check for insufficient stars error
       if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
         setError('You have run out of stars. Redirecting to subscription page...');
@@ -98,7 +101,7 @@ export const useImageGenerator = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, selectedCharacters, aspectRatio, navigate]);
+  }, [uploadedImages, selectedCharacters, aspectRatio, resolution, navigate]);
 
   const clearAll = useCallback(() => {
     setGeneratedImages([]);
@@ -117,6 +120,8 @@ export const useImageGenerator = () => {
     setSelectedCharacters,
     aspectRatio,
     setAspectRatio,
+    resolution,
+    setResolution,
     generateImage,
     addUploadedImage,
     removeUploadedImage,

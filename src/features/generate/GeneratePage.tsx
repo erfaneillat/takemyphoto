@@ -5,7 +5,8 @@ import type { GeneratedImage } from '@/core/domain/entities/Image';
 import type { Character } from '@/core/domain/entities/Character';
 import { CharacterSelectorModal } from '@/features/edit/components/CharacterSelectorModal';
 import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
-import { 
+import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import {
   Image as ImageIcon,
   Sparkles,
   Loader2,
@@ -28,6 +29,8 @@ export const GeneratePage = () => {
     setSelectedCharacters,
     aspectRatio,
     setAspectRatio,
+    resolution,
+    setResolution,
     generateImage,
     addUploadedImage,
     removeUploadedImage,
@@ -70,13 +73,13 @@ export const GeneratePage = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;
-    
+
     // Convert FileList to array and process each file
     Array.from(files).forEach((file) => {
       if (uploadedImages.length >= MAX_IMAGES) return; // Stop if we've reached the limit
       addUploadedImage(file);
     });
-    
+
     // Reset the input so the same file can be selected again
     event.target.value = '';
   };
@@ -116,7 +119,7 @@ export const GeneratePage = () => {
                   >
                     <Download size={20} className="md:w-6 md:h-6" />
                   </button>
-                  
+
                   {/* Attach as Reference Button */}
                   <button
                     onClick={async () => {
@@ -166,11 +169,10 @@ export const GeneratePage = () => {
                   <button
                     key={image.id}
                     onClick={() => setSelectedHistoryImage(image.url)}
-                    className={`flex-shrink-0 w-16 h-16 md:w-24 md:h-24 rounded-lg md:rounded-xl overflow-hidden border-2 transition-all ${
-                      selectedHistoryImage === image.url || (!selectedHistoryImage && index === 0)
+                    className={`flex-shrink-0 w-16 h-16 md:w-24 md:h-24 rounded-lg md:rounded-xl overflow-hidden border-2 transition-all ${selectedHistoryImage === image.url || (!selectedHistoryImage && index === 0)
                         ? 'border-blue-500 dark:border-blue-400 shadow-lg'
                         : 'border-gray-200 dark:border-border-light hover:border-gray-400 dark:hover:border-gray-600'
-                    }`}
+                      }`}
                   >
                     <img
                       src={image.url}
@@ -217,6 +219,13 @@ export const GeneratePage = () => {
               className="mb-4 md:mb-6"
             />
 
+            {/* Resolution Selector */}
+            <ResolutionSelector
+              value={resolution}
+              onChange={setResolution}
+              className="mb-4 md:mb-6"
+            />
+
             {/* References Section */}
             <div className="mb-4 md:mb-6">
               <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 md:mb-3">
@@ -227,18 +236,16 @@ export const GeneratePage = () => {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={!canAddMoreImages}
-                  className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${
-                    canAddMoreImages
+                  className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${canAddMoreImages
                       ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
                       : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   <Upload size={20} className={`md:w-6 md:h-6 ${canAddMoreImages ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`} />
-                  <span className={`text-xs font-medium text-center leading-tight ${
-                    canAddMoreImages
+                  <span className={`text-xs font-medium text-center leading-tight ${canAddMoreImages
                       ? 'text-gray-600 dark:text-gray-400'
                       : 'text-gray-400 dark:text-gray-500'
-                  }`}>
+                    }`}>
                     {t('generate.uploadImage')} <br />({uploadedImages.length}/{MAX_IMAGES})
                   </span>
                 </button>
@@ -247,18 +254,16 @@ export const GeneratePage = () => {
                 <button
                   onClick={handleOpenCharacterSelector}
                   disabled={!canAddMoreCharacters}
-                  className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${
-                    canAddMoreCharacters
+                  className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${canAddMoreCharacters
                       ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
                       : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   <Users size={20} className={`md:w-6 md:h-6 ${canAddMoreCharacters ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`} />
-                  <span className={`text-xs font-medium text-center leading-tight ${
-                    canAddMoreCharacters
+                  <span className={`text-xs font-medium text-center leading-tight ${canAddMoreCharacters
                       ? 'text-gray-600 dark:text-gray-400'
                       : 'text-gray-400 dark:text-gray-500'
-                  }`}>
+                    }`}>
                     {t('generate.attachCharacter')} <br />({selectedCharacters.length}/{MAX_CHARACTERS})
                   </span>
                 </button>
