@@ -1,55 +1,55 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { GeneratedImageEntity } from '@core/domain/entities/GeneratedImageEntity';
 
-export interface GeneratedImageEntityDocument extends Omit<GeneratedImageEntity, 'id'>, Document {}
+export interface GeneratedImageEntityDocument extends Omit<GeneratedImageEntity, 'id'>, Document { }
 
 const GeneratedImageEntitySchema = new Schema<GeneratedImageEntityDocument>(
   {
-    userId: { 
-      type: String, 
+    userId: {
+      type: String,
       required: true,
-      index: true 
+      index: true
     },
-    taskId: { 
-      type: String, 
+    taskId: {
+      type: String,
       required: false
     },
-    prompt: { 
-      type: String, 
-      required: true 
+    prompt: {
+      type: String,
+      required: true
     },
-    type: { 
-      type: String, 
-      enum: ['TEXTTOIAMGE', 'IMAGETOIAMGE'], 
-      required: true 
+    type: {
+      type: String,
+      enum: ['TEXTTOIAMGE', 'IMAGETOIAMGE', 'THUMBNAIL'],
+      required: true
     },
-    imageUrl: { 
+    imageUrl: {
       type: String
     },
-    originImageUrl: { 
-      type: String 
+    originImageUrl: {
+      type: String
     },
-    referenceImageUrls: [{ 
-      type: String 
+    referenceImageUrls: [{
+      type: String
     }],
-    characterIds: [{ 
-      type: String 
+    characterIds: [{
+      type: String
     }],
     templateId: {
       type: String,
       index: true
     },
-    status: { 
-      type: String, 
-      enum: ['pending', 'completed', 'failed'], 
+    status: {
+      type: String,
+      enum: ['pending', 'completed', 'failed'],
       default: 'pending',
-      index: true 
+      index: true
     },
-    error: { 
-      type: String 
+    error: {
+      type: String
     },
-    completedAt: { 
-      type: Date 
+    completedAt: {
+      type: Date
     }
   },
   {

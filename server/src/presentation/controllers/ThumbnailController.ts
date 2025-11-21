@@ -12,6 +12,11 @@ export class ThumbnailController {
         const { description, language, aspectRatio, visualDescription } = req.body;
         const files = req.files as Express.Multer.File[];
 
+        if (!req.user || !req.user.userId) {
+            throw new AppError(401, 'User not authenticated');
+        }
+        const userId = req.user.userId;
+
         if (!description) {
             throw new AppError(400, 'Description is required');
         }
@@ -21,6 +26,7 @@ export class ThumbnailController {
         }
 
         const result = await this.generateThumbnailUseCase.execute({
+            userId,
             description,
             language,
             images: files,

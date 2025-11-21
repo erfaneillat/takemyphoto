@@ -5,7 +5,7 @@ export interface GeneratedImage {
   userId: string;
   taskId: string;
   prompt: string;
-  type: 'TEXTTOIAMGE' | 'IMAGETOIAMGE';
+  type: 'TEXTTOIAMGE' | 'IMAGETOIAMGE' | 'THUMBNAIL';
   imageUrl: string;
   originImageUrl?: string;
   referenceImageUrls?: string[];
@@ -35,7 +35,7 @@ export const generatedImagesApi = {
    */
   async getUserImages(limit = 50, skip = 0): Promise<GeneratedImagesResponse> {
     const token = localStorage.getItem('accessToken');
-    
+
     if (!token) {
       throw new Error('No access token found');
     }
@@ -61,7 +61,7 @@ export const generatedImagesApi = {
   /**
    * Get images by type
    */
-  async getImagesByType(type: 'TEXTTOIAMGE' | 'IMAGETOIAMGE', limit = 50, skip = 0): Promise<GeneratedImage[]> {
+  async getImagesByType(type: 'TEXTTOIAMGE' | 'IMAGETOIAMGE' | 'THUMBNAIL', limit = 50, skip = 0): Promise<GeneratedImage[]> {
     const response = await this.getUserImages(limit, skip);
     return response.data.images.filter(img => img.type === type);
   }

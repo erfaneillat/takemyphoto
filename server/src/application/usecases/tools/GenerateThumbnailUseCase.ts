@@ -1,7 +1,12 @@
 import { OpenAIService } from '@infrastructure/services/OpenAIService';
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
+import { IUserRepository } from '@core/domain/repositories/IUserRepository';
+import { AppError } from '@presentation/middleware/errorHandler';
+import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
+import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
 
 export interface GenerateThumbnailRequest {
+    userId: string;
     description: string;
     language: string;
     images?: Express.Multer.File[];
@@ -13,17 +18,50 @@ export interface GenerateThumbnailResponse {
     image: string; // base64
     mimeType: string;
     prompt: string;
+    imageUrl: string;
+    imageId: string;
 }
 
 export class GenerateThumbnailUseCase {
     constructor(
         private openAIService: OpenAIService,
-        private googleAIService: GoogleAIService
+        private googleAIService: GoogleAIService,
+        private userRepository: IUserRepository,
+        private fileUploadService: IFileUploadService,
+        private generatedImageRepository: IGeneratedImageEntityRepository
     ) { }
 
     async execute(request: GenerateThumbnailRequest): Promise<GenerateThumbnailResponse> {
+        const { userId } = request;
+
+        // Check user's plan and star balance
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new AppError(404, 'User not found');
+        }
+
+        const isUnlimited = user.subscription && user.subscription !== 'free';
+        if (!isUnlimited) {
+            if (user.stars <= 0) {
+                throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue.');
+            }
+            await this.userRepository.decrementStars(userId, 1);
+            console.log(`⭐ User ${userId} consumed 1 star for thumbnail generation. Remaining: ${user.stars - 1}`);
+        } else {
+            console.log(`♾️ Unlimited thumbnail generation for ${user.subscription} user ${userId}`);
+        }
+
         // Determine type based on aspect ratio
         const type = request.aspectRatio === '9:16' ? 'Instagram Cover' : 'YouTube Thumbnail';
+
+        // Prepare reference images
+        const referenceImageUrls: string[] = [];
+        if (request.images && request.images.length > 0) {
+            for (const file of request.images) {
+                const uploadResult = await this.fileUploadService.uploadImage(file, 'nero/references');
+                referenceImageUrls.push(uploadResult.url);
+            }
+        }
 
         // 1. Generate prompt using OpenAI (using only text description)
         const prompt = await this.openAIService.generateThumbnailPrompt(
@@ -55,10 +93,43 @@ export class GenerateThumbnailUseCase {
             throw new Error('Failed to generate thumbnail image');
         }
 
+        // Save the generated image
+        const imageBuffer = Buffer.from(imageResult.data, 'base64');
+        const mimeType = imageResult.mimeType || 'image/png';
+        const ext = mimeType.includes('jpeg') ? 'jpg' : mimeType.split('/')[1] || 'png';
+        const imageFile: Express.Multer.File = {
+            buffer: imageBuffer,
+            mimetype: mimeType,
+            originalname: `thumbnail-${Date.now()}.${ext}`,
+            fieldname: 'image',
+            encoding: '7bit',
+            size: imageBuffer.length,
+            stream: null as any,
+            destination: '',
+            filename: '',
+            path: ''
+        };
+
+        const uploadResult = await this.fileUploadService.uploadImage(imageFile, 'nero/thumbnails');
+        const localImageUrl = uploadResult.url;
+
+        // Save to repository
+        const generatedImage = await this.generatedImageRepository.create({
+            userId,
+            prompt,
+            type: 'THUMBNAIL',
+            imageUrl: localImageUrl,
+            referenceImageUrls: referenceImageUrls.length > 0 ? referenceImageUrls : undefined,
+            status: 'completed',
+            completedAt: new Date()
+        });
+
         return {
             image: imageResult.data,
             mimeType: imageResult.mimeType,
-            prompt: prompt
+            prompt: prompt,
+            imageUrl: localImageUrl,
+            imageId: generatedImage.id
         };
     }
 }

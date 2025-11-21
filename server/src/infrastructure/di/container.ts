@@ -539,7 +539,10 @@ export class Container {
 
     this.generateThumbnailUseCase = new GenerateThumbnailUseCase(
       this.openAIService,
-      this.googleAIService
+      this.googleAIService,
+      this.userRepository,
+      this.fileUploadService,
+      this.generatedImageEntityRepository
     );
 
     this.errorLogController = new ErrorLogController(
