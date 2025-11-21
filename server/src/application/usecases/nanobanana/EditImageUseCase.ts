@@ -36,7 +36,7 @@ export class EditImageUseCase {
   ) { }
 
   async execute(request: EditImageRequest): Promise<EditImageResponse> {
-    const { userId, prompt, imageSize = '1:1', resolution = '2K', uploadedImages, characterImageUrls = [], templateId } = request;
+    const { userId, prompt, imageSize = '1:1', resolution = '1K', uploadedImages, characterImageUrls = [], templateId } = request;
 
     // Validate that at least one image is provided for editing
     if (!uploadedImages || uploadedImages.length === 0) {

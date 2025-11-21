@@ -36,7 +36,7 @@ export class GenerateImageUseCase {
   ) { }
 
   async execute(request: GenerateImageRequest): Promise<GenerateImageResponse> {
-    const { userId, prompt, imageSize = '1:1', resolution = '2K', uploadedImages = [], characterImageUrls = [], templateId } = request;
+    const { userId, prompt, imageSize = '1:1', resolution = '1K', uploadedImages = [], characterImageUrls = [], templateId } = request;
 
     const user = await this.userRepository.findById(userId);
     if (!user) {

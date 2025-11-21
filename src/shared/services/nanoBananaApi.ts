@@ -63,6 +63,10 @@ class NanoBananaApi {
       formData.append('imageSize', request.imageSize);
     }
 
+    if (request.resolution) {
+      formData.append('resolution', request.resolution);
+    }
+
     if (request.characterImageUrls && request.characterImageUrls.length > 0) {
       formData.append('characterImageUrls', JSON.stringify(request.characterImageUrls));
     }
