@@ -53,6 +53,7 @@ import { GetUsersUseCase } from '@application/usecases/user/GetUsersUseCase';
 import { GetUserStatsUseCase } from '@application/usecases/user/GetUserStatsUseCase';
 import { UpdateUserUseCase } from '@application/usecases/user/UpdateUserUseCase';
 import { DeleteUserUseCase } from '@application/usecases/user/DeleteUserUseCase';
+import { UpscaleImageUseCase as AIUpscaleImageUseCase } from '@application/usecases/upscale/UpscaleImageUseCase';
 import { UpscaleImageUseCase } from '@application/usecases/enhance/UpscaleImageUseCase';
 import { ImageToPromptUseCase } from '@application/usecases/enhance/ImageToPromptUseCase';
 import { GenerateImageUseCase } from '@application/usecases/nanobanana/GenerateImageUseCase';
@@ -95,6 +96,7 @@ import { DashboardController } from '@presentation/controllers/DashboardControll
 import { ContactController } from '@presentation/controllers/ContactController';
 import { CheckoutController } from '@presentation/controllers/CheckoutController';
 import { ErrorLogController } from '@presentation/controllers/ErrorLogController';
+import { UpscaleController } from '@presentation/controllers/UpscaleController';
 
 export class Container {
   // Repositories
@@ -153,6 +155,7 @@ export class Container {
   public updateUserUseCase: UpdateUserUseCase;
   public deleteUserUseCase: DeleteUserUseCase;
   public upscaleImageUseCase: UpscaleImageUseCase;
+  public aiUpscaleImageUseCase: AIUpscaleImageUseCase;
   public imageToPromptUseCase: ImageToPromptUseCase;
   public generateImageUseCase: GenerateImageUseCase;
   public editImageUseCase: EditImageUseCase;
@@ -193,6 +196,7 @@ export class Container {
   public contactController: ContactController;
   public checkoutController: CheckoutController;
   public errorLogController: ErrorLogController;
+  public upscaleController: UpscaleController;
 
   constructor() {
     // Initialize Repositories
@@ -353,6 +357,12 @@ export class Container {
     );
 
     this.upscaleImageUseCase = new UpscaleImageUseCase();
+
+    this.aiUpscaleImageUseCase = new AIUpscaleImageUseCase(
+      this.googleAIService,
+      this.fileUploadService,
+      this.errorLogService
+    );
 
     this.imageToPromptUseCase = new ImageToPromptUseCase(
       this.openAIService
@@ -555,6 +565,10 @@ export class Container {
 
     this.thumbnailController = new ThumbnailController(
       this.generateThumbnailUseCase
+    );
+
+    this.upscaleController = new UpscaleController(
+      this.aiUpscaleImageUseCase
     );
   }
 }

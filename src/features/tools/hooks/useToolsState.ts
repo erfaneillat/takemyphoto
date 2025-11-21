@@ -55,9 +55,7 @@ export const useToolsState = () => {
       icon: 'Maximize2',
       path: '/upscale',
       color: 'from-cyan-500 to-blue-500',
-      image: '/upscale.jpg',
-      badgeKey: 'comingSoon',
-      disabled: true
+      image: '/upscale.jpg'
     },
     {
       id: 'imageToPrompt',

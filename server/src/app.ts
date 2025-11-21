@@ -20,6 +20,7 @@ import { createContactRoutes } from '@presentation/routes/contactRoutes';
 import { createCheckoutRoutes } from '@presentation/routes/checkoutRoutes';
 import { createErrorLogRoutes } from '@presentation/routes/errorLogRoutes';
 import { createThumbnailRoutes } from '@presentation/routes/thumbnailRoutes';
+import { createUpscaleRoutes } from '@presentation/routes/upscaleRoutes';
 import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -157,6 +158,8 @@ export class App {
     this.app.use(`${baseUrl}/contact`, createContactRoutes(this.container.contactController));
     this.app.use(`${baseUrl}/checkout`, createCheckoutRoutes(this.container.checkoutController));
     this.app.use(`${baseUrl}/error-logs`, createErrorLogRoutes(this.container.errorLogController));
+    // Upscale tool routes
+    this.app.use(`${baseUrl}/upscale`, createUpscaleRoutes(this.container.upscaleController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');

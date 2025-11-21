@@ -289,6 +289,34 @@
       "description": "We're constantly adding new AI tools to enhance your creative workflow"
     }
   },
+  "upscale": {
+    "badge": "AI Image Upscaler",
+    "title": "Upscale Your Images",
+    "subtitle": "Enhance image resolution up to 4K using advanced AI technology",
+    "upload": {
+      "title": "Upload Image",
+      "dragDrop": "Drop an image here or click to select",
+      "formats": "PNG, JPG, JPEG up to 10MB",
+      "change": "Change image"
+    },
+    "resolution": {
+      "title": "Select Target Resolution",
+      "1k": "1024×1024",
+      "2k": "2048×2048",
+      "4k": "4096×4096"
+    },
+    "button": "Upscale Image",
+    "processing": "Upscaling...",
+    "result": {
+      "title": "Upscaled Image",
+      "placeholder": "Your upscaled image will appear here",
+      "success": "Successfully upscaled to {{resolution}}"
+    },
+    "download": "Download",
+    "error": {
+      "title": "Upscaling Failed"
+    }
+  },
   "explore": {
     "title": "Explore",
     "subtitle": "Discover creative styles and ideas for your photo edits",
@@ -605,26 +633,6 @@
       "contactButton": "Contact Support"
     },
     "moneyBackGuarantee": "30-Day Money Back Guarantee"
-  },
-  "upscale": {
-    "title": "Image Upscaler",
-    "description": "Upscale your images with AI",
-    "uploadImage": "Upload Image",
-    "uploadHint": "Click to browse or drag and drop",
-    "scaleLabel": "Upscale Factor",
-    "scaleHint": "Select how much to upscale your image",
-    "upscaleButton": "Upscale Image",
-    "upscaling": "Upscaling your image...",
-    "downloadButton": "Download",
-    "closeButton": "Close",
-    "preview": {
-      "noImage": "No image uploaded yet",
-      "uploadToStart": "Upload an image to start upscaling"
-    },
-    "result": {
-      "title": "Upscaled Successfully!",
-      "description": "Upscaled {{scale}}x"
-    }
   },
   "imageToPrompt": {
     "title": "Image to Prompt",
