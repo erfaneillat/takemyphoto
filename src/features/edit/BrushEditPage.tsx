@@ -132,9 +132,16 @@ export const BrushEditPage = () => {
       });
 
       // Add generated image to history
+      // Resolve image URL to absolute path using server origin (without /api path)
+      const serverOrigin = (() => {
+        const raw = import.meta.env.VITE_API_BASE_URL as string | undefined;
+        if (!raw) return '';
+        try { const u = new URL(raw); return `${u.protocol}//${u.host}`; } catch { return ''; }
+      })();
+
       const generatedImageUrl = result.imageUrl.startsWith('http')
         ? result.imageUrl
-        : `${import.meta.env.VITE_API_BASE_URL || ''}${result.imageUrl}`;
+        : `${serverOrigin}${result.imageUrl}`;
 
       setGeneratedImages(prev => [...prev, generatedImageUrl]);
       setSelectedHistoryImage(generatedImageUrl);

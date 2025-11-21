@@ -36,8 +36,8 @@ export const ToolCard = ({ tool }: ToolCardProps) => {
     <button
       onClick={handleClick}
       aria-disabled={tool.disabled}
-      className={`group relative w-full bg-white dark:bg-surface-card rounded-3xl border border-gray-200 dark:border-gray-800 transition-all duration-300 text-left overflow-hidden flex flex-col h-full
-        ${tool.disabled ? 'opacity-60 cursor-not-allowed' : 'hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl hover:-translate-y-1'}`}
+      className={`group relative w-full bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 transition-all duration-300 text-left overflow-hidden flex flex-col h-full
+        ${tool.disabled ? 'opacity-60 cursor-not-allowed' : 'hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-xl hover:-translate-y-1'}`}
     >
       {/* Image Header */}
       <div className="relative h-48 w-full overflow-hidden">
@@ -77,7 +77,7 @@ export const ToolCard = ({ tool }: ToolCardProps) => {
         </p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-gray-800/50">
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
           <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
             {tool.disabled ? t('tools.comingSoon') : t('common.tryNow')}
           </span>

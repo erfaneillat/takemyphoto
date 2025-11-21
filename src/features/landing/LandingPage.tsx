@@ -111,7 +111,7 @@ export const LandingPage = () => {
     };
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-purple-500/20" onMouseMove={handleMouseMove}>
+        <div ref={containerRef} className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white overflow-hidden selection:bg-purple-500/20" onMouseMove={handleMouseMove}>
             {/* Dynamic Background Elements */}
             <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-[120px] animate-pulse" />
@@ -128,12 +128,12 @@ export const LandingPage = () => {
                     initial="hidden"
                     animate="visible"
                 >
-                    <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 border border-foreground/10 backdrop-blur-md hover:bg-foreground/10 transition-colors cursor-default">
+                    <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 backdrop-blur-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-default">
                         <Sparkles className="w-4 h-4 text-amber-500" />
-                        <span className="text-sm font-medium text-foreground/80">Next Gen AI Engine Available</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Next Gen AI Engine Available</span>
                     </motion.div>
 
-                    <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[1.1]">
+                    <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gray-900 dark:text-white leading-[1.1]">
                         Create Beyond <br />
                         <span className="relative inline-block">
                             <span className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 blur-3xl opacity-20 animate-pulse"></span>
@@ -143,7 +143,7 @@ export const LandingPage = () => {
                         </span>
                     </motion.h1>
 
-                    <motion.p variants={itemVariants} className="text-xl text-foreground/60 max-w-2xl mx-auto leading-relaxed">
+                    <motion.p variants={itemVariants} className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
                         Unleash your creativity with the most powerful AI art generation platform.
                         Transform your ideas into breathtaking visuals in seconds using our suite of professional tools.
                     </motion.p>
@@ -152,7 +152,7 @@ export const LandingPage = () => {
                         <Button
                             size="lg"
                             onClick={() => navigate('/explore')}
-                            className="relative overflow-hidden group text-lg px-8 py-6 rounded-2xl bg-foreground text-background hover:bg-foreground/90 shadow-xl shadow-foreground/10 transition-all hover:scale-105 active:scale-95"
+                            className="relative overflow-hidden group text-lg px-8 py-6 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-xl shadow-black/10 dark:shadow-white/10 transition-all hover:scale-105 active:scale-95"
                         >
                             <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
                             Start Creating Free
@@ -165,7 +165,7 @@ export const LandingPage = () => {
                                 const toolsSection = document.getElementById('tools-section');
                                 toolsSection?.scrollIntoView({ behavior: 'smooth' });
                             }}
-                            className="text-lg px-8 py-6 rounded-2xl border-2 hover:bg-foreground/5 transition-all hover:scale-105 active:scale-95 backdrop-blur-sm"
+                            className="text-lg px-8 py-6 rounded-2xl border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 backdrop-blur-sm"
                         >
                             Explore Tools
                         </Button>
@@ -180,14 +180,14 @@ export const LandingPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.4 }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 h-full pointer-events-none" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-transparent z-10 h-24 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent z-10 h-full pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white dark:from-black via-transparent to-transparent z-10 h-24 pointer-events-none" />
 
                     {/* Scrolling Marquee */}
                     <div className="flex gap-6 overflow-hidden py-4 mask-image-linear-gradient">
                         <div className="flex gap-6 animate-scroll-x min-w-max">
                             {[...tools, ...tools].map((tool, i) => (
-                                <div key={`${tool.id}-${i}`} className="w-72 h-96 rounded-3xl overflow-hidden relative group shadow-2xl border border-foreground/5 bg-foreground/5">
+                                <div key={`${tool.id}-${i}`} className="w-72 h-96 rounded-3xl overflow-hidden relative group shadow-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                                     <img src={tool.image} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                                     <div className="absolute bottom-6 left-6">
@@ -198,7 +198,7 @@ export const LandingPage = () => {
                         </div>
                         <div className="flex gap-6 animate-scroll-x min-w-max" aria-hidden="true">
                             {[...tools, ...tools].map((tool, i) => (
-                                <div key={`${tool.id}-${i}-clone`} className="w-72 h-96 rounded-3xl overflow-hidden relative group shadow-2xl border border-foreground/5 bg-foreground/5">
+                                <div key={`${tool.id}-${i}-clone`} className="w-72 h-96 rounded-3xl overflow-hidden relative group shadow-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                                     <img src={tool.image} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                                     <div className="absolute bottom-6 left-6">
@@ -220,8 +220,8 @@ export const LandingPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-3xl md:text-5xl font-bold mb-6">Why Choose Take My Photo?</h2>
-                        <p className="text-foreground/60 text-lg max-w-2xl mx-auto">Experience the future of creativity with our cutting-edge features.</p>
+                        <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">Why Choose Take My Photo?</h2>
+                        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">Experience the future of creativity with our cutting-edge features.</p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -232,13 +232,13 @@ export const LandingPage = () => {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className={`p-8 rounded-3xl border backdrop-blur-sm hover:bg-foreground/[0.02] transition-colors ${feature.className}`}
+                                className={`p-8 rounded-3xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${feature.className}`}
                             >
-                                <div className="w-12 h-12 rounded-2xl bg-background border border-foreground/10 flex items-center justify-center mb-6 shadow-sm">
+                                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 flex items-center justify-center mb-6 shadow-sm">
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                                <p className="text-foreground/60 leading-relaxed">{feature.description}</p>
+                                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
+                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -247,7 +247,7 @@ export const LandingPage = () => {
 
             {/* Tools Showcase Section */}
             <section id="tools-section" className="py-24 px-4 sm:px-6 lg:px-8 scroll-mt-20 relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-foreground/[0.02] to-transparent -z-10" />
+                <div className="absolute inset-0 bg-gradient-to-b from-gray-50 dark:from-gray-900/50 to-transparent -z-10" />
                 <div className="max-w-7xl mx-auto">
                     <motion.div
                         className="text-center mb-16"
@@ -261,10 +261,10 @@ export const LandingPage = () => {
                                 {t('tools.badge')}
                             </span>
                         </div>
-                        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+                        <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                             {t('tools.title')}
                         </h2>
-                        <p className="text-lg text-foreground/60 max-w-2xl mx-auto">
+                        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                             {t('tools.subtitle')}
                         </p>
                     </motion.div>
@@ -281,7 +281,7 @@ export const LandingPage = () => {
                             >
                                 <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
                                     style={{
-                                        background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.1), transparent 40%)`
+                                        background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.05), transparent 40%)`
                                     }}
                                 />
                                 <div className="relative z-10 h-full">
@@ -298,7 +298,7 @@ export const LandingPage = () => {
                         viewport={{ once: true }}
                         transition={{ delay: 0.5 }}
                     >
-                        <p className="text-foreground/60 text-sm font-medium flex items-center justify-center gap-2">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm font-medium flex items-center justify-center gap-2">
                             <Zap className="w-4 h-4 text-amber-500" />
                             {t('tools.moreComingSoon.description')}
                         </p>
@@ -307,9 +307,9 @@ export const LandingPage = () => {
             </section>
 
             {/* Stats Section */}
-            <section className="py-20 border-y border-foreground/5 bg-foreground/[0.01]">
+            <section className="py-20 border-y border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-foreground/10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-700">
                         {[
                             { number: "10M+", label: "Images Generated" },
                             { number: "500k+", label: "Active Creators" },
@@ -322,10 +322,10 @@ export const LandingPage = () => {
                                 viewport={{ once: true }}
                                 className="space-y-2 pt-8 md:pt-0"
                             >
-                                <div className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/40 font-tracking-tight">
+                                <div className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 font-tracking-tight">
                                     {stat.number}
                                 </div>
-                                <div className="text-foreground/60 font-medium text-lg">{stat.label}</div>
+                                <div className="text-gray-600 dark:text-gray-400 font-medium text-lg">{stat.label}</div>
                             </motion.div>
                         ))}
                     </div>
@@ -335,7 +335,7 @@ export const LandingPage = () => {
             {/* Testimonials */}
             <section className="py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-foreground">Loved by Creators</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gray-900 dark:text-white">Loved by Creators</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {testimonials.map((testimonial, index) => (
                             <motion.div
@@ -344,14 +344,14 @@ export const LandingPage = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.2 }}
-                                className="p-8 rounded-3xl bg-background border border-foreground/10 relative hover:border-foreground/20 transition-colors shadow-lg shadow-foreground/5 group"
+                                className="p-8 rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 relative hover:border-gray-300 dark:hover:border-gray-600 transition-colors shadow-lg shadow-gray-500/5 dark:shadow-black/20 group"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-br from-foreground/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 dark:from-gray-700/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
                                 <div className="flex items-center gap-4 mb-6 relative z-10">
-                                    <img src={testimonial.avatar} alt={testimonial.name} className="w-14 h-14 rounded-full object-cover ring-4 ring-foreground/5" />
+                                    <img src={testimonial.avatar} alt={testimonial.name} className="w-14 h-14 rounded-full object-cover ring-4 ring-gray-200 dark:ring-gray-700" />
                                     <div>
-                                        <div className="font-bold text-foreground text-lg">{testimonial.name}</div>
-                                        <div className="text-sm text-foreground/60 font-medium">{testimonial.role}</div>
+                                        <div className="font-bold text-gray-900 dark:text-white text-lg">{testimonial.name}</div>
+                                        <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">{testimonial.role}</div>
                                     </div>
                                 </div>
                                 <div className="flex mb-4 relative z-10">
@@ -359,7 +359,7 @@ export const LandingPage = () => {
                                         <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
                                     ))}
                                 </div>
-                                <p className="text-foreground/80 italic text-lg leading-relaxed relative z-10">"{testimonial.content}"</p>
+                                <p className="text-gray-700 dark:text-gray-300 italic text-lg leading-relaxed relative z-10">"{testimonial.content}"</p>
                             </motion.div>
                         ))}
                     </div>
@@ -373,7 +373,7 @@ export const LandingPage = () => {
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="rounded-[3rem] bg-foreground text-background p-12 md:p-24 text-center relative overflow-hidden shadow-2xl shadow-foreground/20 group"
+                        className="rounded-[3rem] bg-gray-900 dark:bg-white text-white dark:text-gray-900 p-12 md:p-24 text-center relative overflow-hidden shadow-2xl shadow-gray-900/20 dark:shadow-white/20 group"
                     >
                         <div className="absolute top-0 left-0 w-full h-full opacity-10">
                             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
@@ -382,19 +382,19 @@ export const LandingPage = () => {
 
                         <div className="relative z-10 space-y-8">
                             <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Ready to start creating?</h2>
-                            <p className="text-xl text-background/80 max-w-2xl mx-auto">
+                            <p className="text-xl text-white/80 dark:text-gray-600 max-w-2xl mx-auto">
                                 Join thousands of creators who are already using our tools to bring their imagination to reality.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
                                 <Button
                                     size="lg"
                                     onClick={() => navigate('/explore')}
-                                    className="bg-background text-foreground hover:bg-background/90 text-lg px-12 py-7 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
+                                    className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 text-lg px-12 py-7 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
                                 >
                                     Get Started Now
                                 </Button>
                             </div>
-                            <div className="flex flex-wrap justify-center gap-6 pt-8 text-sm text-background/60 font-medium">
+                            <div className="flex flex-wrap justify-center gap-6 pt-8 text-sm text-white/60 dark:text-gray-600 font-medium">
                                 <div className="flex items-center gap-2">
                                     <CheckCircle2 className="w-4 h-4" /> No credit card required
                                 </div>

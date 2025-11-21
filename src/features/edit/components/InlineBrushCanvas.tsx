@@ -31,22 +31,22 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       imageRef.current = img;
-      
+
       // Set canvas dimensions to match container while maintaining aspect ratio
       const container = containerRef.current;
       if (!container) return;
 
       const containerWidth = container.clientWidth;
       const containerHeight = Math.min(container.clientHeight, 600);
-      
+
       let width = img.width;
       let height = img.height;
-      
+
       // Scale to fit container
       const ratio = Math.min(containerWidth / width, containerHeight / height);
       width = width * ratio;
       height = height * ratio;
-      
+
       canvas.width = width;
       canvas.height = height;
       maskCanvas.width = width;
@@ -55,25 +55,25 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
       cursorCanvas.height = height;
 
       setCanvasSize({ width, height });
-      
+
       // Draw image on main canvas
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(img, 0, 0, width, height);
       }
-      
+
       // Initialize mask canvas with transparent background
       const maskCtx = maskCanvas.getContext('2d');
       if (maskCtx) {
         maskCtx.clearRect(0, 0, width, height);
       }
-      
+
       // Initialize cursor canvas with transparent background
       const cursorCtx = cursorCanvas.getContext('2d');
       if (cursorCtx) {
         cursorCtx.clearRect(0, 0, width, height);
       }
-      
+
       onMaskChange(null);
     };
     img.src = imageUrl;
@@ -102,7 +102,7 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
   const updateMask = useCallback(() => {
     const maskCanvas = maskCanvasRef.current;
     if (!maskCanvas) return;
-    
+
     const maskDataUrl = maskCanvas.toDataURL('image/png');
     onMaskChange(maskDataUrl);
   }, [onMaskChange]);
@@ -157,7 +157,7 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
     const coords = getCoordinates(e);
     if (coords) {
       drawCursor(coords.x, coords.y);
-      
+
       if (isDrawing) {
         draw(coords.x, coords.y);
       }
@@ -222,14 +222,14 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
     // Redraw main canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(imageRef.current, 0, 0, canvas.width, canvas.height);
-    
+
     onMaskChange(null);
   }, [onMaskChange]);
 
   return (
     <div className="h-full flex flex-col p-4 gap-4">
       {/* Canvas Container */}
-      <div 
+      <div
         ref={containerRef}
         className="flex-1 relative bg-gray-100 dark:bg-surface rounded-xl overflow-hidden flex items-center justify-center"
       >
@@ -277,22 +277,20 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => setTool('brush')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                tool === 'brush'
-                  ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
-                  : 'bg-gray-100 dark:bg-surface text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-surface-hover'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${tool === 'brush'
+                ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
+                : 'bg-gray-100 dark:bg-surface text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-surface-hover'
+                }`}
             >
               <Paintbrush size={16} />
               <span className="text-sm font-medium">{t('edit.brushTool.brush')}</span>
             </button>
             <button
               onClick={() => setTool('eraser')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                tool === 'eraser'
-                  ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
-                  : 'bg-gray-100 dark:bg-surface text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-surface-hover'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${tool === 'eraser'
+                ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
+                : 'bg-gray-100 dark:bg-surface text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-surface-hover'
+                }`}
             >
               <Eraser size={16} />
               <span className="text-sm font-medium">{t('edit.brushTool.eraser')}</span>
