@@ -168,10 +168,10 @@ export const BrushEditPage = () => {
   return (
     <div className="h-full bg-white dark:bg-black flex flex-col overflow-hidden transition-colors">
       {/* Main Content - Responsive Layout */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Image Preview & Canvas Panel */}
         <div className="flex-1 flex flex-col bg-gray-50 dark:bg-surface min-h-0">
-          <div className="flex-1 min-h-[300px] md:min-h-[400px] flex items-center justify-center overflow-hidden">
+          <div className="flex-1 min-h-[40vh] sm:min-h-[50vh] md:min-h-[60vh] lg:min-h-[400px] flex items-center justify-center overflow-hidden">
             {uploadedImage || mainDisplayImage ? (
               <div className="w-full h-full relative">
                 <InlineBrushCanvas
@@ -268,10 +268,10 @@ export const BrushEditPage = () => {
         </div>
 
         {/* Controls Panel */}
-        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col">
-          <div className="p-4 md:p-6 pb-[calc(90px+env(safe-area-inset-bottom))] lg:pb-6 flex flex-col flex-1 overflow-y-auto">
+        <div className="w-full lg:w-96 flex-shrink-0 bg-white dark:bg-surface-card border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-border-light flex flex-col max-h-[60vh] lg:max-h-none">
+          <div className="p-3 md:p-4 lg:p-6 pb-[calc(140px+env(safe-area-inset-bottom))] lg:pb-6 flex flex-col flex-1 overflow-y-auto">
             {/* Header */}
-            <div className="mb-4 md:mb-6">
+            <div className="mb-3 md:mb-4 lg:mb-6">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">
                 {t('edit.brushMode.title')}
               </h2>
@@ -282,11 +282,11 @@ export const BrushEditPage = () => {
 
             {/* Upload Image Section */}
             {uploadedImage ? (
-              <div className="hidden md:block mb-4 md:mb-6">
+              <div className="hidden lg:block mb-3 md:mb-4 lg:mb-6">
                 <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Uploaded Image
                 </label>
-                <div className="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-border-light group">
+                <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-lg md:rounded-xl overflow-hidden border-2 border-gray-200 dark:border-border-light group">
                   <img
                     src={uploadedImage}
                     alt="Uploaded"
@@ -296,21 +296,21 @@ export const BrushEditPage = () => {
                     onClick={handleRemoveImage}
                     className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 active:opacity-100 transition-all flex items-center justify-center"
                   >
-                    <X size={24} className="text-white" />
+                    <X size={20} className="text-white" />
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="mb-4 md:mb-6">
+              <div className="mb-3 md:mb-4 lg:mb-6">
                 <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Upload Image
                 </label>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full flex flex-col items-center justify-center gap-2 p-6 rounded-xl border-2 border-dashed border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all cursor-pointer"
+                  className="w-full flex flex-col items-center justify-center gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all cursor-pointer"
                 >
-                  <Upload size={24} className="text-gray-400 dark:text-gray-500" />
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <Upload size={20} className="md:w-6 md:h-6 text-gray-400 dark:text-gray-500" />
+                  <span className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
                     {t('edit.promptBased.uploadImage')}
                   </span>
                 </button>
@@ -319,12 +319,12 @@ export const BrushEditPage = () => {
 
             {/* Prompt Input */}
             {uploadedImage && (
-              <div className="mb-4 md:mb-6">
+              <div className="mb-3 md:mb-4 lg:mb-6">
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder={t('edit.brushTool.promptPlaceholder')}
-                  className="w-full px-3 md:px-4 py-2.5 md:py-3 bg-gray-50 dark:bg-surface rounded-lg md:rounded-xl border border-gray-200 dark:border-border-light focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none resize-none min-h-[100px] md:min-h-[120px] text-sm"
+                  className="w-full px-3 md:px-4 py-2 md:py-2.5 lg:py-3 bg-gray-50 dark:bg-surface rounded-lg md:rounded-xl border border-gray-200 dark:border-border-light focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none resize-none min-h-[80px] md:min-h-[100px] lg:min-h-[120px] text-sm"
                 />
               </div>
             )}
@@ -334,34 +334,35 @@ export const BrushEditPage = () => {
               <ResolutionSelector
                 value={resolution}
                 onChange={setResolution}
-                className="mb-4 md:mb-6"
+                className="mb-3 md:mb-4 lg:mb-6"
               />
             )}
 
             {/* Error Message */}
             {error && (
-              <div className="mb-4 md:mb-6 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+              <div className="mb-3 md:mb-4 lg:mb-6 p-2 md:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-xs md:text-sm text-red-600 dark:text-red-400">{error}</p>
               </div>
             )}
+            <div className="h-[140px] lg:hidden" />
           </div>
 
           {/* Generate Button - Fixed at Bottom on Mobile, Inline on Desktop */}
           {uploadedImage && (
-            <div className="p-4 md:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card lg:relative fixed bottom-24 md:bottom-0 left-0 right-0 z-[60] lg:z-auto pb-[env(safe-area-inset-bottom)]">
+            <div className="p-3 md:p-4 lg:p-6 border-t border-gray-200 dark:border-border-light bg-white dark:bg-surface-card lg:relative fixed bottom-24 md:bottom-0 left-0 right-0 z-[60] lg:z-auto pb-[env(safe-area-inset-bottom)]">
               <button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || isProcessing}
-                className="w-full px-4 md:px-6 py-3 md:py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg md:rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-sm md:text-base active:scale-95"
+                className="w-full px-4 md:px-6 py-2.5 md:py-3 lg:py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg md:rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:hover:shadow-blue-600/30 flex items-center justify-center gap-2 text-sm md:text-base active:scale-95"
               >
                 {isProcessing ? (
                   <>
-                    <Loader2 size={18} className="md:w-5 md:h-5 animate-spin" />
+                    <Loader2 size={16} className="md:w-5 md:h-5 animate-spin" />
                     <span className="truncate">{t('edit.editingImage')}</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles size={18} className="md:w-5 md:h-5" />
+                    <Sparkles size={16} className="md:w-5 md:h-5" />
                     <span>{t('edit.brushMode.editButton')}</span>
                   </>
                 )}

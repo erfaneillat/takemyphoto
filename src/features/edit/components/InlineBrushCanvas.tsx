@@ -227,11 +227,11 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
   }, [onMaskChange]);
 
   return (
-    <div className="h-full flex flex-col p-4 gap-4">
+    <div className="h-full flex flex-col p-2 md:p-4 gap-2 md:gap-4">
       {/* Canvas Container */}
       <div
         ref={containerRef}
-        className="flex-1 relative bg-gray-100 dark:bg-surface rounded-xl overflow-hidden flex items-center justify-center"
+        className="flex-1 relative bg-gray-100 dark:bg-surface rounded-lg md:rounded-xl overflow-hidden flex items-center justify-center"
       >
         <div
           className="relative"
@@ -268,47 +268,50 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
       </div>
 
       {/* Tools */}
-      <div className="flex-shrink-0 bg-gray-50 dark:bg-surface-card rounded-xl p-3 md:p-4 border border-gray-200 dark:border-border-light space-y-3 md:space-y-4">
+      <div className="flex-shrink-0 bg-gray-50 dark:bg-surface-card rounded-lg md:rounded-xl p-2 md:p-3 lg:p-4 border border-gray-200 dark:border-border-light space-y-2 md:space-y-3 lg:space-y-4">
         {/* Tool Selection */}
-        <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[48px] md:min-w-[60px]">
+        <div className="flex items-center gap-1 md:gap-2 lg:gap-3 flex-wrap">
+          <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block min-w-[40px] md:min-w-[60px]">
             {t('edit.brushTool.tool')}:
           </span>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-1 md:gap-2 flex-wrap flex-1">
             <button
               onClick={() => setTool('brush')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${tool === 'brush'
+              className={`flex items-center gap-1 md:gap-2 px-2 md:px-3 lg:px-4 py-1.5 md:py-2 rounded-md md:rounded-lg transition-all text-xs md:text-sm ${tool === 'brush'
                 ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
                 : 'bg-gray-100 dark:bg-surface text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-surface-hover'
                 }`}
             >
-              <Paintbrush size={16} />
-              <span className="text-sm font-medium">{t('edit.brushTool.brush')}</span>
+              <Paintbrush size={14} className="md:w-4 md:h-4" />
+              <span className="font-medium hidden sm:inline">{t('edit.brushTool.brush')}</span>
             </button>
             <button
               onClick={() => setTool('eraser')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${tool === 'eraser'
+              className={`flex items-center gap-1 md:gap-2 px-2 md:px-3 lg:px-4 py-1.5 md:py-2 rounded-md md:rounded-lg transition-all text-xs md:text-sm ${tool === 'eraser'
                 ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
                 : 'bg-gray-100 dark:bg-surface text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-surface-hover'
                 }`}
             >
-              <Eraser size={16} />
-              <span className="text-sm font-medium">{t('edit.brushTool.eraser')}</span>
+              <Eraser size={14} className="md:w-4 md:h-4" />
+              <span className="font-medium hidden sm:inline">{t('edit.brushTool.eraser')}</span>
+            </button>
+            <button
+              onClick={handleClear}
+              className="flex items-center justify-center gap-1 md:gap-2 px-2 md:px-3 lg:px-4 py-1.5 md:py-2 bg-gray-100 dark:bg-surface hover:bg-gray-200 dark:hover:bg-surface-hover text-gray-900 dark:text-white rounded-md md:rounded-lg transition-all text-xs md:text-sm ml-auto"
+            >
+              <RotateCcw size={14} className="md:w-4 md:h-4" />
+              <span className="font-medium hidden sm:inline">{t('edit.brushTool.clear')}</span>
             </button>
           </div>
-          <button
-            onClick={handleClear}
-            className="ml-0 md:ml-auto w-full md:w-auto flex items-center justify-center md:justify-start gap-2 px-4 py-2 bg-gray-100 dark:bg-surface hover:bg-gray-200 dark:hover:bg-surface-hover text-gray-900 dark:text-white rounded-lg transition-all"
-          >
-            <RotateCcw size={16} />
-            <span className="text-sm font-medium">{t('edit.brushTool.clear')}</span>
-          </button>
         </div>
 
         {/* Brush Size */}
-        <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[48px] md:min-w-[60px]">
+        <div className="flex items-center gap-1 md:gap-2 lg:gap-3 flex-wrap">
+          <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block min-w-[40px] md:min-w-[60px]">
             {t('edit.brushTool.size')}:
+          </span>
+          <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 sm:hidden">
+            {brushSize}px
           </span>
           <input
             type="range"
@@ -316,9 +319,9 @@ export const InlineBrushCanvas = ({ imageUrl, onMaskChange, overlay }: InlineBru
             max="50"
             value={brushSize}
             onChange={(e) => setBrushSize(Number(e.target.value))}
-            className="flex-1 min-w-[160px] h-2 bg-gray-200 dark:bg-surface rounded-lg appearance-none cursor-pointer"
+            className="flex-1 min-w-[120px] md:min-w-[160px] h-1.5 md:h-2 bg-gray-200 dark:bg-surface rounded-lg appearance-none cursor-pointer"
           />
-          <span className="text-sm font-medium text-gray-900 dark:text-white w-12 text-right">
+          <span className="text-xs md:text-sm font-medium text-gray-900 dark:text-white w-8 md:w-12 text-right hidden sm:inline">
             {brushSize}px
           </span>
         </div>
