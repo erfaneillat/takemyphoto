@@ -22,9 +22,11 @@ export const useImageEditor = () => {
   const [resolution, setResolution] = useState<ResolutionValue>('1K');
   const [error, setError] = useState<string | null>(null);
 
+  const MAX_IMAGES = 5;
+
   const addUploadedImage = useCallback((file: File) => {
-    if (uploadedImages.length >= 3) {
-      return { success: false, message: 'Maximum 3 images allowed' };
+    if (uploadedImages.length >= MAX_IMAGES) {
+      return { success: false, message: 'Maximum 5 images allowed' };
     }
 
     const reader = new FileReader();

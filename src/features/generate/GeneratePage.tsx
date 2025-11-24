@@ -42,7 +42,7 @@ export const GeneratePage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const MAX_CHARACTERS = 2;
-  const MAX_IMAGES = 3;
+  const MAX_IMAGES = 5;
   const canAddMoreCharacters = selectedCharacters.length < MAX_CHARACTERS;
   const canAddMoreImages = uploadedImages.length < MAX_IMAGES;
 
@@ -170,8 +170,8 @@ export const GeneratePage = () => {
                     key={image.id}
                     onClick={() => setSelectedHistoryImage(image.url)}
                     className={`flex-shrink-0 w-16 h-16 md:w-24 md:h-24 rounded-lg md:rounded-xl overflow-hidden border-2 transition-all ${selectedHistoryImage === image.url || (!selectedHistoryImage && index === 0)
-                        ? 'border-blue-500 dark:border-blue-400 shadow-lg'
-                        : 'border-gray-200 dark:border-border-light hover:border-gray-400 dark:hover:border-gray-600'
+                      ? 'border-blue-500 dark:border-blue-400 shadow-lg'
+                      : 'border-gray-200 dark:border-border-light hover:border-gray-400 dark:hover:border-gray-600'
                       }`}
                   >
                     <img
@@ -237,14 +237,14 @@ export const GeneratePage = () => {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={!canAddMoreImages}
                   className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${canAddMoreImages
-                      ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
-                      : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
+                    ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
+                    : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
                     }`}
                 >
                   <Upload size={20} className={`md:w-6 md:h-6 ${canAddMoreImages ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`} />
                   <span className={`text-xs font-medium text-center leading-tight ${canAddMoreImages
-                      ? 'text-gray-600 dark:text-gray-400'
-                      : 'text-gray-400 dark:text-gray-500'
+                    ? 'text-gray-600 dark:text-gray-400'
+                    : 'text-gray-400 dark:text-gray-500'
                     }`}>
                     {t('generate.uploadImage')} <br />({uploadedImages.length}/{MAX_IMAGES})
                   </span>
@@ -255,14 +255,14 @@ export const GeneratePage = () => {
                   onClick={handleOpenCharacterSelector}
                   disabled={!canAddMoreCharacters}
                   className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-dashed transition-all min-h-[100px] md:min-h-[120px] ${canAddMoreCharacters
-                      ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
-                      : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
+                    ? 'bg-gray-50 dark:bg-surface border-gray-300 dark:border-border-light hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer active:scale-95'
+                    : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
                     }`}
                 >
                   <Users size={20} className={`md:w-6 md:h-6 ${canAddMoreCharacters ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`} />
                   <span className={`text-xs font-medium text-center leading-tight ${canAddMoreCharacters
-                      ? 'text-gray-600 dark:text-gray-400'
-                      : 'text-gray-400 dark:text-gray-500'
+                    ? 'text-gray-600 dark:text-gray-400'
+                    : 'text-gray-400 dark:text-gray-500'
                     }`}>
                     {t('generate.attachCharacter')} <br />({selectedCharacters.length}/{MAX_CHARACTERS})
                   </span>

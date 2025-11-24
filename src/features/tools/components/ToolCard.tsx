@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ImagePlus, Wand2, Compass, Paintbrush, Maximize2, Lightbulb, ArrowRight, Video, Smartphone } from 'lucide-react';
-import { useTranslation } from '@/shared/hooks';
+import { useTranslation, useRegion } from '@/shared/hooks';
 import { Tool } from '../hooks';
 
 interface ToolCardProps {
@@ -21,6 +21,7 @@ const iconMap = {
 export const ToolCard = ({ tool }: ToolCardProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isIran } = useRegion();
   const Icon = iconMap[tool.icon as keyof typeof iconMap];
 
   const handleClick = () => {
@@ -36,7 +37,7 @@ export const ToolCard = ({ tool }: ToolCardProps) => {
     <button
       onClick={handleClick}
       aria-disabled={tool.disabled}
-      className={`group relative w-full bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 transition-all duration-300 text-left overflow-hidden flex flex-col h-full
+      className={`group relative w-full bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 transition-all duration-300 text-start overflow-hidden flex flex-col h-full
         ${tool.disabled ? 'opacity-60 cursor-not-allowed' : 'hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-xl hover:-translate-y-1'}`}
     >
       {/* Image Header */}
@@ -85,7 +86,10 @@ export const ToolCard = ({ tool }: ToolCardProps) => {
             <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center group-hover:bg-blue-50 dark:group-hover:bg-blue-500/10 transition-colors">
               <ArrowRight
                 size={16}
-                className="text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transform group-hover:translate-x-0.5 transition-all"
+                className={`text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transform transition-all ${isIran
+                    ? 'rotate-180 group-hover:-translate-x-0.5'
+                    : 'group-hover:translate-x-0.5'
+                  }`}
               />
             </div>
           )}

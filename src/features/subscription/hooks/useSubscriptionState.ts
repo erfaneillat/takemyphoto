@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export type PlanType = 'free' | 'pro' | 'premium';
 export type BillingCycle = 'monthly' | 'yearly';
@@ -27,7 +26,7 @@ export interface SubscriptionState {
 }
 
 export const useSubscriptionState = (): SubscriptionState => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -54,11 +53,11 @@ export const useSubscriptionState = (): SubscriptionState => {
       id: 'pro',
       name: 'Pro',
       translationKey: 'pro',
-      monthlyPrice: 5.99,
-      yearlyPrice: 35.88, // €2.99/month: 2.99 * 12 = 35.88
+      monthlyPrice: 299000,
+      yearlyPrice: 2990000,
       popular: true,
       features: [
-        'unlimitedGenerations',
+        'credits',
         'allTools',
         'hdExport',
         'noWatermark',
@@ -74,13 +73,15 @@ export const useSubscriptionState = (): SubscriptionState => {
     setSelectedPlan(plan);
   };
 
-  const subscribeToPlan = async (planId: PlanType) => {
+  const subscribeToPlan = async (_planId: PlanType) => {
     setIsProcessing(true);
     try {
-      // Navigate to checkout page with plan and billing cycle info
+      // Payment integration disabled for now as requested
+      // In the future, this will integrate with local payment gateways (e.g., ZarinPal)
+
+      /* 
       const plan = plans.find(p => p.id === planId);
       if (plan) {
-        // Encode plan data in URL params for checkout page
         const checkoutParams = new URLSearchParams({
           planId: planId,
           billingCycle: billingCycle,
@@ -88,7 +89,11 @@ export const useSubscriptionState = (): SubscriptionState => {
         });
         navigate(`/checkout?${checkoutParams.toString()}`);
       }
-      setSelectedPlan(null);
+      */
+
+      // Just set selected plan for UI feedback
+      // setSelectedPlan(null);
+      alert('Payment integration coming soon / درگاه پرداخت به زودی فعال می‌شود');
     } catch (error) {
       console.error('Subscription error:', error);
       throw error;

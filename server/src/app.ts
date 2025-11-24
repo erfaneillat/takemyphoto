@@ -69,8 +69,8 @@ export class App {
     }));
 
     // Body parsing
-    this.app.use(express.json({ limit: '10mb' }));
-    this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+    this.app.use(express.json({ limit: '100mb' }));
+    this.app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
     // Compression
     this.app.use(compression({

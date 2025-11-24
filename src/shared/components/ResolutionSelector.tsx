@@ -1,17 +1,18 @@
 import { Monitor } from 'lucide-react';
+import { useTranslation } from '@/shared/hooks';
 
 export type ResolutionValue = '1K' | '2K' | '4K';
 
 interface ResolutionOption {
     value: ResolutionValue;
-    label: string;
-    description: string;
+    labelKey: string;
+    descriptionKey: string;
 }
 
 const resolutionOptions: ResolutionOption[] = [
-    { value: '1K', label: '1K (Standard)', description: 'Fast generation, good quality' },
-    { value: '2K', label: '2K (High)', description: 'Recommended, balanced quality' },
-    { value: '4K', label: '4K (Ultra)', description: 'Best quality, slower generation' },
+    { value: '1K', labelKey: 'generate.resolution.options.1K.label', descriptionKey: 'generate.resolution.options.1K.description' },
+    { value: '2K', labelKey: 'generate.resolution.options.2K.label', descriptionKey: 'generate.resolution.options.2K.description' },
+    { value: '4K', labelKey: 'generate.resolution.options.4K.label', descriptionKey: 'generate.resolution.options.4K.description' },
 ];
 
 interface ResolutionSelectorProps {
@@ -21,11 +22,12 @@ interface ResolutionSelectorProps {
 }
 
 export const ResolutionSelector = ({ value, onChange, className = '' }: ResolutionSelectorProps) => {
+    const { t } = useTranslation();
     return (
         <div className={className}>
             <label className="flex items-center gap-2 text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Monitor size={16} />
-                <span>Resolution</span>
+                <span>{t('generate.resolution.label')}</span>
             </label>
             <select
                 value={value}
@@ -34,11 +36,12 @@ export const ResolutionSelector = ({ value, onChange, className = '' }: Resoluti
             >
                 {resolutionOptions.map((option) => (
                     <option key={option.value} value={option.value}>
-                        {option.label} - {option.description}
+                        {t(option.labelKey)} - {t(option.descriptionKey)}
                     </option>
                 ))}
             </select>
         </div>
     );
 };
+
 

@@ -90,12 +90,17 @@ export default {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-100%)' },
         },
+        'scroll-x-reverse': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 0.3s ease-out',
         shimmer: 'shimmer 2s ease-in-out infinite',
         'gradient-x': 'gradient-x 15s ease infinite',
         'scroll-x': 'scroll-x 30s linear infinite',
+        'scroll-x-reverse': 'scroll-x-reverse 30s linear infinite',
         'spin-slow': 'spin 12s linear infinite',
       },
     },

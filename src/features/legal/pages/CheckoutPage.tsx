@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useTranslation } from '@/shared/hooks';
+import { useTranslation, useRegion } from '@/shared/hooks';
 import { useAuthStore } from '@/shared/stores';
 import { ShoppingCart, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 export const CheckoutPage = () => {
   const { t } = useTranslation();
+  const { isIran } = useRegion();
   const [searchParams] = useSearchParams();
   const { user } = useAuthStore();
   const [planInfo, setPlanInfo] = useState<{ planId?: string; billingCycle?: string; price?: string } | null>(null);
@@ -35,7 +36,7 @@ export const CheckoutPage = () => {
     const planId = searchParams.get('planId');
     const billingCycle = searchParams.get('billingCycle');
     const price = searchParams.get('price');
-    
+
     if (planId) {
       setPlanInfo({ planId, billingCycle: billingCycle || 'monthly', price: price || '0' });
     }
@@ -79,7 +80,7 @@ export const CheckoutPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -89,18 +90,18 @@ export const CheckoutPage = () => {
 
     try {
       const apiBase = import.meta.env.VITE_API_BASE_URL || '/api/v1';
-      
-      // Prepare payment data
+
+      // Prepare payment data based on region
       const paymentData = {
         ...formData,
         amount: parseFloat(planInfo?.price || '0'),
         planId: planInfo?.planId,
         billingCycle: planInfo?.billingCycle,
-        fromCurrencyCode: 364, // IRR
+        fromCurrencyCode: 978, // Always EUR since our prices are in EUR
         toCurrencyCode: 978, // EUR
-        country: 'Iran',
-        city: 'Tehran',
-        description: `Subscription Payment - ${planInfo?.planId || 'Plan'}`
+        country: isIran ? 'Iran' : 'Germany', // Default to Germany for Global for now. TODO: Integrate Stripe/Paddle for true Global payments
+        city: isIran ? 'Tehran' : 'Berlin',
+        description: `Subscription Payment - ${planInfo?.planId || 'Plan'}`,
       };
 
       const response = await fetch(`${apiBase}/checkout`, {
@@ -155,8 +156,13 @@ export const CheckoutPage = () => {
               <ShoppingCart className="w-12 h-12 text-primary" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-3">
             {t('checkout.title')}
+            {!isIran && (
+              <span className="text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full">
+                Global
+              </span>
+            )}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             {t('checkout.subtitle')}
@@ -251,11 +257,10 @@ export const CheckoutPage = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder={t('checkout.form.firstNamePlaceholder')}
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.firstName
-                      ? 'border-red-500 dark:border-red-500'
-                      : 'border-gray-300 dark:border-border-light'
-                  } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.firstName
+                    ? 'border-red-500 dark:border-red-500'
+                    : 'border-gray-300 dark:border-border-light'
+                    } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
                 />
                 {errors.firstName && (
                   <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -279,11 +284,10 @@ export const CheckoutPage = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder={t('checkout.form.lastNamePlaceholder')}
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.lastName
-                      ? 'border-red-500 dark:border-red-500'
-                      : 'border-gray-300 dark:border-border-light'
-                  } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.lastName
+                    ? 'border-red-500 dark:border-red-500'
+                    : 'border-gray-300 dark:border-border-light'
+                    } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
                 />
                 {errors.lastName && (
                   <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -308,11 +312,10 @@ export const CheckoutPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder={t('checkout.form.emailPlaceholder')}
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.email
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-gray-300 dark:border-border-light'
-                } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.email
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-gray-300 dark:border-border-light'
+                  } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -336,11 +339,10 @@ export const CheckoutPage = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder={t('checkout.form.phonePlaceholder')}
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.phone
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-gray-300 dark:border-border-light'
-                } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.phone
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-gray-300 dark:border-border-light'
+                  } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
               />
               {errors.phone && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -364,11 +366,10 @@ export const CheckoutPage = () => {
                 value={formData.address}
                 onChange={handleChange}
                 placeholder={t('checkout.form.addressPlaceholder')}
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.address
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-gray-300 dark:border-border-light'
-                } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white resize-none`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.address
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-gray-300 dark:border-border-light'
+                  } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white resize-none`}
               />
               {errors.address && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -392,11 +393,10 @@ export const CheckoutPage = () => {
                 value={formData.postalCode}
                 onChange={handleChange}
                 placeholder={t('checkout.form.postalCodePlaceholder')}
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.postalCode
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-gray-300 dark:border-border-light'
-                } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.postalCode
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-gray-300 dark:border-border-light'
+                  } bg-white dark:bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-gray-900 dark:text-white`}
               />
               {errors.postalCode && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">

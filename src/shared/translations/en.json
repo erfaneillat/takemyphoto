@@ -367,6 +367,56 @@
     },
     "history": {
       "title": "History"
+    },
+    "aspectRatio": {
+      "label": "Aspect Ratio",
+      "options": {
+        "1_1": {
+          "label": "Square (1:1)",
+          "description": "Perfect for social media posts"
+        },
+        "9_16": {
+          "label": "Portrait (9:16)",
+          "description": "Instagram Stories, TikTok"
+        },
+        "16_9": {
+          "label": "Landscape (16:9)",
+          "description": "YouTube, presentations"
+        },
+        "3_4": {
+          "label": "Portrait (3:4)",
+          "description": "Standard portrait"
+        },
+        "4_3": {
+          "label": "Landscape (4:3)",
+          "description": "Classic displays"
+        },
+        "3_2": {
+          "label": "Classic (3:2)",
+          "description": "Photo prints"
+        },
+        "2_3": {
+          "label": "Classic Portrait (2:3)",
+          "description": "Portrait prints"
+        }
+      }
+    },
+    "resolution": {
+      "label": "Resolution",
+      "options": {
+        "1K": {
+          "label": "1K (Standard)",
+          "description": "Fast generation, good quality"
+        },
+        "2K": {
+          "label": "2K (High)",
+          "description": "Recommended, balanced quality"
+        },
+        "4K": {
+          "label": "4K (Ultra)",
+          "description": "Best quality, slower generation"
+        }
+      }
     }
   },
   "edit": {
@@ -598,7 +648,8 @@
       "pro": {
         "name": "Pro",
         "features": {
-          "unlimitedGenerations": "Unlimited generations",
+          "creditsMonthly": "300 Stars / Month",
+          "creditsYearly": "3600 Stars / Year",
           "allTools": "All AI tools & features access",
           "hdExport": "HD & 4K export quality",
           "noWatermark": "No watermark on exports",

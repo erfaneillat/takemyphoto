@@ -15,50 +15,54 @@ export const SubscriptionPage = () => {
     subscribeToPlan,
   } = useSubscriptionState();
 
-  const benefits = [
+  const features = [
     {
       icon: Zap,
       title: t('subscription.benefits.faster.title'),
       description: t('subscription.benefits.faster.description'),
-      gradient: 'from-yellow-500 to-orange-500',
+      color: 'text-amber-500',
+      bg: 'bg-amber-50 dark:bg-amber-900/20',
     },
     {
       icon: Shield,
       title: t('subscription.benefits.priority.title'),
       description: t('subscription.benefits.priority.description'),
-      gradient: 'from-blue-500 to-cyan-500',
+      color: 'text-blue-500',
+      bg: 'bg-blue-50 dark:bg-blue-900/20',
     },
     {
       icon: Star,
       title: t('subscription.benefits.quality.title'),
       description: t('subscription.benefits.quality.description'),
-      gradient: 'from-purple-500 to-pink-500',
+      color: 'text-purple-500',
+      bg: 'bg-purple-50 dark:bg-purple-900/20',
     },
     {
       icon: Users,
       title: t('subscription.benefits.support.title'),
       description: t('subscription.benefits.support.description'),
-      gradient: 'from-green-500 to-emerald-500',
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-50 dark:bg-emerald-900/20',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-surface dark:to-surface-card pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0B0B] pb-20 font-persian" dir="rtl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+
         {/* Header Section */}
-        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 dark:border-cyan-500/20 mb-4 sm:mb-6">
-            <Star size={14} className="sm:size-4 text-blue-600 dark:text-cyan-400" />
-            <span className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-cyan-400">
-              {t('subscription.badge')}
-            </span>
+        <div className="text-center max-w-3xl mx-auto mb-16 relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -z-10" />
+
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-bold mb-6 border border-blue-100 dark:border-blue-800">
+            <Star className="w-4 h-4 fill-current" />
+            <span>{t('subscription.badge')}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 lg:mb-6 px-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
             {t('subscription.title')}
           </h1>
-
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
             {t('subscription.subtitle')}
           </p>
         </div>
@@ -67,7 +71,7 @@ export const SubscriptionPage = () => {
         <BillingToggle billingCycle={billingCycle} onChange={setBillingCycle} />
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto mb-12 sm:mb-16 lg:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-24">
           {plans.map((plan) => (
             <PricingCard
               key={plan.id}
@@ -81,37 +85,30 @@ export const SubscriptionPage = () => {
           ))}
         </div>
 
-        {/* Benefits Section */}
-        <div className="mt-12 sm:mt-16 lg:mt-20">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 px-4">
+        {/* Features Grid */}
+        <div className="max-w-6xl mx-auto mb-24">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               {t('subscription.whyUpgrade')}
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4">
-              {t('subscription.whyUpgradeSubtitle')}
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {benefits.map((benefit, index) => {
-              const Icon = benefit.icon;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
               return (
                 <div
                   key={index}
-                  className="group bg-white dark:bg-surface-card rounded-2xl p-6 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-300"
+                  className="group flex flex-col items-center text-center p-8 rounded-3xl bg-white dark:bg-[#111111] border border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-900/50 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300"
                 >
-                  <div className="flex justify-center mb-4">
-                    <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${benefit.gradient} p-3 transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}
-                    >
-                      <Icon className="w-full h-full text-white" />
-                    </div>
+                  <div className={`w-16 h-16 rounded-2xl ${feature.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className={`w-8 h-8 ${feature.color}`} />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white text-center mb-2">
-                    {benefit.title}
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                    {feature.title}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                    {benefit.description}
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                    {feature.description}
                   </p>
                 </div>
               );
@@ -119,31 +116,29 @@ export const SubscriptionPage = () => {
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mt-12 sm:mt-16 lg:mt-20 text-center px-4">
-          <div className="inline-block w-full max-w-3xl p-6 sm:p-8 lg:p-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border border-blue-100 dark:border-blue-900/30">
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-              {t('subscription.faq.title')}
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 max-w-2xl mx-auto">
-              {t('subscription.faq.description')}
-            </p>
-            <button className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm sm:text-base font-semibold rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300">
-              {t('subscription.faq.contactButton')}
-            </button>
-          </div>
-        </div>
+        {/* FAQ / Trust Section */}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white dark:bg-[#111111] rounded-[2.5rem] p-8 sm:p-12 border border-gray-200 dark:border-gray-800 text-center shadow-xl shadow-gray-200/50 dark:shadow-none relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-full blur-2xl" />
 
-        {/* Money Back Guarantee */}
-        <div className="mt-8 sm:mt-12 text-center">
-          <div className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30">
-            <Shield size={16} className="sm:size-5 text-green-600 dark:text-green-400" />
-            <span className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400">
-              {t('subscription.moneyBackGuarantee')}
-            </span>
+            <div className="relative z-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 mb-6 ring-8 ring-emerald-50/50 dark:ring-emerald-900/10">
+                <Shield className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                {t('subscription.moneyBackGuarantee')}
+              </h3>
+              <p className="text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
+                {t('subscription.faq.description')}
+              </p>
+              <button className="w-full sm:w-auto px-10 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold text-lg rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl active:scale-95">
+                {t('subscription.faq.contactButton')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 };
+

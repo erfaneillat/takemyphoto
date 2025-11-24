@@ -27,28 +27,31 @@ export const PricingCard = ({
 }: PricingCardProps) => {
   const { t } = useTranslation();
   const Icon = iconMap[plan.icon as keyof typeof iconMap];
-  
+
   const monthlyPrice = plan.monthlyPrice;
   const yearlyPrice = plan.yearlyPrice;
-  const yearlyMonthlyEquivalent = (plan.yearlyPrice / 12).toFixed(2);
-  const originalYearlyPrice = (plan.monthlyPrice * 12).toFixed(2);
-  const displayPrice = billingCycle === 'yearly' ? yearlyPrice.toFixed(2) : monthlyPrice.toFixed(2);
-  const yearlySavings = Math.max(0, plan.monthlyPrice * 12 - plan.yearlyPrice).toFixed(2);
+  const yearlyMonthlyEquivalent = Math.round(plan.yearlyPrice / 12);
+  const originalYearlyPrice = plan.monthlyPrice * 12;
+  const displayPrice = billingCycle === 'yearly' ? yearlyPrice : monthlyPrice;
+  const yearlySavings = Math.max(0, plan.monthlyPrice * 12 - plan.yearlyPrice);
   const isFree = plan.id === 'free';
+
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('fa-IR');
+  };
 
   return (
     <div
       onClick={onSelect}
-      className={`relative bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 border-2 transition-all duration-300 cursor-pointer group flex flex-col ${
-        isSelected
-          ? 'border-blue-500 dark:border-cyan-500 shadow-2xl sm:scale-105'
-          : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl'
-      } ${plan.popular ? 'ring-2 ring-blue-500/20 dark:ring-cyan-500/20' : ''}`}
+      className={`relative bg-white dark:bg-surface-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 transition-all duration-300 cursor-pointer group flex flex-col ${isSelected
+        ? 'border-blue-500 dark:border-cyan-500 shadow-2xl sm:scale-105 z-10'
+        : 'border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-cyan-900/30 hover:shadow-xl'
+        } ${plan.popular ? 'ring-4 ring-blue-500/10 dark:ring-cyan-500/10' : ''}`}
     >
       {/* Popular Badge */}
       {plan.popular && (
         <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
-          <div className="px-3 sm:px-4 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs sm:text-sm font-semibold rounded-full shadow-lg">
+          <div className="px-4 sm:px-5 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs sm:text-sm font-bold rounded-full shadow-lg tracking-wide">
             {t('subscription.popular')}
           </div>
         </div>
@@ -57,77 +60,107 @@ export const PricingCard = ({
       {/* Icon */}
       <div className="flex justify-center mb-4 sm:mb-6">
         <div
-          className={`w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${plan.color} p-3 sm:p-3.5 lg:p-4 transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}
+          className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-gradient-to-br ${plan.color} p-3.5 sm:p-4 transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 shadow-lg`}
         >
           <Icon className="w-full h-full text-white" />
         </div>
       </div>
 
       {/* Plan Name */}
-      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
+      <h3 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white text-center mb-2 tracking-tight">
         {t(`subscription.plans.${plan.translationKey}.name`)}
       </h3>
 
       {/* Price */}
       {billingCycle === 'monthly' ? (
-        <div className="flex items-baseline justify-center gap-1 mb-4">
-          <span className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-            €{displayPrice}
-          </span>
-          <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-            {isFree ? '' : `/${t('subscription.month')}`}
+        <div className="flex flex-col items-center justify-center gap-1 mb-6">
+          <div className="flex items-baseline gap-1">
+            <span className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+              {isFree ? 'رایگان' : formatPrice(displayPrice)}
+            </span>
+            {!isFree && (
+              <span className="text-lg sm:text-xl font-medium text-gray-500 dark:text-gray-400">
+                تومان
+              </span>
+            )}
+          </div>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+            {isFree ? '' : `ماهانه`}
           </span>
         </div>
       ) : (
-        <div className="mb-4">
+        <div className="mb-6 text-center">
           {/* Yearly Total Price */}
-          <div className="flex items-baseline justify-center gap-1 mb-1">
-            <span className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-              €{displayPrice}
-            </span>
-            <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-              {isFree ? '' : `/${t('subscription.year')}`}
+          <div className="flex flex-col items-center justify-center gap-1 mb-2">
+            <div className="flex items-baseline gap-1">
+              <span className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+                {isFree ? 'رایگان' : formatPrice(displayPrice)}
+              </span>
+              {!isFree && (
+                <span className="text-lg sm:text-xl font-medium text-gray-500 dark:text-gray-400">
+                  تومان
+                </span>
+              )}
+            </div>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+              {isFree ? '' : `سالانه`}
             </span>
           </div>
-          
+
           {/* Monthly Equivalent Subtitle */}
           {!isFree && (
-            <p className="text-sm text-center text-gray-600 dark:text-gray-400 mb-2">
-              (€{yearlyMonthlyEquivalent}/{t('subscription.perMonth')})
+            <p className="text-sm text-center text-gray-500 dark:text-gray-400 mb-2 font-medium">
+              (معادل {formatPrice(yearlyMonthlyEquivalent)} تومان / ماهانه)
             </p>
           )}
-          
+
           {/* Original Price with Strikethrough */}
-          {!isFree && parseFloat(yearlySavings) > 0 && (
+          {!isFree && yearlySavings > 0 && (
             <div className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-base sm:text-lg text-gray-500 dark:text-gray-500 line-through">
-                €{originalYearlyPrice}
+              <span className="text-base sm:text-lg text-gray-400 dark:text-gray-600 line-through decoration-2 decoration-red-500/50">
+                {formatPrice(originalYearlyPrice)}
               </span>
+              <div className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold rounded-md">
+                {Math.round((yearlySavings / originalYearlyPrice) * 100)}% تخفیف
+              </div>
             </div>
           )}
         </div>
       )}
 
       {/* Billing Note */}
-      {billingCycle === 'yearly' && !isFree && parseFloat(yearlySavings) > 0 && (
-        <p className="text-sm text-center text-green-600 dark:text-green-400 mb-6">
-          {t('subscription.saveYearly', { amount: `€${yearlySavings}` })}
+      {billingCycle === 'yearly' && !isFree && yearlySavings > 0 && (
+        <p className="text-sm text-center text-emerald-600 dark:text-emerald-400 mb-6 font-bold bg-emerald-50 dark:bg-emerald-900/20 py-2 rounded-lg">
+          {formatPrice(yearlySavings)} تومان سود شما در پرداخت سالانه
         </p>
       )}
 
       {/* Features */}
-      <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 mt-4 sm:mt-6 flex-grow">
-        {plan.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 sm:gap-3">
-            <div className="mt-0.5 flex-shrink-0">
-              <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 dark:text-green-400" />
-            </div>
-            <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-              {t(`subscription.plans.${plan.translationKey}.features.${feature}`)}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <div className="border-t border-gray-100 dark:border-gray-800 pt-6 mb-6 sm:mb-8 flex-grow">
+        <ul className="space-y-4">
+          {plan.features.map((feature) => {
+            let featureText = t(`subscription.plans.${plan.translationKey}.features.${feature}`);
+
+            // Dynamic credit text based on billing cycle
+            if (feature === 'credits') {
+              featureText = billingCycle === 'yearly'
+                ? t(`subscription.plans.${plan.translationKey}.features.creditsYearly`)
+                : t(`subscription.plans.${plan.translationKey}.features.creditsMonthly`);
+            }
+
+            return (
+              <li key={feature} className="flex items-start gap-3">
+                <div className="mt-1 flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                  <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-cyan-400" />
+                </div>
+                <span className="text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {featureText}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
       {/* CTA Button */}
       <button
@@ -138,19 +171,18 @@ export const PricingCard = ({
           }
         }}
         disabled={isFree || (isProcessing && isSelected)}
-        className={`w-full py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 ${
-          isFree
-            ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-            : isSelected
-            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg hover:shadow-xl'
+        className={`w-full py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] ${isFree
+          ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed shadow-none'
+          : isSelected
+            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white'
             : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100'
-        }`}
+          }`}
       >
         {isFree
           ? t('subscription.currentPlan')
           : isProcessing && isSelected
-          ? t('subscription.processing')
-          : t('subscription.selectPlan')}
+            ? t('subscription.processing')
+            : t('subscription.selectPlan')}
       </button>
     </div>
   );

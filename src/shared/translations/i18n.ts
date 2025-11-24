@@ -4,22 +4,34 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './en.json';
 import fa from './fa.json';
 
-// Detect browser language
-function getBrowserLanguage(): string {
+// Detect language based on domain and browser
+function getInitialLanguage(): string {
+  // 1. Check for Developer Override
+  const debugOverride = localStorage.getItem('debug_region');
+  if (debugOverride === 'IR') return 'fa';
+  if (debugOverride === 'GLOBAL') return 'en';
+
+  // 2. Check domain first
+  const hostname = window.location.hostname;
+  if (hostname.endsWith('.ir')) {
+    return 'fa';
+  }
+
+  // Fallback to browser language
   const browserLang = navigator.language || (navigator as any).userLanguage;
-  
+
   // Check if browser language is Persian/Farsi
   if (browserLang.startsWith('fa') || browserLang.startsWith('per')) {
     return 'fa';
   }
-  
+
   // Check if browser language is English
   if (browserLang.startsWith('en')) {
     return 'en';
   }
-  
-  // Default to Persian for other languages
-  return 'fa';
+
+  // Default to English for non-IR domains if browser is not Farsi
+  return 'en';
 }
 
 i18n
@@ -34,8 +46,8 @@ i18n
         translation: fa,
       },
     },
-    lng: getBrowserLanguage(), // Auto-detect browser language
-    fallbackLng: 'fa',
+    lng: getInitialLanguage(), // Initial language based on domain/browser
+    fallbackLng: 'en',
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],

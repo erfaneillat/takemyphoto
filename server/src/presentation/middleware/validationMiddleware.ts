@@ -27,7 +27,7 @@ export const validate = (schema: Joi.ObjectSchema) => {
 export const authSchemas = {
   sendCode: Joi.object({
     phoneNumber: Joi.string()
-      .pattern(/^\+?[1-9]\d{1,14}$/)
+      .pattern(/^\+?\d{10,15}$/)
       .required()
       .messages({
         'string.pattern.base': 'Invalid phone number format'
@@ -36,7 +36,7 @@ export const authSchemas = {
 
   verifyCode: Joi.object({
     phoneNumber: Joi.string()
-      .pattern(/^\+?[1-9]\d{1,14}$/)
+      .pattern(/^\+?\d{10,15}$/)
       .required(),
     code: Joi.string()
       .length(6)

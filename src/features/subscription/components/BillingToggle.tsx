@@ -10,31 +10,32 @@ export const BillingToggle = ({ billingCycle, onChange }: BillingToggleProps) =>
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center justify-center gap-2 sm:gap-4 mb-8 sm:mb-10 lg:mb-12">
-      <button
-        onClick={() => onChange('monthly')}
-        className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${
-          billingCycle === 'monthly'
-            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-        }`}
-      >
-        {t('subscription.monthly')}
-      </button>
+    <div className="flex justify-center mb-12">
+      <div className="relative flex items-center bg-gray-100 dark:bg-gray-900 p-1.5 rounded-2xl shadow-inner">
+        <button
+          onClick={() => onChange('monthly')}
+          className={`relative z-10 px-8 py-3 rounded-xl text-base font-bold transition-all duration-300 ${billingCycle === 'monthly'
+            ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm'
+            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
+        >
+          {t('subscription.monthly')}
+        </button>
 
-      <button
-        onClick={() => onChange('yearly')}
-        className={`relative px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${
-          billingCycle === 'yearly'
-            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-        }`}
-      >
-        {t('subscription.yearly')}
-        <span className="absolute -top-2 -right-1 sm:-right-2 px-1.5 sm:px-2 py-0.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[10px] sm:text-xs font-bold rounded-full whitespace-nowrap">
-          {t('subscription.save60')}
-        </span>
-      </button>
+        <button
+          onClick={() => onChange('yearly')}
+          className={`relative z-10 px-8 py-3 rounded-xl text-base font-bold transition-all duration-300 ${billingCycle === 'yearly'
+            ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm'
+            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
+        >
+          {t('subscription.yearly')}
+        </button>
+
+        <div className="absolute -left-4 -top-5 bg-[#10B981] text-white text-xs font-black px-3 py-1.5 rounded-full shadow-lg transform -rotate-12 z-20 border-2 border-white dark:border-[#0B0B0B]">
+          ۲۰٪ تخفیف
+        </div>
+      </div>
     </div>
   );
 };

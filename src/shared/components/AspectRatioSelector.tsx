@@ -1,21 +1,22 @@
 import { RectangleHorizontal } from 'lucide-react';
+import { useTranslation } from '@/shared/hooks';
 
 export type AspectRatioValue = '1:1' | '9:16' | '16:9' | '3:4' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '21:9';
 
 interface AspectRatioOption {
   value: AspectRatioValue;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
 }
 
 const aspectRatioOptions: AspectRatioOption[] = [
-  { value: '1:1', label: 'Square (1:1)', description: 'Perfect for social media posts' },
-  { value: '9:16', label: 'Portrait (9:16)', description: 'Instagram Stories, TikTok' },
-  { value: '16:9', label: 'Landscape (16:9)', description: 'YouTube, presentations' },
-  { value: '3:4', label: 'Portrait (3:4)', description: 'Standard portrait' },
-  { value: '4:3', label: 'Landscape (4:3)', description: 'Classic displays' },
-  { value: '3:2', label: 'Classic (3:2)', description: 'Photo prints' },
-  { value: '2:3', label: 'Classic Portrait (2:3)', description: 'Portrait prints' },
+  { value: '1:1', labelKey: 'generate.aspectRatio.options.1_1.label', descriptionKey: 'generate.aspectRatio.options.1_1.description' },
+  { value: '9:16', labelKey: 'generate.aspectRatio.options.9_16.label', descriptionKey: 'generate.aspectRatio.options.9_16.description' },
+  { value: '16:9', labelKey: 'generate.aspectRatio.options.16_9.label', descriptionKey: 'generate.aspectRatio.options.16_9.description' },
+  { value: '3:4', labelKey: 'generate.aspectRatio.options.3_4.label', descriptionKey: 'generate.aspectRatio.options.3_4.description' },
+  { value: '4:3', labelKey: 'generate.aspectRatio.options.4_3.label', descriptionKey: 'generate.aspectRatio.options.4_3.description' },
+  { value: '3:2', labelKey: 'generate.aspectRatio.options.3_2.label', descriptionKey: 'generate.aspectRatio.options.3_2.description' },
+  { value: '2:3', labelKey: 'generate.aspectRatio.options.2_3.label', descriptionKey: 'generate.aspectRatio.options.2_3.description' },
 ];
 
 interface AspectRatioSelectorProps {
@@ -25,11 +26,12 @@ interface AspectRatioSelectorProps {
 }
 
 export const AspectRatioSelector = ({ value, onChange, className = '' }: AspectRatioSelectorProps) => {
+  const { t } = useTranslation();
   return (
     <div className={className}>
       <label className="flex items-center gap-2 text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         <RectangleHorizontal size={16} />
-        <span>Aspect Ratio</span>
+        <span>{t('generate.aspectRatio.label')}</span>
       </label>
       <select
         value={value}
@@ -38,7 +40,7 @@ export const AspectRatioSelector = ({ value, onChange, className = '' }: AspectR
       >
         {aspectRatioOptions.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label} - {option.description}
+            {t(option.labelKey)} - {t(option.descriptionKey)}
           </option>
         ))}
       </select>
