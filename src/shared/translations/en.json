@@ -215,6 +215,64 @@
     }
   },
   "landing": {
+    "newHero": {
+      "badge": "The next-gen AI engine is here",
+      "titleLine1": "Create beyond",
+      "titleLine2": "the edge of imagination",
+      "description": "Unleash your creativity with the most powerful AI art platform. Transform any idea into breathtaking imagery in seconds using our professional toolset.",
+      "startCreating": "Start creating for free",
+      "exploreTools": "Explore tools"
+    },
+    "whyChoose": {
+      "title": "Why choose Take My Photo?",
+      "subtitle": "Experience the future of creativity with our advanced capabilities."
+    },
+    "featuresList": {
+      "quality": {
+        "title": "Studio-grade quality",
+        "description": "Commercial-ready output with crisp resolution."
+      },
+      "fast": {
+        "title": "Blazing fast",
+        "description": "Generate polished concepts in mere seconds."
+      },
+      "secure": {
+        "title": "Secure & private",
+        "description": "Your data and creations are encrypted and protected."
+      },
+      "creative": {
+        "title": "Creative freedom",
+        "description": "Limitless possibilities powered by intelligent prompt understanding."
+      }
+    },
+    "stats": {
+      "imagesGenerated": "Images generated",
+      "activeCreators": "Active creators",
+      "uptime": "Service uptime"
+    },
+    "testimonials": {
+      "title": "Loved by creators",
+      "alex": {
+        "role": "Digital Artist",
+        "content": "The image quality blows me away. It completely transformed my workflow."
+      },
+      "sarah": {
+        "role": "Content Producer",
+        "content": "Finally an AI tool that gives me exactly what I imagine without complicated prompt tricks."
+      },
+      "jordan": {
+        "role": "Marketing Lead",
+        "content": "We now use it for every campaign asset. It saves us hours each week."
+      }
+    },
+    "cta": {
+      "title": "Ready to start creating?",
+      "subtitle": "Join thousands of creators turning imagination into reality with our tools.",
+      "button": "Get started now",
+      "noCreditCard": "No credit card required",
+      "freeTrial": "7-day free trial",
+      "cancelAnytime": "Cancel anytime"
+    },
     "hero": {
       "badge": "AI-Powered Image Editing",
       "title": "AI Photo Editing, Made Simple.",
