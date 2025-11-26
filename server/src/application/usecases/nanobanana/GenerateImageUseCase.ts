@@ -123,7 +123,7 @@ export class GenerateImageUseCase {
       response = await this.googleAIService.generateImage({
         prompt: finalPrompt,
         referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
-        aspectRatio: imageSize as any,
+        aspectRatio: imageSize === '2.39:1' ? undefined : imageSize as any,
         responseModalities: ['Image'], // Only return image, no text
         resolution: resolution
       });

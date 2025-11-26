@@ -1,7 +1,7 @@
 import { RectangleHorizontal } from 'lucide-react';
 import { useTranslation } from '@/shared/hooks';
 
-export type AspectRatioValue = '1:1' | '9:16' | '16:9' | '3:4' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '21:9';
+export type AspectRatioValue = '1:1' | '9:16' | '16:9' | '3:4' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '21:9' | '2.39:1';
 
 interface AspectRatioOption {
   value: AspectRatioValue;
@@ -17,6 +17,7 @@ const aspectRatioOptions: AspectRatioOption[] = [
   { value: '4:3', labelKey: 'generate.aspectRatio.options.4_3.label', descriptionKey: 'generate.aspectRatio.options.4_3.description' },
   { value: '3:2', labelKey: 'generate.aspectRatio.options.3_2.label', descriptionKey: 'generate.aspectRatio.options.3_2.description' },
   { value: '2:3', labelKey: 'generate.aspectRatio.options.2_3.label', descriptionKey: 'generate.aspectRatio.options.2_3.description' },
+  { value: '2.39:1', labelKey: 'generate.aspectRatio.options.2_39_1.label', descriptionKey: 'generate.aspectRatio.options.2_39_1.description' },
 ];
 
 interface AspectRatioSelectorProps {

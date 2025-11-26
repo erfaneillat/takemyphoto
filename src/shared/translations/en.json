@@ -456,6 +456,10 @@
         "2_3": {
           "label": "Classic Portrait (2:3)",
           "description": "Portrait prints"
+        },
+        "2_39_1": {
+          "label": "Cinemascope (2.39:1)",
+          "description": "Cinematic widescreen"
         }
       }
     },

@@ -3,7 +3,7 @@ import axios from 'axios';
 export interface GoogleAIGenerateRequest {
   prompt: string;
   referenceImages?: { mimeType: string; data: string }[]; // base64 encoded images
-  aspectRatio?: '1:1' | '9:16' | '16:9' | '3:4' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '21:9';
+  aspectRatio?: '1:1' | '9:16' | '16:9' | '3:4' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '21:9' | '2.39:1';
   responseModalities?: ('Text' | 'Image')[];
   resolution?: string;
 }
