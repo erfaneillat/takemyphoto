@@ -3,7 +3,7 @@ export interface GeneratedImageEntity {
   userId: string;
   taskId?: string; // Optional - only for async APIs that use task tracking
   prompt: string;
-  type: 'TEXTTOIAMGE' | 'IMAGETOIAMGE' | 'THUMBNAIL'; // generation or editing
+  type: 'TEXTTOIAMGE' | 'IMAGETOIAMGE' | 'THUMBNAIL' | 'PRODUCT'; // generation or editing
   imageUrl?: string;
   originImageUrl?: string; // For image-to-image edits
   referenceImageUrls?: string[]; // Input images used

@@ -4,7 +4,7 @@ import { LandingPage } from '@/features/landing';
 import { ExplorePage } from '@/features/explore';
 import { EditPage, BrushEditPage } from '@/features/edit';
 import { GeneratePage } from '@/features/generate';
-import { ToolsPage, ThumbnailGeneratorPage, InstagramCoverGeneratorPage } from '@/features/tools';
+import { ToolsPage, ThumbnailGeneratorPage, InstagramCoverGeneratorPage, ProductImageGeneratorPage } from '@/features/tools';
 import { ProfilePage } from '@/features/profile';
 import { UpgradePage } from '@/features/upgrade';
 import { SubscriptionPage } from '@/features/subscription';
@@ -109,6 +109,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <InstagramCoverGeneratorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tools/product-image-generator"
+            element={
+              <ProtectedRoute>
+                <ProductImageGeneratorPage />
               </ProtectedRoute>
             }
           />

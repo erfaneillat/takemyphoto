@@ -79,6 +79,7 @@ import { UpdateErrorLogUseCase } from '@application/usecases/error-log/UpdateErr
 import { DeleteErrorLogUseCase } from '@application/usecases/error-log/DeleteErrorLogUseCase';
 import { DeleteManyErrorLogsUseCase } from '@application/usecases/error-log/DeleteManyErrorLogsUseCase';
 import { GenerateThumbnailUseCase } from '@application/usecases/tools/GenerateThumbnailUseCase';
+import { GenerateProductImageUseCase } from '@application/usecases/tools/GenerateProductImageUseCase';
 
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
@@ -97,6 +98,7 @@ import { ContactController } from '@presentation/controllers/ContactController';
 import { CheckoutController } from '@presentation/controllers/CheckoutController';
 import { ErrorLogController } from '@presentation/controllers/ErrorLogController';
 import { UpscaleController } from '@presentation/controllers/UpscaleController';
+import { ProductImageController } from '@presentation/controllers/ProductImageController';
 
 export class Container {
   // Repositories
@@ -180,6 +182,7 @@ export class Container {
   public deleteErrorLogUseCase: DeleteErrorLogUseCase;
   public deleteManyErrorLogsUseCase: DeleteManyErrorLogsUseCase;
   public generateThumbnailUseCase: GenerateThumbnailUseCase;
+  public generateProductImageUseCase: GenerateProductImageUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -197,6 +200,7 @@ export class Container {
   public checkoutController: CheckoutController;
   public errorLogController: ErrorLogController;
   public upscaleController: UpscaleController;
+  public productImageController: ProductImageController;
 
   constructor() {
     // Initialize Repositories
@@ -569,6 +573,18 @@ export class Container {
 
     this.upscaleController = new UpscaleController(
       this.aiUpscaleImageUseCase
+    );
+
+    this.generateProductImageUseCase = new GenerateProductImageUseCase(
+      this.googleAIService,
+      this.userRepository,
+      this.fileUploadService,
+      this.generatedImageEntityRepository,
+      this.errorLogService
+    );
+
+    this.productImageController = new ProductImageController(
+      this.generateProductImageUseCase
     );
   }
 }

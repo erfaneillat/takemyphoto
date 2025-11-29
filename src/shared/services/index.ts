@@ -5,3 +5,4 @@ export * from './templateApi';
 export * from './enhanceApi';
 export * from './nanoBananaApi';
 export * from './thumbnailApi';
+export * from './productImageApi';

@@ -34,6 +34,33 @@ export const useToolsState = () => {
       image: '/prompt-base-edit.jpeg'
     },
     {
+      id: 'productImageGenerator',
+      translationKey: 'productImageGenerator',
+      icon: 'ShoppingBag',
+      path: '/tools/product-image-generator',
+      color: 'from-emerald-500 to-teal-500',
+      image: '/product-image.jpg',
+      badge: 'New'
+    },
+    {
+      id: 'thumbnailGenerator',
+      translationKey: 'thumbnailGenerator',
+      icon: 'Video',
+      path: '/tools/thumbnail-generator',
+      color: 'from-red-500 to-orange-500',
+      image: '/thumnail.jpg',
+      badge: 'New'
+    },
+    {
+      id: 'instagramCoverGenerator',
+      translationKey: 'instagramCoverGenerator',
+      icon: 'Smartphone',
+      path: '/tools/instagram-cover-generator',
+      color: 'from-purple-500 to-pink-500',
+      image: '/insta.jpeg',
+      badge: 'New'
+    },
+    {
       id: 'brush',
       translationKey: 'brushEditor',
       icon: 'Paintbrush',
@@ -64,24 +91,6 @@ export const useToolsState = () => {
       path: '/image-to-prompt',
       color: 'from-purple-500 to-pink-500',
       image: '/image-to-prompt.jpg'
-    },
-    {
-      id: 'thumbnailGenerator',
-      translationKey: 'thumbnailGenerator',
-      icon: 'Video',
-      path: '/tools/thumbnail-generator',
-      color: 'from-red-500 to-orange-500',
-      image: '/thumnail.jpg',
-      badge: 'New'
-    },
-    {
-      id: 'instagramCoverGenerator',
-      translationKey: 'instagramCoverGenerator',
-      icon: 'Smartphone',
-      path: '/tools/instagram-cover-generator',
-      color: 'from-purple-500 to-pink-500',
-      image: '/insta.jpeg',
-      badge: 'New'
     }
   ];
 

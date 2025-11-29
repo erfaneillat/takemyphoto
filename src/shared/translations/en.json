@@ -342,6 +342,10 @@
       "title": "Instagram Cover Generator",
       "description": "Create stunning 9:16 covers for your Instagram Reels and Stories"
     },
+    "productImageGenerator": {
+      "title": "Product Image Generator",
+      "description": "Create stunning product photos for your online shop with AI"
+    },
     "moreComingSoon": {
       "title": "More Tools Coming Soon",
       "description": "We're constantly adding new AI tools to enhance your creative workflow"
@@ -806,6 +810,76 @@
       "maxImages": "Maximum 6 images allowed",
       "descriptionRequired": "Description is required",
       "failed": "Failed to generate cover"
+    }
+  },
+  "productGenerator": {
+    "badge": "Product Photography AI",
+    "title": "Product Image Generator",
+    "description": "Create stunning product photos for your online shop using AI. Upload your product image and select a photography style.",
+    "productName": "Product Name",
+    "productNamePlaceholder": "e.g. Premium Leather Wallet, Wireless Headphones...",
+    "productDescription": "Product Description (Optional)",
+    "productDescriptionPlaceholder": "Describe your product features, materials, colors...",
+    "productImages": "Product Images (Up to 5)",
+    "productImagesHint": "Upload up to 5 product images from different angles",
+    "selectStyle": "Select Photography Style",
+    "referenceImage": "Reference Image (Optional)",
+    "referenceImageHint": "Add a reference image to guide the style and composition",
+    "upload": "Upload",
+    "generateButton": "Generate Product Photo",
+    "generating": "Generating...",
+    "download": "Download",
+    "preview": {
+      "loading": "Creating your product photo...",
+      "placeholder": "Your generated product image will appear here"
+    },
+    "error": {
+      "nameRequired": "Product name is required",
+      "imageRequired": "At least one product image is required",
+      "maxProductImages": "Maximum 5 product images allowed",
+      "failed": "Failed to generate product image"
+    },
+    "styles": {
+      "ecommerce": {
+        "label": "E-commerce",
+        "description": "Clean white background, professional look"
+      },
+      "lifestyle": {
+        "label": "Lifestyle",
+        "description": "Product in real-world setting"
+      },
+      "flatlay": {
+        "label": "Flat Lay",
+        "description": "Top-down Pinterest style"
+      },
+      "minimal": {
+        "label": "Minimal",
+        "description": "Simple, clean, elegant"
+      },
+      "colorblock": {
+        "label": "Color Block",
+        "description": "Bold colorful backgrounds"
+      },
+      "moody": {
+        "label": "Moody",
+        "description": "Dark, dramatic lighting"
+      },
+      "macro": {
+        "label": "Macro",
+        "description": "Close-up detail shots"
+      },
+      "infographic": {
+        "label": "Infographic",
+        "description": "Product with info overlay style"
+      },
+      "ugc": {
+        "label": "UGC",
+        "description": "User-generated content style"
+      },
+      "pinterest": {
+        "label": "Pinterest",
+        "description": "Aesthetic, save-worthy composition"
+      }
     }
   },
   "auth": {

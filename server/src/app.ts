@@ -21,6 +21,7 @@ import { createCheckoutRoutes } from '@presentation/routes/checkoutRoutes';
 import { createErrorLogRoutes } from '@presentation/routes/errorLogRoutes';
 import { createThumbnailRoutes } from '@presentation/routes/thumbnailRoutes';
 import { createUpscaleRoutes } from '@presentation/routes/upscaleRoutes';
+import { createProductImageRoutes } from '@presentation/routes/productImageRoutes';
 import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -160,6 +161,8 @@ export class App {
     this.app.use(`${baseUrl}/error-logs`, createErrorLogRoutes(this.container.errorLogController));
     // Upscale tool routes
     this.app.use(`${baseUrl}/upscale`, createUpscaleRoutes(this.container.upscaleController));
+    // Product image generator routes
+    this.app.use(`${baseUrl}/tools/product-image`, createProductImageRoutes(this.container.productImageController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');

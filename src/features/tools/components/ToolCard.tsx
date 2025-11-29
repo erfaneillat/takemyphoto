@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ImagePlus, Wand2, Compass, Paintbrush, Maximize2, Lightbulb, ArrowRight, Video, Smartphone } from 'lucide-react';
+import { ImagePlus, Wand2, Compass, Paintbrush, Maximize2, Lightbulb, ArrowRight, Video, Smartphone, ShoppingBag } from 'lucide-react';
 import { useTranslation, useRegion } from '@/shared/hooks';
 import { Tool } from '../hooks';
 
@@ -15,7 +15,8 @@ const iconMap = {
   Compass: Compass,
   Lightbulb: Lightbulb,
   Video: Video,
-  Smartphone: Smartphone
+  Smartphone: Smartphone,
+  ShoppingBag: ShoppingBag
 };
 
 export const ToolCard = ({ tool }: ToolCardProps) => {
@@ -87,8 +88,8 @@ export const ToolCard = ({ tool }: ToolCardProps) => {
               <ArrowRight
                 size={16}
                 className={`text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transform transition-all ${isIran
-                    ? 'rotate-180 group-hover:-translate-x-0.5'
-                    : 'group-hover:translate-x-0.5'
+                  ? 'rotate-180 group-hover:-translate-x-0.5'
+                  : 'group-hover:translate-x-0.5'
                   }`}
               />
             </div>

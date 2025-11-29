@@ -20,7 +20,7 @@ const GeneratedImageEntitySchema = new Schema<GeneratedImageEntityDocument>(
     },
     type: {
       type: String,
-      enum: ['TEXTTOIAMGE', 'IMAGETOIAMGE', 'THUMBNAIL'],
+      enum: ['TEXTTOIAMGE', 'IMAGETOIAMGE', 'THUMBNAIL', 'PRODUCT'],
       required: true
     },
     imageUrl: {
