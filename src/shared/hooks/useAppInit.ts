@@ -10,7 +10,12 @@ import { useTranslation } from './useTranslation';
  */
 export const useAppInit = () => {
   const { theme } = useThemeStore();
-  const { language } = useTranslation();
+  const { language, t } = useTranslation();
+
+  useEffect(() => {
+    // Update document title based on translation
+    document.title = `${t('app.title')} - ${t('app.description')}`;
+  }, [language, t]);
 
   useEffect(() => {
     // Ensure theme is applied on mount
