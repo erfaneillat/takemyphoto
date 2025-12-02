@@ -16,7 +16,7 @@ export class UserController {
     private updateUserUseCase: UpdateUserUseCase,
     private deleteUserUseCase: DeleteUserUseCase,
     private userRepository: IUserRepository
-  ) {}
+  ) { }
 
   getProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId;
@@ -59,11 +59,13 @@ export class UserController {
     const role = req.query.role as string;
     const subscription = req.query.subscription as string;
     const search = req.query.search as string;
+    const loginType = req.query.loginType as 'phone' | 'google' | 'all' | undefined;
 
     const filters = {
       ...(role && { role }),
       ...(subscription && { subscription }),
-      ...(search && { search })
+      ...(search && { search }),
+      ...(loginType && loginType !== 'all' && { loginType })
     };
 
     const result = await this.getUsersUseCase.execute(page, limit, filters);

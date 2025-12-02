@@ -12,6 +12,7 @@ export interface GetUsersFilters {
   role?: string;
   subscription?: string;
   search?: string;
+  loginType?: 'phone' | 'google' | 'all';
 }
 
 export interface IUserRepository {
@@ -30,5 +31,7 @@ export interface IUserRepository {
     byRole: Record<string, number>;
     bySubscription: Record<string, number>;
     verified: number;
+    phoneUsers: number;
+    googleUsers: number;
   }>;
 }

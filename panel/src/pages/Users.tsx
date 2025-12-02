@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Search, Users as UsersIcon, Crown, Star, Shield, CheckCircle, X, Edit2, Trash2, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react'
+import { Search, Users as UsersIcon, Crown, Star, Shield, CheckCircle, X, Edit2, Trash2, ChevronLeft, ChevronRight, Minus, Plus, Phone, Globe } from 'lucide-react'
 import axios from 'axios'
 import { resolveApiBase } from '../utils/api'
 
@@ -25,6 +25,8 @@ interface UserStats {
   byRole: Record<string, number>
   bySubscription: Record<string, number>
   verified: number
+  phoneUsers: number
+  googleUsers: number
 }
 
 const Users = () => {
@@ -38,6 +40,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [filterRole, setFilterRole] = useState<string>('')
   const [filterSubscription, setFilterSubscription] = useState<string>('')
+  const [filterLoginType, setFilterLoginType] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState<string>('')
 
   const fetchUsers = async () => {
@@ -45,12 +48,13 @@ const Users = () => {
       setLoading(true)
       const token = localStorage.getItem('accessToken')
       const apiBase = resolveApiBase()
-      
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
         ...(filterRole && { role: filterRole }),
         ...(filterSubscription && { subscription: filterSubscription }),
+        ...(filterLoginType && { loginType: filterLoginType }),
         ...(searchQuery && { search: searchQuery })
       })
 
@@ -79,7 +83,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem('accessToken')
       const apiBase = resolveApiBase()
-      
+
       const response = await axios.get(`${apiBase}/users/admin/stats`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -95,7 +99,7 @@ const Users = () => {
   useEffect(() => {
     fetchUsers()
     fetchStats()
-  }, [page, filterRole, filterSubscription, searchQuery])
+  }, [page, filterRole, filterSubscription, filterLoginType, searchQuery])
 
   const updateUser = async (id: string, data: Partial<User>) => {
     try {
@@ -105,7 +109,7 @@ const Users = () => {
       }
       const token = localStorage.getItem('accessToken')
       const apiBase = resolveApiBase()
-      
+
       await axios.patch(
         `${apiBase}/users/admin/${id}`,
         data,
@@ -115,12 +119,12 @@ const Users = () => {
           }
         }
       )
-      
+
       // Update local state
-      setUsers(users.map(user => 
+      setUsers(users.map(user =>
         user.id === id ? { ...user, ...data } : user
       ))
-      
+
       if (selectedUser?.id === id) {
         setSelectedUser({ ...selectedUser, ...data })
       }
@@ -134,7 +138,7 @@ const Users = () => {
 
   const deleteUser = async (id: string) => {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return
-    
+
     try {
       if (!id) {
         console.error('deleteUser called without a valid id')
@@ -142,13 +146,13 @@ const Users = () => {
       }
       const token = localStorage.getItem('accessToken')
       const apiBase = resolveApiBase()
-      
+
       await axios.delete(`${apiBase}/users/admin/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
-      
+
       setUsers(users.filter(user => user.id !== id))
       if (selectedUser?.id === id) {
         setSelectedUser(null)
@@ -190,7 +194,7 @@ const Users = () => {
 
       {/* Statistics */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -230,6 +234,26 @@ const Users = () => {
               <CheckCircle className="text-green-500" size={32} />
             </div>
           </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Iran (Phone)</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.phoneUsers || 0}</p>
+              </div>
+              <Phone className="text-orange-500" size={32} />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Google Users</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.googleUsers || 0}</p>
+              </div>
+              <Globe className="text-blue-500" size={32} />
+            </div>
+          </div>
         </div>
       )}
 
@@ -264,6 +288,15 @@ const Users = () => {
             <option value="free">Free</option>
             <option value="pro">Pro</option>
             <option value="premium">Premium</option>
+          </select>
+          <select
+            value={filterLoginType}
+            onChange={(e) => setFilterLoginType(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Login Types</option>
+            <option value="phone">Phone (Iran)</option>
+            <option value="google">Google</option>
           </select>
         </div>
       </div>

@@ -67,6 +67,13 @@ export class UserRepository implements IUserRepository {
       query.subscription = filters.subscription;
     }
 
+    if (filters?.loginType === 'phone') {
+      query.phoneNumber = { $exists: true, $ne: null };
+      query.googleId = { $exists: false };
+    } else if (filters?.loginType === 'google') {
+      query.googleId = { $exists: true, $ne: null };
+    }
+
     if (filters?.search) {
       query.$or = [
         { name: { $regex: filters.search, $options: 'i' } },
@@ -102,8 +109,10 @@ export class UserRepository implements IUserRepository {
     byRole: Record<string, number>;
     bySubscription: Record<string, number>;
     verified: number;
+    phoneUsers: number;
+    googleUsers: number;
   }> {
-    const [total, byRole, bySubscription, verified] = await Promise.all([
+    const [total, byRole, bySubscription, verified, phoneUsers, googleUsers] = await Promise.all([
       UserModel.countDocuments(),
       UserModel.aggregate([
         { $group: { _id: '$role', count: { $sum: 1 } } }
@@ -111,7 +120,9 @@ export class UserRepository implements IUserRepository {
       UserModel.aggregate([
         { $group: { _id: '$subscription', count: { $sum: 1 } } }
       ]),
-      UserModel.countDocuments({ isVerified: true })
+      UserModel.countDocuments({ isVerified: true }),
+      UserModel.countDocuments({ phoneNumber: { $exists: true, $ne: null }, googleId: { $exists: false } }),
+      UserModel.countDocuments({ googleId: { $exists: true, $ne: null } })
     ]);
 
     const roleStats: Record<string, number> = {};
@@ -128,7 +139,9 @@ export class UserRepository implements IUserRepository {
       total,
       byRole: roleStats,
       bySubscription: subscriptionStats,
-      verified
+      verified,
+      phoneUsers,
+      googleUsers
     };
   }
 }
