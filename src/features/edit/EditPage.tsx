@@ -303,7 +303,7 @@ export const EditPage = () => {
                 {t('edit.promptBased.referencesLabel')}
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 md:mb-3">
-                You can add 1 character and up to 5 images
+                {t('profile.characters.limitInfo')}
               </p>
               <div className="grid grid-cols-2 gap-2 md:gap-3">
                 {/* Upload Image Button */}
