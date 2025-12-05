@@ -918,7 +918,9 @@
       "invalidCode": "Please enter a valid 6-digit code",
       "verificationFailed": "Verification failed. Please try again",
       "networkError": "Network error. Please check your connection",
-      "tooManyAttempts": "Too many attempts. Please try again later"
+      "tooManyAttempts": "Too many attempts. Please try again later",
+      "smsSendFailed": "Failed to send verification code. Please try again",
+      "smsServiceUnavailable": "SMS service is temporarily unavailable. Please try again later"
     }
   },
   "privacy": {

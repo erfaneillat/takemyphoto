@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { thumbnailApi, GenerateThumbnailResponse } from '@/shared/services';
-import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import { useAuthStore } from '@/shared/stores';
+import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
-import { Upload, X, Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Sparkles, Loader2, Star } from 'lucide-react';
 
 export const ThumbnailGeneratorPage = () => {
     const { t } = useTranslation();
+    const { refreshUser } = useAuthStore();
     const [description, setDescription] = useState('');
     const [visualDescription, setVisualDescription] = useState('');
     const [language, setLanguage] = useState('English');
@@ -43,6 +45,9 @@ export const ThumbnailGeneratorPage = () => {
         try {
             const data = await thumbnailApi.generate(description, language, images, undefined, visualDescription, resolution);
             setResult(data);
+
+            // Refresh user data to update star count in header
+            await refreshUser();
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || err.message || t('thumbnailGenerator.error.failed'));
@@ -171,6 +176,10 @@ export const ThumbnailGeneratorPage = () => {
                                 <>
                                     <Sparkles size={20} />
                                     {t('thumbnailGenerator.generateButton')}
+                                    <div className="flex items-center gap-1 bg-yellow-400/20 px-2 py-0.5 rounded-full">
+                                        <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                                        <span className="text-yellow-300 text-sm font-medium">{getStarCostForResolution(resolution)}</span>
+                                    </div>
                                 </>
                             )}
                         </button>

@@ -7,7 +7,7 @@ import type { Character } from '@/core/domain/entities/Character';
 import type { Template } from '@/shared/services/templateApi';
 import { CharacterSelectorModal } from './components/CharacterSelectorModal';
 import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
-import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import {
   Image as ImageIcon,
   Upload,
@@ -17,6 +17,7 @@ import {
   Users,
   Plus,
   Download,
+  Star,
 } from 'lucide-react';
 
 export const EditPage = () => {
@@ -404,6 +405,10 @@ export const EditPage = () => {
                   <>
                     <Sparkles size={18} className="md:w-5 md:h-5" />
                     <span>{t('edit.promptBased.generateButton')}</span>
+                    <div className="flex items-center gap-1 bg-yellow-400/20 px-2 py-0.5 rounded-full">
+                      <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                      <span className="text-yellow-300 text-sm font-medium">{getStarCostForResolution(resolution)}</span>
+                    </div>
                   </>
                 )}
               </button>
@@ -429,6 +434,10 @@ export const EditPage = () => {
             <>
               <Sparkles size={18} />
               <span>{t('edit.promptBased.generateButton')}</span>
+              <div className="flex items-center gap-1 bg-yellow-400/20 px-2 py-0.5 rounded-full">
+                <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                <span className="text-yellow-300 text-sm font-medium">{getStarCostForResolution(resolution)}</span>
+              </div>
             </>
           )}
         </button>

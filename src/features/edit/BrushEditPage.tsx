@@ -2,7 +2,8 @@ import { useRef, useState } from 'react';
 import { useTranslation } from '@/shared/hooks';
 import { InlineBrushCanvas } from './components/InlineBrushCanvas';
 import { nanoBananaApi } from '@/shared/services/nanoBananaApi';
-import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import { useAuthStore } from '@/shared/stores';
+import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 import {
   Image as ImageIcon,
@@ -12,10 +13,12 @@ import {
   X,
   Download,
   Plus,
+  Star,
 } from 'lucide-react';
 
 export const BrushEditPage = () => {
   const { t } = useTranslation();
+  const { refreshUser } = useAuthStore();
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [maskDataUrl, setMaskDataUrl] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
@@ -149,6 +152,9 @@ export const BrushEditPage = () => {
       setUploadedImage(generatedImageUrl);
       setMaskDataUrl(null);
       setPrompt('');
+
+      // Refresh user data to update star count in header
+      await refreshUser();
     } catch (err) {
       console.error('Error generating image:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate image');
@@ -364,6 +370,10 @@ export const BrushEditPage = () => {
                   <>
                     <Sparkles size={16} className="md:w-5 md:h-5" />
                     <span>{t('edit.brushMode.editButton')}</span>
+                    <div className="flex items-center gap-1 bg-yellow-400/20 px-2 py-0.5 rounded-full">
+                      <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                      <span className="text-yellow-300 text-sm font-medium">{getStarCostForResolution(resolution)}</span>
+                    </div>
                   </>
                 )}
               </button>

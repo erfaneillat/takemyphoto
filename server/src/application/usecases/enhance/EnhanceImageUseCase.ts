@@ -1,6 +1,11 @@
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs/promises';
+import { IUserRepository } from '@core/domain/repositories/IUserRepository';
+import { AppError } from '@presentation/middleware/errorHandler';
+
+// Star cost for enhance is flat 10 stars
+const ENHANCE_STAR_COST = 10;
 
 export interface EnhanceImageRequest {
   imageFile: Express.Multer.File;
@@ -21,8 +26,22 @@ export interface EnhanceImageResponse {
 }
 
 export class EnhanceImageUseCase {
+  constructor(
+    private userRepository: IUserRepository
+  ) { }
+
   async execute(request: EnhanceImageRequest): Promise<EnhanceImageResponse> {
     const { imageFile, options, userId } = request;
+
+    // Check user's star balance (all users pay stars now)
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(404, 'User not found');
+    }
+
+    if (user.stars < ENHANCE_STAR_COST) {
+      throw new AppError(403, `INSUFFICIENT_STARS: You need ${ENHANCE_STAR_COST} stars for image enhancement. You have ${user.stars} stars. Please upgrade your subscription to get more stars.`);
+    }
 
     // Create uploads directory if it doesn't exist
     const uploadsDir = path.join(process.cwd(), 'uploads', 'enhanced', userId);
@@ -89,6 +108,10 @@ export class EnhanceImageUseCase {
       .toFile(filepath);
 
     const url = `/uploads/enhanced/${userId}/${filename}`;
+
+    // Deduct stars AFTER successful enhancement
+    await this.userRepository.decrementStars(userId, ENHANCE_STAR_COST);
+    console.log(`⭐ User ${userId} consumed ${ENHANCE_STAR_COST} stars for image enhancement. Remaining: ${user.stars - ENHANCE_STAR_COST}`);
 
     return {
       url,

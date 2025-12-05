@@ -8,11 +8,13 @@ import type {
   ImageEditParams
 } from '@/core/domain/entities/Image';
 import { nanoBananaApi } from '@/shared/services';
+import { useAuthStore } from '@/shared/stores';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 
 export const useImageEditor = () => {
   const navigate = useNavigate();
+  const { refreshUser } = useAuthStore();
   const [mode, setMode] = useState<EditMode>('generate');
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
@@ -103,6 +105,10 @@ export const useImageEditor = () => {
         timestamp: new Date(),
       };
       setGeneratedImages(prev => [newImage, ...prev]);
+
+      // Refresh user data to update star count in header
+      await refreshUser();
+
       return newImage;
     } catch (err: any) {
       console.error('Edit error:', err);
@@ -121,7 +127,7 @@ export const useImageEditor = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, aspectRatio, resolution, navigate]);
+  }, [uploadedImages, aspectRatio, resolution, navigate, refreshUser]);
 
   const editImages = useCallback(async (params: ImageEditParams) => {
     setIsProcessing(true);
@@ -155,6 +161,10 @@ export const useImageEditor = () => {
         timestamp: new Date(),
       };
       setGeneratedImages(prev => [newImage, ...prev]);
+
+      // Refresh user data to update star count in header
+      await refreshUser();
+
       return newImage;
     } catch (err: any) {
       console.error('Edit error:', err);
@@ -173,7 +183,7 @@ export const useImageEditor = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [navigate]);
+  }, [navigate, refreshUser]);
 
   const editAgain = useCallback((image: GeneratedImage, newPrompt: string) => {
     const editParams: ImageEditParams = {

@@ -1,6 +1,14 @@
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs/promises';
+import { IUserRepository } from '@core/domain/repositories/IUserRepository';
+import { AppError } from '@presentation/middleware/errorHandler';
+
+// Helper function to calculate star cost based on scale
+function getStarCost(scale: number): number {
+  // 2x = 10 stars, 4x = 20 stars
+  return scale >= 4 ? 20 : 10;
+}
 
 export interface UpscaleImageRequest {
   imageFile: Express.Multer.File;
@@ -17,8 +25,23 @@ export interface UpscaleImageResponse {
 }
 
 export class UpscaleImageUseCase {
+  constructor(
+    private userRepository: IUserRepository
+  ) { }
+
   async execute(request: UpscaleImageRequest): Promise<UpscaleImageResponse> {
     const { imageFile, scale, userId } = request;
+
+    // Check user's star balance (all users pay stars now)
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(404, 'User not found');
+    }
+
+    const starCost = getStarCost(scale);
+    if (user.stars < starCost) {
+      throw new AppError(403, `INSUFFICIENT_STARS: You need ${starCost} stars for ${scale}x upscale. You have ${user.stars} stars. Please upgrade your subscription to get more stars.`);
+    }
 
     // Create uploads directory if it doesn't exist
     const uploadsDir = path.join(process.cwd(), 'uploads', 'enhanced', userId);
@@ -69,6 +92,10 @@ export class UpscaleImageUseCase {
     }
 
     const url = `/uploads/enhanced/${userId}/${filename}`;
+
+    // Deduct stars AFTER successful upscale
+    await this.userRepository.decrementStars(userId, starCost);
+    console.log(`⭐ User ${userId} consumed ${starCost} stars for ${scale}x upscale. Remaining: ${user.stars - starCost}`);
 
     return {
       url,

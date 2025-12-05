@@ -8,6 +8,11 @@ import { TemplateModel } from '@infrastructure/database/models/TemplateModel';
 import { StyleUsageModel } from '@infrastructure/database/models/StyleUsageModel';
 import { AppError } from '@presentation/middleware/errorHandler';
 
+// Helper function to calculate star cost based on resolution
+function getStarCost(resolution: string): number {
+  return resolution === '4K' ? 20 : 10;
+}
+
 export interface EditImageRequest {
   userId: string;
   prompt: string;
@@ -43,21 +48,15 @@ export class EditImageUseCase {
       throw new Error('At least one image is required for editing');
     }
 
-    // Check user's plan and star balance
+    // Check user's star balance (all users pay stars now)
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new AppError(404, 'User not found');
     }
 
-    const isUnlimited = user.subscription && user.subscription !== 'free';
-    if (!isUnlimited) {
-      if (user.stars <= 0) {
-        throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue editing images.');
-      }
-      await this.userRepository.decrementStars(userId, 1);
-      console.log(`⭐ User ${userId} consumed 1 star for editing. Remaining: ${user.stars - 1}`);
-    } else {
-      console.log(`♾️ Unlimited editing for ${user.subscription} user ${userId}`);
+    const starCost = getStarCost(resolution);
+    if (user.stars < starCost) {
+      throw new AppError(403, `INSUFFICIENT_STARS: You need ${starCost} stars for ${resolution} resolution. You have ${user.stars} stars. Please upgrade your subscription to get more stars.`);
     }
 
     // Prepare images as base64 for Google AI API
@@ -201,6 +200,10 @@ export class EditImageUseCase {
       status: 'completed',
       completedAt: new Date()
     });
+
+    // Deduct stars AFTER successful edit
+    await this.userRepository.decrementStars(userId, starCost);
+    console.log(`⭐ User ${userId} consumed ${starCost} stars for ${resolution} editing. Remaining: ${user.stars - starCost}`);
 
     // Track style usage if template was used
     if (templateId) {

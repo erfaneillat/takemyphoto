@@ -5,7 +5,7 @@ import type { GeneratedImage } from '@/core/domain/entities/Image';
 import type { Character } from '@/core/domain/entities/Character';
 import { CharacterSelectorModal } from '@/features/edit/components/CharacterSelectorModal';
 import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
-import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import {
   Image as ImageIcon,
   Sparkles,
@@ -15,6 +15,7 @@ import {
   Upload,
   Plus,
   Download,
+  Star,
 } from 'lucide-react';
 
 export const GeneratePage = () => {
@@ -331,6 +332,10 @@ export const GeneratePage = () => {
                   <>
                     <Sparkles size={18} className="md:w-5 md:h-5" />
                     <span>{t('generate.generateButton')}</span>
+                    <div className="flex items-center gap-1 bg-yellow-400/20 px-2 py-0.5 rounded-full">
+                      <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                      <span className="text-yellow-300 text-sm font-medium">{getStarCostForResolution(resolution)}</span>
+                    </div>
                   </>
                 )}
               </button>
@@ -356,6 +361,10 @@ export const GeneratePage = () => {
             <>
               <Sparkles size={18} />
               <span>{t('generate.generateButton')}</span>
+              <div className="flex items-center gap-1 bg-yellow-400/20 px-2 py-0.5 rounded-full">
+                <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                <span className="text-yellow-300 text-sm font-medium">{getStarCostForResolution(resolution)}</span>
+              </div>
             </>
           )}
         </button>

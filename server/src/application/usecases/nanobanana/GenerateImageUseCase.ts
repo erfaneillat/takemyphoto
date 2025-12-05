@@ -8,6 +8,11 @@ import { TemplateModel } from '@infrastructure/database/models/TemplateModel';
 import { StyleUsageModel } from '@infrastructure/database/models/StyleUsageModel';
 import { AppError } from '@presentation/middleware/errorHandler';
 
+// Helper function to calculate star cost based on resolution
+function getStarCost(resolution: string): number {
+  return resolution === '4K' ? 20 : 10;
+}
+
 export interface GenerateImageRequest {
   userId: string;
   prompt: string;
@@ -42,15 +47,11 @@ export class GenerateImageUseCase {
     if (!user) {
       throw new AppError(404, 'User not found');
     }
-    const isUnlimited = user.subscription && user.subscription !== 'free';
-    if (!isUnlimited) {
-      if (user.stars <= 0) {
-        throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue generating images.');
-      }
-      await this.userRepository.decrementStars(userId, 1);
-      console.log(`⭐ User ${userId} consumed 1 star. Remaining: ${user.stars - 1}`);
-    } else {
-      console.log(`♾️ Unlimited generation for ${user.subscription} user ${userId}`);
+
+    // Check if user has enough stars (all users pay stars now)
+    const starCost = getStarCost(resolution);
+    if (user.stars < starCost) {
+      throw new AppError(403, `INSUFFICIENT_STARS: You need ${starCost} stars for ${resolution} resolution. You have ${user.stars} stars. Please upgrade your subscription to get more stars.`);
     }
 
     // Note: Google AI currently generates one image at a time
@@ -199,6 +200,10 @@ export class GenerateImageUseCase {
       status: 'completed',
       completedAt: new Date()
     });
+
+    // Deduct stars AFTER successful generation
+    await this.userRepository.decrementStars(userId, starCost);
+    console.log(`⭐ User ${userId} consumed ${starCost} stars for ${resolution} generation. Remaining: ${user.stars - starCost}`);
 
     // Track style usage if template was used
     if (templateId) {

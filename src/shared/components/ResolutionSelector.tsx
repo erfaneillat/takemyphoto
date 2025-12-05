@@ -15,6 +15,11 @@ const resolutionOptions: ResolutionOption[] = [
     { value: '4K', labelKey: 'generate.resolution.options.4K.label', descriptionKey: 'generate.resolution.options.4K.description' },
 ];
 
+// Helper function to get star cost for a resolution
+export function getStarCostForResolution(resolution: ResolutionValue): number {
+    return resolution === '4K' ? 20 : 10;
+}
+
 interface ResolutionSelectorProps {
     value: ResolutionValue;
     onChange: (value: ResolutionValue) => void;
@@ -43,6 +48,3 @@ export const ResolutionSelector = ({ value, onChange, className = '' }: Resoluti
         </div>
     );
 };
-
-
-

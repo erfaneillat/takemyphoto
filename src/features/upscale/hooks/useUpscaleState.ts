@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuthStore } from '@/shared/stores';
 
 interface UpscaleState {
     selectedImage: File | null;
@@ -9,6 +10,7 @@ interface UpscaleState {
 }
 
 export const useUpscaleState = () => {
+    const { refreshUser } = useAuthStore();
     const [state, setState] = useState<UpscaleState>({
         selectedImage: null,
         selectedResolution: '2K', // Default to 2K
@@ -91,6 +93,9 @@ export const useUpscaleState = () => {
                     upscaledImage: resolvedUrl,
                     isUpscaling: false
                 }));
+
+                // Refresh user data to update star count in header
+                await refreshUser();
             } else {
                 throw new Error('No upscaled image returned');
             }

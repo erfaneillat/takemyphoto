@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import type { GeneratedImage, ImageGenerationParams, UploadedImage } from '@/core/domain/entities/Image';
 import type { Character } from '@/core/domain/entities/Character';
 import { nanoBananaApi } from '@/shared/services';
+import { useAuthStore } from '@/shared/stores';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 
 export const useImageGenerator = () => {
   const navigate = useNavigate();
+  const { refreshUser } = useAuthStore();
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -83,6 +85,10 @@ export const useImageGenerator = () => {
         timestamp: new Date(),
       };
       setGeneratedImages(prev => [newImage, ...prev]);
+
+      // Refresh user data to update star count in header
+      await refreshUser();
+
       return newImage;
     } catch (err: any) {
       console.error('Generation error:', err);

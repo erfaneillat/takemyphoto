@@ -5,6 +5,11 @@ import { IFileUploadService } from '@infrastructure/services/LocalFileUploadServ
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
 import { ErrorLogService } from '@application/services/ErrorLogService';
 
+// Helper function to calculate star cost based on resolution
+function getStarCost(resolution: string): number {
+    return resolution === '4K' ? 20 : 10;
+}
+
 // Product photography styles
 export type ProductStyle =
     | 'ecommerce'      // Clean white background, professional
@@ -105,21 +110,16 @@ export class GenerateProductImageUseCase {
     async execute(request: GenerateProductImageRequest): Promise<GenerateProductImageResponse> {
         const { userId, productName, productDescription, style, productImages, referenceImage, aspectRatio, resolution } = request;
 
-        // Check user's plan and star balance
+        // Check user's star balance (all users pay stars now)
         const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new AppError(404, 'User not found');
         }
 
-        const isUnlimited = user.subscription && user.subscription !== 'free';
-        if (!isUnlimited) {
-            if (user.stars <= 0) {
-                throw new AppError(403, 'INSUFFICIENT_STARS: You have run out of stars. Please upgrade your subscription to continue.');
-            }
-            await this.userRepository.decrementStars(userId, 1);
-            console.log(`⭐ User ${userId} consumed 1 star for product image generation. Remaining: ${user.stars - 1}`);
-        } else {
-            console.log(`♾️ Unlimited product image generation for ${user.subscription} user ${userId}`);
+        const resolutionValue = resolution || '1K';
+        const starCost = getStarCost(resolutionValue);
+        if (user.stars < starCost) {
+            throw new AppError(403, `INSUFFICIENT_STARS: You need ${starCost} stars for ${resolutionValue} resolution. You have ${user.stars} stars. Please upgrade your subscription to get more stars.`);
         }
 
         // Upload product images for reference tracking
@@ -275,6 +275,10 @@ Generate a beautiful, commercial-quality product photograph that would make cust
             status: 'completed',
             completedAt: new Date()
         });
+
+        // Deduct stars AFTER successful generation
+        await this.userRepository.decrementStars(userId, starCost);
+        console.log(`⭐ User ${userId} consumed ${starCost} stars for ${resolutionValue} product image generation. Remaining: ${user.stars - starCost}`);
 
         return {
             image: imageResult.data,

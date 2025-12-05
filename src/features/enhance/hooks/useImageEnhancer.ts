@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { enhanceApi } from '@/shared/services/enhanceApi';
+import { useAuthStore } from '@/shared/stores';
 
 export interface UploadedImage {
   id: string;
@@ -15,6 +16,7 @@ export interface UpscaledResult {
 }
 
 export const useImageUpscaler = () => {
+  const { refreshUser } = useAuthStore();
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
   const [upscaledResult, setUpscaledResult] = useState<UpscaledResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -46,14 +48,14 @@ export const useImageUpscaler = () => {
 
     setIsProcessing(true);
     setError(null);
-    
+
     try {
       // Resolve server origin for static uploads
       const apiOrigin = (import.meta as any).env.VITE_SERVER_ORIGIN || window.location.origin;
 
       // Call backend API to upscale image
       const result = await enhanceApi.upscaleImage(uploadedImage.file, scale);
-      
+
       // Construct URL: in dev use relative (/uploads -> Vite proxy), in prod use absolute
       const fullUrl = (import.meta as any).env.DEV
         ? result.url
@@ -68,6 +70,9 @@ export const useImageUpscaler = () => {
 
       setUpscaledResult(upscaled);
       setShowResultModal(true);
+
+      // Refresh user data to update star count in header
+      await refreshUser();
     } catch (err: any) {
       console.error('Upscaling failed:', err);
       const serverMsg = err?.response?.data?.message;

@@ -1,6 +1,14 @@
 import { GoogleAIService, GoogleAIGenerateRequest } from '../../../infrastructure/services/GoogleAIService';
 import { LocalFileUploadService } from '../../../infrastructure/services/LocalFileUploadService';
 import { ErrorLogService } from '../../services/ErrorLogService';
+import { IUserRepository } from '@core/domain/repositories/IUserRepository';
+import { AppError } from '@presentation/middleware/errorHandler';
+
+// Helper function to calculate star cost based on resolution
+function getStarCost(resolution: string): number {
+    // 4K = 20 stars, others = 10 stars
+    return resolution === '4096x4096' || resolution === '4K' ? 20 : 10;
+}
 
 export interface UpscaleImageRequest {
     imageBuffer: Buffer;
@@ -19,10 +27,26 @@ export class UpscaleImageUseCase {
     constructor(
         private googleAIService: GoogleAIService,
         private fileUploadService: LocalFileUploadService,
-        private errorLogService?: ErrorLogService
+        private errorLogService?: ErrorLogService,
+        private userRepository?: IUserRepository
     ) { }
 
     async execute(request: UpscaleImageRequest): Promise<UpscaleImageResponse> {
+        // Check user's star balance (all users pay stars now)
+        let user: any = null;
+        let starCost = 0;
+        if (this.userRepository) {
+            user = await this.userRepository.findById(request.userId);
+            if (!user) {
+                throw new AppError(404, 'User not found');
+            }
+
+            starCost = getStarCost(request.resolution);
+            if (user.stars < starCost) {
+                throw new AppError(403, `INSUFFICIENT_STARS: You need ${starCost} stars for ${request.resolution} upscale. You have ${user.stars} stars. Please upgrade your subscription to get more stars.`);
+            }
+        }
+
         try {
             // Get original image dimensions (we'll use a simple approach without Sharp for now)
             const originalResolution = "unknown"; // Will be enhanced later with proper image processing
@@ -90,6 +114,12 @@ export class UpscaleImageUseCase {
                 savedPath: uploadResult.url,
                 userId: request.userId
             });
+
+            // Deduct stars AFTER successful upscale
+            if (this.userRepository && user) {
+                await this.userRepository.decrementStars(request.userId, starCost);
+                console.log(`⭐ User ${request.userId} consumed ${starCost} stars for ${request.resolution} AI upscale. Remaining: ${user.stars - starCost}`);
+            }
 
             return {
                 imageUrl: uploadResult.url,

@@ -19,6 +19,7 @@ import { ErrorLogRepository } from '@infrastructure/database/repositories/ErrorL
 import { JwtService } from '@infrastructure/services/JwtService';
 import { LocalFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { MockSmsService, ISmsService } from '@infrastructure/services/SmsService';
+import { KavenegarService } from '@infrastructure/services/KavenegarService';
 import { OpenAIService } from '@infrastructure/services/OpenAIService';
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { RemoteImageService } from '@infrastructure/services/RemoteImageService';
@@ -234,7 +235,15 @@ export class Container {
     this.openAIService = new OpenAIService();
     this.googleAIService = new GoogleAIService();
     this.remoteImageService = new RemoteImageService();
-    this.smsService = new MockSmsService();
+    // Initialize SMS Service - Use Kavenegar in production, Mock in development
+    const kavenegarApiKey = process.env.KAVENEGAR_API_KEY;
+    if (kavenegarApiKey) {
+      this.smsService = new KavenegarService(kavenegarApiKey);
+      console.log('[Container] Using KavenegarService for SMS');
+    } else {
+      this.smsService = new MockSmsService();
+      console.log('[Container] Using MockSmsService for SMS (KAVENEGAR_API_KEY not set)');
+    }
 
     // Initialize Yekpay Service
     const yekpayMerchantId = process.env.YEKPAY_MERCHANT_ID || '';
@@ -373,16 +382,20 @@ export class Container {
       this.categoryRepository
     );
 
-    this.upscaleImageUseCase = new UpscaleImageUseCase();
+    this.upscaleImageUseCase = new UpscaleImageUseCase(
+      this.userRepository
+    );
 
     this.aiUpscaleImageUseCase = new AIUpscaleImageUseCase(
       this.googleAIService,
       this.fileUploadService,
-      this.errorLogService
+      this.errorLogService,
+      this.userRepository
     );
 
     this.imageToPromptUseCase = new ImageToPromptUseCase(
-      this.openAIService
+      this.openAIService,
+      this.userRepository
     );
 
     this.generateImageUseCase = new GenerateImageUseCase(

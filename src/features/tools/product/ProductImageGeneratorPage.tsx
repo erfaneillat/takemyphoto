@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { productImageApi, ProductStyle, GenerateProductImageResponse } from '@/shared/services';
-import { ResolutionSelector } from '@/shared/components/ResolutionSelector';
+import { useAuthStore } from '@/shared/stores';
+import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
@@ -12,7 +13,8 @@ import {
     Sparkles,
     Loader2,
     ShoppingBag,
-    Check
+    Check,
+    Star
 } from 'lucide-react';
 
 // Style options with icons and colors
@@ -37,6 +39,7 @@ const STYLE_OPTIONS: {
 
 export const ProductImageGeneratorPage = () => {
     const { t } = useTranslation();
+    const { refreshUser } = useAuthStore();
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [selectedStyle, setSelectedStyle] = useState<ProductStyle>('ecommerce');
@@ -100,6 +103,9 @@ export const ProductImageGeneratorPage = () => {
                 resolution
             );
             setResult(data);
+
+            // Refresh user data to update star count in header
+            await refreshUser();
         } catch (err: any) {
             console.error(err);
             const message = err.response?.data?.message || err.message || t('productGenerator.error.failed');
@@ -317,6 +323,10 @@ export const ProductImageGeneratorPage = () => {
                                 <>
                                     <Sparkles size={20} />
                                     {t('productGenerator.generateButton')}
+                                    <div className="flex items-center gap-1 bg-yellow-400/20 px-2 py-0.5 rounded-full">
+                                        <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                                        <span className="text-yellow-300 text-sm font-medium">{getStarCostForResolution(resolution)}</span>
+                                    </div>
                                 </>
                             )}
                         </button>
