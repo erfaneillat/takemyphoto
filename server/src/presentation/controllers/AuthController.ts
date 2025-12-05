@@ -11,32 +11,64 @@ export class AuthController {
     private verifyCodeUseCase: VerifyCodeUseCase,
     private googleAuthUseCase: GoogleAuthUseCase,
     private adminLoginUseCase: AdminLoginUseCase
-  ) {}
+  ) { }
 
   sendVerificationCode = asyncHandler(async (req: Request, res: Response) => {
     const { phoneNumber } = req.body;
 
-    await this.sendVerificationCodeUseCase.execute(phoneNumber);
+    try {
+      await this.sendVerificationCodeUseCase.execute(phoneNumber);
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Verification code sent successfully'
-    });
+      return res.status(200).json({
+        status: 'success',
+        message: 'Verification code sent successfully'
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to send verification code';
+
+      // Handle SMS service errors
+      if (message.includes('SMS service not configured') ||
+        message.includes('Failed to send verification code') ||
+        message.includes('Kavenegar API error')) {
+        return res.status(503).json({
+          status: 'error',
+          message: 'SMS service is temporarily unavailable. Please try again later.'
+        });
+      }
+
+      throw error;
+    }
   });
 
   verifyCode = asyncHandler(async (req: Request, res: Response) => {
     const { phoneNumber, code } = req.body;
 
-    const result = await this.verifyCodeUseCase.execute(phoneNumber, code);
+    try {
+      const result = await this.verifyCodeUseCase.execute(phoneNumber, code);
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user: result.user,
-        accessToken: result.accessToken,
-        refreshToken: result.refreshToken
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          user: result.user,
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken
+        }
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Verification failed';
+
+      // Handle known verification errors with 400 status
+      if (message.includes('Invalid or expired verification code') ||
+        message.includes('Too many attempts')) {
+        return res.status(400).json({
+          status: 'error',
+          message
+        });
       }
-    });
+
+      // Re-throw unknown errors to be handled by global error handler
+      throw error;
+    }
   });
 
   googleAuth = asyncHandler(async (req: Request, res: Response) => {
