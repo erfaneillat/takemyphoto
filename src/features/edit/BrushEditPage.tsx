@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { InlineBrushCanvas } from './components/InlineBrushCanvas';
 import { nanoBananaApi } from '@/shared/services/nanoBananaApi';
 import { useAuthStore } from '@/shared/stores';
+import { handleInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 import {
@@ -17,6 +19,7 @@ import {
 } from 'lucide-react';
 
 export const BrushEditPage = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { refreshUser } = useAuthStore();
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -157,7 +160,10 @@ export const BrushEditPage = () => {
       await refreshUser();
     } catch (err) {
       console.error('Error generating image:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate image');
+      // Check for insufficient stars error and handle redirect
+      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+        setError(getErrorMessage(err) || t('edit.error.failed'));
+      }
     } finally {
       setIsProcessing(false);
     }

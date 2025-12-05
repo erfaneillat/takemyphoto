@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type {
   GeneratedImage,
   UploadedImage,
@@ -9,11 +10,13 @@ import type {
 } from '@/core/domain/entities/Image';
 import { nanoBananaApi } from '@/shared/services';
 import { useAuthStore } from '@/shared/stores';
+import { handleInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 
 export const useImageEditor = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { refreshUser } = useAuthStore();
   const [mode, setMode] = useState<EditMode>('generate');
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -113,21 +116,15 @@ export const useImageEditor = () => {
     } catch (err: any) {
       console.error('Edit error:', err);
 
-      // Check for insufficient stars error
-      if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
-        setError('You have run out of stars. Redirecting to subscription page...');
-        // Navigate to subscription page after showing error
-        setTimeout(() => {
-          navigate('/subscription');
-        }, 2000);
-      } else {
-        setError(err.message || 'Failed to edit image');
+      // Check for insufficient stars error and handle redirect
+      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+        setError(getErrorMessage(err) || t('edit.error.failed'));
       }
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, aspectRatio, resolution, navigate, refreshUser]);
+  }, [uploadedImages, aspectRatio, resolution, navigate, refreshUser, t]);
 
   const editImages = useCallback(async (params: ImageEditParams) => {
     setIsProcessing(true);
@@ -169,21 +166,15 @@ export const useImageEditor = () => {
     } catch (err: any) {
       console.error('Edit error:', err);
 
-      // Check for insufficient stars error
-      if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
-        setError('You have run out of stars. Redirecting to subscription page...');
-        // Navigate to subscription page after showing error
-        setTimeout(() => {
-          navigate('/subscription');
-        }, 2000);
-      } else {
-        setError(err.message || 'Failed to edit image');
+      // Check for insufficient stars error and handle redirect
+      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+        setError(getErrorMessage(err) || t('edit.error.failed'));
       }
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, [navigate, refreshUser]);
+  }, [navigate, refreshUser, t]);
 
   const editAgain = useCallback((image: GeneratedImage, newPrompt: string) => {
     const editParams: ImageEditParams = {

@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { thumbnailApi, GenerateThumbnailResponse } from '@/shared/services';
 import { useAuthStore } from '@/shared/stores';
+import { handleInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 import { Upload, X, Image as ImageIcon, Sparkles, Loader2, Star } from 'lucide-react';
 
 export const ThumbnailGeneratorPage = () => {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const { refreshUser } = useAuthStore();
     const [description, setDescription] = useState('');
@@ -50,7 +53,10 @@ export const ThumbnailGeneratorPage = () => {
             await refreshUser();
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.message || err.message || t('thumbnailGenerator.error.failed'));
+            // Check for insufficient stars error and handle redirect
+            if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+                setError(getErrorMessage(err) || t('thumbnailGenerator.error.failed'));
+            }
         } finally {
             setLoading(false);
         }

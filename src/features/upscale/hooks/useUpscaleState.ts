@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/shared/stores';
+import { isInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 
 interface UpscaleState {
     selectedImage: File | null;
@@ -10,6 +13,8 @@ interface UpscaleState {
 }
 
 export const useUpscaleState = () => {
+    const navigate = useNavigate();
+    const { t } = useTranslation();
     const { refreshUser } = useAuthStore();
     const [state, setState] = useState<UpscaleState>({
         selectedImage: null,
@@ -100,11 +105,24 @@ export const useUpscaleState = () => {
                 throw new Error('No upscaled image returned');
             }
         } catch (error) {
-            setState(prev => ({
-                ...prev,
-                error: error instanceof Error ? error.message : 'Unknown error occurred',
-                isUpscaling: false
-            }));
+            const errorMessage = getErrorMessage(error);
+            // Check for insufficient stars error and handle redirect
+            if (isInsufficientStarsError(error)) {
+                setState(prev => ({
+                    ...prev,
+                    error: t('common.insufficientStars'),
+                    isUpscaling: false
+                }));
+                setTimeout(() => {
+                    navigate('/subscription');
+                }, 2000);
+            } else {
+                setState(prev => ({
+                    ...prev,
+                    error: errorMessage || t('upscale.error.failed'),
+                    isUpscaling: false
+                }));
+            }
         }
     };
 

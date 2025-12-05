@@ -1,14 +1,17 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { GeneratedImage, ImageGenerationParams, UploadedImage } from '@/core/domain/entities/Image';
 import type { Character } from '@/core/domain/entities/Character';
 import { nanoBananaApi } from '@/shared/services';
 import { useAuthStore } from '@/shared/stores';
+import { handleInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
 
 export const useImageGenerator = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { refreshUser } = useAuthStore();
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -93,21 +96,15 @@ export const useImageGenerator = () => {
     } catch (err: any) {
       console.error('Generation error:', err);
 
-      // Check for insufficient stars error
-      if (err.message && err.message.includes('INSUFFICIENT_STARS')) {
-        setError('You have run out of stars. Redirecting to subscription page...');
-        // Navigate to subscription page after showing error
-        setTimeout(() => {
-          navigate('/subscription');
-        }, 2000);
-      } else {
-        setError(err.message || 'Failed to generate image');
+      // Check for insufficient stars error and handle redirect
+      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+        setError(getErrorMessage(err) || t('generate.error.failed'));
       }
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedImages, selectedCharacters, aspectRatio, resolution, navigate]);
+  }, [uploadedImages, selectedCharacters, aspectRatio, resolution, navigate, t]);
 
   const clearAll = useCallback(() => {
     setGeneratedImages([]);

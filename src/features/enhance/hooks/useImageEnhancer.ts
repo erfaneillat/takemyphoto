@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { enhanceApi } from '@/shared/services/enhanceApi';
 import { useAuthStore } from '@/shared/stores';
+import { handleInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 
 export interface UploadedImage {
   id: string;
@@ -16,6 +19,8 @@ export interface UpscaledResult {
 }
 
 export const useImageUpscaler = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const { refreshUser } = useAuthStore();
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
   const [upscaledResult, setUpscaledResult] = useState<UpscaledResult | null>(null);
@@ -75,9 +80,10 @@ export const useImageUpscaler = () => {
       await refreshUser();
     } catch (err: any) {
       console.error('Upscaling failed:', err);
-      const serverMsg = err?.response?.data?.message;
-      const msg = serverMsg || err?.message || 'Upscaling failed';
-      setError(msg);
+      // Check for insufficient stars error and handle redirect
+      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+        setError(getErrorMessage(err) || t('enhance.error.failed'));
+      }
       throw err;
     } finally {
       setIsProcessing(false);

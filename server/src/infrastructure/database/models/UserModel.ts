@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { User, SubscriptionTier, UserRole } from '@core/domain/entities/User';
 
-export interface IUserDocument extends Omit<User, 'id'>, Document {}
+export interface IUserDocument extends Omit<User, 'id'>, Document { }
 
 const UserSchema = new Schema<IUserDocument>(
   {
@@ -41,7 +41,7 @@ const UserSchema = new Schema<IUserDocument>(
     },
     stars: {
       type: Number,
-      default: 3,
+      default: 30,
       min: 0
     },
     isVerified: {

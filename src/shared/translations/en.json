@@ -379,7 +379,13 @@
     },
     "download": "Download",
     "error": {
-      "title": "Upscaling Failed"
+      "title": "Upscaling Failed",
+      "failed": "Failed to upscale image. Please try again."
+    }
+  },
+  "enhance": {
+    "error": {
+      "failed": "Failed to enhance image. Please try again."
     }
   },
   "explore": {
@@ -486,6 +492,9 @@
           "description": "Best quality, slower generation"
         }
       }
+    },
+    "error": {
+      "failed": "Failed to generate image. Please try again."
     }
   },
   "edit": {
@@ -574,6 +583,9 @@
     },
     "history": {
       "title": "History"
+    },
+    "error": {
+      "failed": "Failed to edit image. Please try again."
     }
   },
   "profile": {
@@ -770,6 +782,9 @@
     "preview": {
       "noImage": "No image uploaded yet",
       "uploadToStart": "Upload an image to analyze"
+    },
+    "error": {
+      "failed": "Failed to analyze image. Please try again."
     }
   },
   "thumbnailGenerator": {

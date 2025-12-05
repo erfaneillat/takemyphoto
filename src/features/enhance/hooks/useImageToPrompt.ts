@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { handleInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 
 interface UploadedImage {
   file: File;
@@ -12,6 +15,8 @@ interface ImageToPromptResult {
 }
 
 export const useImageToPrompt = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
   const [result, setResult] = useState<ImageToPromptResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -55,8 +60,11 @@ export const useImageToPrompt = () => {
 
       setResult(response.data.data);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to analyze image');
       console.error('Image to prompt error:', err);
+      // Check for insufficient stars error and handle redirect
+      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+        setError(getErrorMessage(err) || t('imageToPrompt.error.failed'));
+      }
     } finally {
       setIsProcessing(false);
     }

@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { productImageApi, ProductStyle, GenerateProductImageResponse } from '@/shared/services';
 import { useAuthStore } from '@/shared/stores';
+import { handleInsufficientStarsError, getErrorMessage } from '@/shared/utils';
 import { ResolutionSelector, getStarCostForResolution } from '@/shared/components/ResolutionSelector';
 import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
 import type { ResolutionValue } from '@/shared/components/ResolutionSelector';
@@ -38,6 +40,7 @@ const STYLE_OPTIONS: {
     ];
 
 export const ProductImageGeneratorPage = () => {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const { refreshUser } = useAuthStore();
     const [productName, setProductName] = useState('');
@@ -108,8 +111,10 @@ export const ProductImageGeneratorPage = () => {
             await refreshUser();
         } catch (err: any) {
             console.error(err);
-            const message = err.response?.data?.message || err.message || t('productGenerator.error.failed');
-            setError(message);
+            // Check for insufficient stars error and handle redirect
+            if (!handleInsufficientStarsError(err, setError, navigate, t)) {
+                setError(getErrorMessage(err) || t('productGenerator.error.failed'));
+            }
         } finally {
             setLoading(false);
         }
