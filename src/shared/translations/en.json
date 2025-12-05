@@ -661,7 +661,8 @@
         "nameRequired": "Character name is required",
         "minImagesRequired": "At least 3 images are required",
         "maxImagesExceeded": "Maximum 5 images allowed"
-      }
+      },
+      "limitInfo": "You can add 1 character and up to 5 images in edit page"
     }
   },
   "upgrade": {
