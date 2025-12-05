@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import { toast } from '../stores/toastStore';
 
 /**
  * Extract error message from API error response
@@ -36,7 +37,7 @@ export const isInsufficientStarsError = (error: unknown): boolean => {
 };
 
 /**
- * Handle insufficient stars error - show message and redirect to subscription
+ * Handle insufficient stars error - show toast and redirect to subscription
  * Returns true if it was an insufficient stars error
  */
 export const handleInsufficientStarsError = (
@@ -46,11 +47,15 @@ export const handleInsufficientStarsError = (
     t: (key: string) => string
 ): boolean => {
     if (isInsufficientStarsError(error)) {
-        setError(t('common.insufficientStars'));
+        const message = t('common.insufficientStars');
+        // Show toast notification
+        toast.error(message, 3000);
+        // Also set error state for components that display it
+        setError(message);
         // Navigate to subscription page after showing error
         setTimeout(() => {
             navigate('/subscription');
-        }, 2000);
+        }, 2500);
         return true;
     }
     return false;

@@ -14,6 +14,7 @@ import { ImageToPromptPage } from '@/features/enhance';
 import { PrivacyPage, TermsPage, AboutPage, ContactPage, CheckoutPage, PaymentSuccessPage, PaymentFailedPage, PaymentCancelledPage } from '@/features/legal';
 import { useAuthStore } from '@/shared/stores';
 import { useAuthInit, useAppInit, useFirebaseInit, useCharacterInit } from '@/shared/hooks';
+import { ToastContainer } from '@/shared/components/Toast';
 import { ReactNode } from 'react';
 
 // Wrapper component to handle edit mode routing
@@ -68,6 +69,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         {/* Auth Routes - Only accessible when NOT authenticated */}
         <Route element={<AuthLayout />}>
