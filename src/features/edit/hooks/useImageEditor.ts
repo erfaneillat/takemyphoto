@@ -117,10 +117,11 @@ export const useImageEditor = () => {
       console.error('Edit error:', err);
 
       // Check for insufficient stars error and handle redirect
-      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
-        setError(getErrorMessage(err) || t('edit.error.failed'));
+      if (handleInsufficientStarsError(err, setError, navigate, t)) {
+        // Don't throw - let the redirect happen with the message visible
+        return;
       }
-      throw err;
+      setError(getErrorMessage(err) || t('edit.error.failed'));
     } finally {
       setIsProcessing(false);
     }
@@ -167,10 +168,11 @@ export const useImageEditor = () => {
       console.error('Edit error:', err);
 
       // Check for insufficient stars error and handle redirect
-      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
-        setError(getErrorMessage(err) || t('edit.error.failed'));
+      if (handleInsufficientStarsError(err, setError, navigate, t)) {
+        // Don't throw - let the redirect happen with the message visible
+        return;
       }
-      throw err;
+      setError(getErrorMessage(err) || t('edit.error.failed'));
     } finally {
       setIsProcessing(false);
     }

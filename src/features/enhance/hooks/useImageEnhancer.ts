@@ -81,10 +81,11 @@ export const useImageUpscaler = () => {
     } catch (err: any) {
       console.error('Upscaling failed:', err);
       // Check for insufficient stars error and handle redirect
-      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
-        setError(getErrorMessage(err) || t('enhance.error.failed'));
+      if (handleInsufficientStarsError(err, setError, navigate, t)) {
+        // Don't throw - let the redirect happen with the message visible
+        return;
       }
-      throw err;
+      setError(getErrorMessage(err) || t('enhance.error.failed'));
     } finally {
       setIsProcessing(false);
     }

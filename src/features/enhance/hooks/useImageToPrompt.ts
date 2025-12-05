@@ -62,9 +62,11 @@ export const useImageToPrompt = () => {
     } catch (err: any) {
       console.error('Image to prompt error:', err);
       // Check for insufficient stars error and handle redirect
-      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
-        setError(getErrorMessage(err) || t('imageToPrompt.error.failed'));
+      if (handleInsufficientStarsError(err, setError, navigate, t)) {
+        // Don't continue - let the redirect happen with the message visible
+        return;
       }
+      setError(getErrorMessage(err) || t('imageToPrompt.error.failed'));
     } finally {
       setIsProcessing(false);
     }

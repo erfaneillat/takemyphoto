@@ -97,10 +97,11 @@ export const useImageGenerator = () => {
       console.error('Generation error:', err);
 
       // Check for insufficient stars error and handle redirect
-      if (!handleInsufficientStarsError(err, setError, navigate, t)) {
-        setError(getErrorMessage(err) || t('generate.error.failed'));
+      if (handleInsufficientStarsError(err, setError, navigate, t)) {
+        // Don't throw - let the redirect happen with the message visible
+        return;
       }
-      throw err;
+      setError(getErrorMessage(err) || t('generate.error.failed'));
     } finally {
       setIsProcessing(false);
     }

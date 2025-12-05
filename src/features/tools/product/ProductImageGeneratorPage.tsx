@@ -112,9 +112,11 @@ export const ProductImageGeneratorPage = () => {
         } catch (err: any) {
             console.error(err);
             // Check for insufficient stars error and handle redirect
-            if (!handleInsufficientStarsError(err, setError, navigate, t)) {
-                setError(getErrorMessage(err) || t('productGenerator.error.failed'));
+            if (handleInsufficientStarsError(err, setError, navigate, t)) {
+                // Don't continue - let the redirect happen with the message visible
+                return;
             }
+            setError(getErrorMessage(err) || t('productGenerator.error.failed'));
         } finally {
             setLoading(false);
         }
