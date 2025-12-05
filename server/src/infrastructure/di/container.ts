@@ -24,6 +24,7 @@ import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
 import { RemoteImageService } from '@infrastructure/services/RemoteImageService';
 import { ErrorLogService } from '@application/services/ErrorLogService';
 import { YekpayService } from '@application/services/YekpayService';
+import { ZarinpalService } from '@application/services/ZarinpalService';
 
 // Use Cases
 import { SendVerificationCodeUseCase } from '@application/usecases/auth/SendVerificationCodeUseCase';
@@ -80,6 +81,8 @@ import { DeleteErrorLogUseCase } from '@application/usecases/error-log/DeleteErr
 import { DeleteManyErrorLogsUseCase } from '@application/usecases/error-log/DeleteManyErrorLogsUseCase';
 import { GenerateThumbnailUseCase } from '@application/usecases/tools/GenerateThumbnailUseCase';
 import { GenerateProductImageUseCase } from '@application/usecases/tools/GenerateProductImageUseCase';
+import { InitiateZarinpalPaymentUseCase } from '@application/usecases/payment/InitiateZarinpalPaymentUseCase';
+import { VerifyZarinpalPaymentUseCase } from '@application/usecases/payment/VerifyZarinpalPaymentUseCase';
 
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
@@ -98,6 +101,7 @@ import { ContactController } from '@presentation/controllers/ContactController';
 import { CheckoutController } from '@presentation/controllers/CheckoutController';
 import { ErrorLogController } from '@presentation/controllers/ErrorLogController';
 import { UpscaleController } from '@presentation/controllers/UpscaleController';
+import { ZarinpalController } from '@presentation/controllers/ZarinpalController';
 import { ProductImageController } from '@presentation/controllers/ProductImageController';
 
 export class Container {
@@ -127,6 +131,7 @@ export class Container {
   public remoteImageService: RemoteImageService;
   public errorLogService: ErrorLogService;
   public yekpayService: YekpayService;
+  public zarinpalService: ZarinpalService;
 
   // Use Cases
   public sendVerificationCodeUseCase: SendVerificationCodeUseCase;
@@ -183,6 +188,8 @@ export class Container {
   public deleteManyErrorLogsUseCase: DeleteManyErrorLogsUseCase;
   public generateThumbnailUseCase: GenerateThumbnailUseCase;
   public generateProductImageUseCase: GenerateProductImageUseCase;
+  public initiateZarinpalPaymentUseCase: InitiateZarinpalPaymentUseCase;
+  public verifyZarinpalPaymentUseCase: VerifyZarinpalPaymentUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -201,6 +208,7 @@ export class Container {
   public errorLogController: ErrorLogController;
   public upscaleController: UpscaleController;
   public productImageController: ProductImageController;
+  public zarinpalController: ZarinpalController;
 
   constructor() {
     // Initialize Repositories
@@ -232,6 +240,11 @@ export class Container {
     const yekpayMerchantId = process.env.YEKPAY_MERCHANT_ID || '';
     const yekpayIsSandbox = process.env.YEKPAY_SANDBOX === 'true';
     this.yekpayService = new YekpayService(yekpayMerchantId, yekpayIsSandbox);
+
+    // Initialize Zarinpal Service
+    const zarinpalMerchantId = process.env.ZARINPAL_MERCHANT_ID || '';
+    const zarinpalIsSandbox = process.env.ZARINPAL_SANDBOX === 'true';
+    this.zarinpalService = new ZarinpalService(zarinpalMerchantId, zarinpalIsSandbox);
 
     // Initialize Error Logging
     this.createErrorLogUseCase = new CreateErrorLogUseCase(
@@ -585,6 +598,26 @@ export class Container {
 
     this.productImageController = new ProductImageController(
       this.generateProductImageUseCase
+    );
+
+    // Initialize Zarinpal Payment Use Cases
+    this.initiateZarinpalPaymentUseCase = new InitiateZarinpalPaymentUseCase(
+      this.paymentRepository,
+      this.checkoutOrderRepository,
+      this.zarinpalService
+    );
+
+    this.verifyZarinpalPaymentUseCase = new VerifyZarinpalPaymentUseCase(
+      this.paymentRepository,
+      this.checkoutOrderRepository,
+      this.userRepository,
+      this.zarinpalService
+    );
+
+    this.zarinpalController = new ZarinpalController(
+      this.createCheckoutOrderUseCase,
+      this.initiateZarinpalPaymentUseCase,
+      this.verifyZarinpalPaymentUseCase
     );
   }
 }

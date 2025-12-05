@@ -1,19 +1,23 @@
 import { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
+import { useAuthStore } from '@/shared/stores';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 
 export const PaymentSuccessPage = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const reference = searchParams.get('reference');
+  const { refreshUser } = useAuthStore();
+
+  // Support both Yekpay (reference) and Zarinpal (refId)
+  const reference = searchParams.get('reference') || searchParams.get('refId');
   const orderId = searchParams.get('orderId');
 
   useEffect(() => {
-    // Optional: Call API to verify payment status
-    // or send confirmation email
-  }, [reference, orderId]);
+    // Refresh user data to get updated subscription status
+    refreshUser();
+  }, [reference, orderId, refreshUser]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white dark:from-green-950/20 dark:to-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -70,11 +74,17 @@ export const PaymentSuccessPage = () => {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/profile')}
               className="flex items-center justify-center gap-2 px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
             >
-              {t('payment.success.goHome')}
+              {t('payment.success.goProfile')}
               <ArrowRight size={20} />
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center justify-center gap-2 px-8 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium"
+            >
+              {t('payment.success.goHome')}
             </button>
           </div>
         </div>

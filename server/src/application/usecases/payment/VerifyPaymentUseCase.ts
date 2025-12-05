@@ -25,7 +25,7 @@ export class VerifyPaymentUseCase {
     private checkoutOrderRepository: ICheckoutOrderRepository,
     private userRepository: IUserRepository,
     private yekpayService: YekpayService
-  ) {}
+  ) { }
 
   async execute(input: VerifyPaymentInput): Promise<VerifyPaymentOutput> {
     // Find payment by authority
@@ -117,8 +117,22 @@ export class VerifyPaymentUseCase {
         }
 
         if (targetUserId) {
-          await this.userRepository.update(targetUserId, { subscription: subscriptionTier });
-          console.log(`Updated user ${targetUserId} subscription to ${subscriptionTier}`);
+          // Calculate stars to add based on plan and billing cycle
+          let starsToAdd = 0;
+          if (planIdLower === 'pro') {
+            // Pro monthly: 400 stars, Pro yearly: 4800 stars
+            starsToAdd = checkoutOrder.billingCycle === 'yearly' ? 4800 : 400;
+          }
+
+          // Get current user to add stars
+          const currentUser = await this.userRepository.findById(targetUserId);
+          const currentStars = currentUser?.stars || 0;
+
+          await this.userRepository.update(targetUserId, {
+            subscription: subscriptionTier,
+            stars: currentStars + starsToAdd
+          });
+          console.log(`Updated user ${targetUserId} subscription to ${subscriptionTier}, added ${starsToAdd} stars (total: ${currentStars + starsToAdd})`);
         }
       }
 

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { useThemeStore, useAuthStore } from '@/shared/stores';
 import { Logo } from './Logo';
-import { Menu, X, Compass, User, Star, Moon, Sun, Wand2, ImagePlus, Wrench, LogIn, CreditCard, Infinity } from 'lucide-react';
+import { Menu, X, Compass, User, Star, Moon, Sun, Wand2, ImagePlus, Wrench, LogIn, CreditCard } from 'lucide-react';
 
 export const Header = () => {
   const { t } = useTranslation();
@@ -77,21 +77,15 @@ export const Header = () => {
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/subscription')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${user?.subscription === 'premium'
-                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50'
-                    : 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800'
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${user?.subscription === 'pro' || user?.subscription === 'premium'
+                  ? 'bg-gradient-to-r from-yellow-100 to-amber-100 dark:from-yellow-900/30 dark:to-amber-900/30 text-yellow-700 dark:text-yellow-400 hover:from-yellow-200 hover:to-amber-200 dark:hover:from-yellow-900/50 dark:hover:to-amber-900/50'
+                  : 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800'
                   }`}
-                title={user?.subscription === 'premium' ? 'Unlimited' : 'View pricing'}
+                title={t('header.viewStars')}
               >
                 <Star size={16} className="fill-yellow-400 text-yellow-400" />
                 <span className="text-sm font-semibold">
-                  {user?.subscription && user.subscription !== 'free' ? (
-                    <span className="flex items-center gap-1">
-                      <Infinity size={14} className="animate-pulse" />
-                    </span>
-                  ) : (
-                    userStars
-                  )}
+                  {userStars.toLocaleString()}
                 </span>
               </button>
             ) : (
@@ -113,15 +107,15 @@ export const Header = () => {
                 <Sun
                   size={20}
                   className={`absolute inset-0 transition-all duration-300 ${theme === 'light'
-                      ? 'rotate-0 scale-100 opacity-100'
-                      : 'rotate-90 scale-0 opacity-0'
+                    ? 'rotate-0 scale-100 opacity-100'
+                    : 'rotate-90 scale-0 opacity-0'
                     }`}
                 />
                 <Moon
                   size={20}
                   className={`absolute inset-0 transition-all duration-300 ${theme === 'dark'
-                      ? 'rotate-0 scale-100 opacity-100'
-                      : '-rotate-90 scale-0 opacity-0'
+                    ? 'rotate-0 scale-100 opacity-100'
+                    : '-rotate-90 scale-0 opacity-0'
                     }`}
                 />
               </div>
@@ -188,21 +182,14 @@ export const Header = () => {
                 <a
                   href="/subscription"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg transition-colors ${user?.subscription === 'premium'
-                      ? 'bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50'
-                      : 'bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800'
+                  className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg transition-colors ${user?.subscription === 'pro' || user?.subscription === 'premium'
+                    ? 'bg-gradient-to-r from-yellow-100 to-amber-100 dark:from-yellow-900/30 dark:to-amber-900/30 hover:from-yellow-200 hover:to-amber-200 dark:hover:from-yellow-900/50 dark:hover:to-amber-900/50'
+                    : 'bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800'
                     }`}
                 >
                   <Star size={18} className="fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {user?.subscription && user.subscription !== 'free' ? (
-                      <span className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
-                        <Infinity size={16} className="animate-pulse" />
-                        {t('header.stars')}
-                      </span>
-                    ) : (
-                      `${userStars} ${t('header.stars')}`
-                    )}
+                  <span className={`text-sm font-semibold ${user?.subscription === 'pro' || user?.subscription === 'premium' ? 'text-yellow-700 dark:text-yellow-400' : 'text-gray-900 dark:text-white'}`}>
+                    {userStars.toLocaleString()} {t('header.stars')}
                   </span>
                 </a>
               ) : (

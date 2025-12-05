@@ -1,39 +1,45 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { CheckoutOrder, OrderStatus } from '@core/domain/entities/CheckoutOrder';
 
-export interface ICheckoutOrderDocument extends Omit<CheckoutOrder, 'id'>, Document {}
+export interface ICheckoutOrderDocument extends Omit<CheckoutOrder, 'id'>, Document { }
 
 const CheckoutOrderSchema = new Schema<ICheckoutOrderDocument>(
   {
     firstName: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
       trim: true
     },
     lastName: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
       trim: true
     },
     email: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
       trim: true,
       lowercase: true
     },
     phone: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
       trim: true
     },
     address: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
       trim: true
     },
     postalCode: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
       trim: true
     },
     planId: {

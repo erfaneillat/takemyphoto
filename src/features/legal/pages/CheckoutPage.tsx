@@ -9,7 +9,7 @@ export const CheckoutPage = () => {
   const { isIran } = useRegion();
   const [searchParams] = useSearchParams();
   const { user } = useAuthStore();
-  const [planInfo, setPlanInfo] = useState<{ planId?: string; billingCycle?: string; price?: string } | null>(null);
+  const [planInfo, setPlanInfo] = useState<{ planId?: string; billingCycle?: string; price?: string; gateway?: string } | null>(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -36,9 +36,10 @@ export const CheckoutPage = () => {
     const planId = searchParams.get('planId');
     const billingCycle = searchParams.get('billingCycle');
     const price = searchParams.get('price');
+    const gateway = searchParams.get('gateway');
 
     if (planId) {
-      setPlanInfo({ planId, billingCycle: billingCycle || 'monthly', price: price || '0' });
+      setPlanInfo({ planId, billingCycle: billingCycle || 'monthly', price: price || '0', gateway: gateway || undefined });
     }
   }, [searchParams]);
 
@@ -91,38 +92,73 @@ export const CheckoutPage = () => {
     try {
       const apiBase = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
-      // Prepare payment data based on region
-      const paymentData = {
-        ...formData,
-        amount: parseFloat(planInfo?.price || '0'),
-        planId: planInfo?.planId,
-        billingCycle: planInfo?.billingCycle,
-        fromCurrencyCode: 978, // Always EUR since our prices are in EUR
-        toCurrencyCode: 978, // EUR
-        country: isIran ? 'Iran' : 'Germany', // Default to Germany for Global for now. TODO: Integrate Stripe/Paddle for true Global payments
-        city: isIran ? 'Tehran' : 'Berlin',
-        description: `Subscription Payment - ${planInfo?.planId || 'Plan'}`,
-      };
+      // Determine which payment gateway to use
+      const useZarinpal = isIran || planInfo?.gateway === 'zarinpal';
 
-      const response = await fetch(`${apiBase}/checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(paymentData),
-      });
+      if (useZarinpal) {
+        // Zarinpal payment for Iran (amount in Rials)
+        const paymentData = {
+          ...formData,
+          amount: parseInt(planInfo?.price || '0'), // Amount in Rials
+          planId: planInfo?.planId,
+          billingCycle: planInfo?.billingCycle,
+          description: `خرید اشتراک ${planInfo?.planId || ''} - ${planInfo?.billingCycle === 'yearly' ? 'سالانه' : 'ماهانه'}`,
+        };
 
-      const result = await response.json();
+        const response = await fetch(`${apiBase}/zarinpal/checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paymentData),
+        });
 
-      if (!response.ok || result.status !== 'success') {
-        throw new Error(result.message || 'Failed to initiate payment');
-      }
+        const result = await response.json();
 
-      // Redirect to Yekpay payment gateway
-      if (result.data?.paymentUrl) {
-        window.location.href = result.data.paymentUrl;
+        if (!response.ok || result.status !== 'success') {
+          throw new Error(result.message || 'خطا در ایجاد درخواست پرداخت');
+        }
+
+        // Redirect to Zarinpal payment gateway
+        if (result.data?.paymentUrl) {
+          window.location.href = result.data.paymentUrl;
+        } else {
+          throw new Error('آدرس درگاه پرداخت دریافت نشد');
+        }
       } else {
-        throw new Error('Payment URL not received');
+        // Yekpay payment for Global (amount in EUR)
+        const paymentData = {
+          ...formData,
+          amount: parseFloat(planInfo?.price || '0'),
+          planId: planInfo?.planId,
+          billingCycle: planInfo?.billingCycle,
+          fromCurrencyCode: 978, // EUR
+          toCurrencyCode: 978, // EUR
+          country: 'Germany',
+          city: 'Berlin',
+          description: `Subscription Payment - ${planInfo?.planId || 'Plan'}`,
+        };
+
+        const response = await fetch(`${apiBase}/checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paymentData),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.status !== 'success') {
+          throw new Error(result.message || 'Failed to initiate payment');
+        }
+
+        // Redirect to Yekpay payment gateway
+        if (result.data?.paymentUrl) {
+          window.location.href = result.data.paymentUrl;
+        } else {
+          throw new Error('Payment URL not received');
+        }
       }
     } catch (error: any) {
       console.error('Checkout form error:', error);
@@ -185,12 +221,22 @@ export const CheckoutPage = () => {
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                   {t('checkout.price')}
                 </p>
-                <p className="text-3xl font-bold text-blue-600 dark:text-cyan-400">
-                  €{planInfo.price}
-                  <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
-                    /{planInfo.billingCycle === 'yearly' ? t('checkout.year') : t('checkout.month')}
-                  </span>
-                </p>
+                {isIran || planInfo.gateway === 'zarinpal' ? (
+                  <p className="text-3xl font-bold text-blue-600 dark:text-cyan-400">
+                    {(parseInt(planInfo.price || '0') / 10).toLocaleString('fa-IR')}
+                    <span className="text-lg mr-1">تومان</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 mr-1">
+                      /{planInfo.billingCycle === 'yearly' ? 'سالانه' : 'ماهانه'}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-3xl font-bold text-blue-600 dark:text-cyan-400">
+                    €{planInfo.price}
+                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
+                      /{planInfo.billingCycle === 'yearly' ? t('checkout.year') : t('checkout.month')}
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -33,7 +33,7 @@ export const BillingToggle = ({ billingCycle, onChange }: BillingToggleProps) =>
         </button>
 
         <div className="absolute -left-4 -top-5 bg-[#10B981] text-white text-xs font-black px-3 py-1.5 rounded-full shadow-lg transform -rotate-12 z-20 border-2 border-white dark:border-[#0B0B0B]">
-          ۲۰٪ تخفیف
+          {t('subscription.discountBadge')}
         </div>
       </div>
     </div>

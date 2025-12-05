@@ -21,12 +21,12 @@ export interface CheckoutOrder {
 }
 
 export interface CreateCheckoutOrderDTO {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  postalCode: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  postalCode?: string;
   planId?: string;
   billingCycle?: string;
 }

@@ -39,6 +39,7 @@
     "profile": "Profile",
     "upgrade": "Upgrade",
     "stars": "Stars",
+    "viewStars": "View Stars",
     "login": "Login",
     "selectLanguage": "Select Language"
   },
@@ -191,11 +192,13 @@
   "payment": {
     "success": {
       "title": "Payment Successful!",
-      "description": "Your payment has been processed successfully. Thank you for your subscription!",
+      "description": "Your payment has been processed successfully. Your subscription is now active!",
       "reference": "Reference Number",
+      "refId": "Transaction ID",
       "orderId": "Order ID",
-      "info": "A confirmation email has been sent to your email address with your order details.",
-      "goHome": "Go to Home"
+      "info": "Your subscription is now active. You can start using all premium features.",
+      "goHome": "Go to Home",
+      "goProfile": "View Profile"
     },
     "failed": {
       "title": "Payment Failed",
@@ -594,6 +597,8 @@
     },
     "accountInfo": "Account Information",
     "email": "Email",
+    "phoneNumber": "Phone Number",
+    "contactInfo": "Contact Info",
     "subscription": "Subscription",
     "subscriptionStatus": {
       "free": "Free",
@@ -693,6 +698,7 @@
     "monthly": "Monthly",
     "yearly": "Yearly",
     "save60": "Save 60%",
+    "discountBadge": "17% OFF",
     "billedYearly": "Billed yearly",
     "saveYearly": "Save {{amount}} per year",
     "currentPlan": "Current Plan",
@@ -714,8 +720,8 @@
       "pro": {
         "name": "Pro",
         "features": {
-          "creditsMonthly": "300 Stars / Month",
-          "creditsYearly": "3600 Stars / Year",
+          "creditsMonthly": "400 Stars / Month",
+          "creditsYearly": "4800 Stars / Year",
           "allTools": "All AI tools & features access",
           "hdExport": "HD & 4K export quality",
           "noWatermark": "No watermark on exports",

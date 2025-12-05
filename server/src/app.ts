@@ -22,6 +22,7 @@ import { createErrorLogRoutes } from '@presentation/routes/errorLogRoutes';
 import { createThumbnailRoutes } from '@presentation/routes/thumbnailRoutes';
 import { createUpscaleRoutes } from '@presentation/routes/upscaleRoutes';
 import { createProductImageRoutes } from '@presentation/routes/productImageRoutes';
+import { createZarinpalRoutes } from '@presentation/routes/zarinpalRoutes';
 import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -163,6 +164,8 @@ export class App {
     this.app.use(`${baseUrl}/upscale`, createUpscaleRoutes(this.container.upscaleController));
     // Product image generator routes
     this.app.use(`${baseUrl}/tools/product-image`, createProductImageRoutes(this.container.productImageController));
+    // Zarinpal payment routes (Iran region)
+    this.app.use(`${baseUrl}/zarinpal`, createZarinpalRoutes(this.container.zarinpalController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');
