@@ -1,16 +1,18 @@
 import apiClient from './api';
 
-export type ShopProductStyle =
-    | 'ecommerce'
-    | 'lifestyle'
-    | 'flatlay'
-    | 'minimal'
-    | 'colorblock'
-    | 'moody'
-    | 'macro'
-    | 'infographic'
-    | 'ugc'
-    | 'pinterest';
+export type ShopProductStyle = string;
+
+export interface ShopStyleItem {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    prompt: string;
+    thumbnailUrl?: string;
+    types: string[];
+    order: number;
+    isActive: boolean;
+}
 
 export interface ShopGenerateProductImageResponse {
     image: string; // base64
@@ -33,6 +35,18 @@ export interface ShopGeneratedImage {
  * No stars needed — shops pay via license.
  */
 export const shopProductImageApi = {
+    getStyles: async (types?: string[]): Promise<ShopStyleItem[]> => {
+        const params: any = { isActive: 'true' };
+        if (types && types.length > 0) {
+            params.types = types.join(',');
+        }
+        const response = await apiClient.get<{
+            status: string;
+            data: { styles: ShopStyleItem[] };
+        }>('/shop-styles', { params });
+        return response.data.data.styles;
+    },
+
     listImages: async (
         licenseKey: string,
         limit: number = 50,
@@ -97,3 +111,4 @@ export const shopProductImageApi = {
         return response.data.data;
     }
 };
+

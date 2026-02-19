@@ -1,7 +1,16 @@
 export enum ShopType {
     GOLD = 'gold',
     CLOTHES = 'clothes',
-    WATCH = 'watch'
+    WATCH = 'watch',
+    SHOES = 'shoes',
+    BAGS = 'bags',
+    COSMETICS = 'cosmetics',
+    FOOD = 'food',
+    ELECTRONICS = 'electronics',
+    FURNITURE = 'furniture',
+    ACCESSORIES = 'accessories',
+    PERFUME = 'perfume',
+    OTHER = 'other'
 }
 
 export interface Shop {

@@ -31,6 +31,10 @@ export default defineConfig({
         target: 'http://localhost:2000',
         changeOrigin: true,
       },
+      '/product-styles': {
+        target: 'http://localhost:2000',
+        changeOrigin: true,
+      },
     },
   },
 })

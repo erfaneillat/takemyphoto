@@ -3,25 +3,13 @@ import { IShopRepository } from '@core/domain/repositories/IShopRepository';
 import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
 import { ErrorLogService } from '@application/services/ErrorLogService';
-
-// Product photography styles (same as user-based version)
-export type ProductStyle =
-    | 'ecommerce'
-    | 'lifestyle'
-    | 'flatlay'
-    | 'minimal'
-    | 'colorblock'
-    | 'moody'
-    | 'macro'
-    | 'infographic'
-    | 'ugc'
-    | 'pinterest';
+import { IShopStyleRepository } from '@core/domain/repositories/IShopStyleRepository';
 
 export interface GenerateShopProductImageRequest {
     shopId: string;
     productName: string;
     productDescription?: string;
-    style: ProductStyle;
+    style: string;
     productImages: Express.Multer.File[];
     referenceImage?: Express.Multer.File;
     aspectRatio?: string;
@@ -35,61 +23,11 @@ export interface GenerateShopProductImageResponse {
     imageId: string;
 }
 
-// Style prompts mapping
-const STYLE_PROMPTS: Record<ProductStyle, string> = {
-    ecommerce: `Professional e-commerce product photography style. Pure white seamless background (#FFFFFF). 
+// Default fallback style prompt (used when DB style not found)
+const DEFAULT_STYLE_PROMPT = `Professional e-commerce product photography style. Pure white seamless background (#FFFFFF). 
     Soft, even studio lighting with no harsh shadows. Product is the sole focus, perfectly centered.
     Clean, commercial look suitable for Amazon, Shopify, or marketplace listings.
-    High-key lighting, crisp details, professional product isolation.`,
-
-    lifestyle: `Lifestyle product photography style. The product is shown in a natural, real-world setting.
-    Warm, inviting atmosphere with contextual props. The scene tells a story of product usage.
-    Soft natural lighting, possibly from a window. Lifestyle props complement but don't overshadow the product.
-    Magazine-quality editorial feel, aspirational yet relatable.`,
-
-    flatlay: `Flat lay photography style, shot directly from above (90-degree angle).
-    Carefully arranged items on a clean surface. Pinterest-worthy aesthetic composition.
-    Complementary props artfully scattered around the main product. Perfect symmetry or intentional asymmetry.
-    Instagram-ready, shareable, visually satisfying arrangement with breathing room between items.`,
-
-    minimal: `Minimalist product photography style. Clean, uncluttered composition with maximum negative space.
-    Simple solid color background (white, beige, light gray, or soft pastels).
-    1-2 subtle accent elements only. Elegant, premium, luxury brand aesthetic.
-    Less is more approach, sophisticated and refined, Scandinavian design influence.`,
-
-    colorblock: `Bold color block product photography style. Vibrant, saturated background colors.
-    Eye-catching contrast between product and background. Pop art influence, energetic and youthful.
-    May use complementary or contrasting color schemes. Perfect for social media, ads, and Gen-Z targeting.
-    High impact visual, attention-grabbing, trendy aesthetic.`,
-
-    moody: `Moody, dark product photography style. Deep shadows and dramatic directional lighting.
-    Dark background (black, charcoal, deep navy). High contrast, cinematic feel.
-    Chiaroscuro lighting technique. Premium, luxury, mysterious atmosphere.
-    Perfect for high-end products, watches, perfumes, whiskey, leather goods.`,
-
-    macro: `Macro/detail product photography style. Extreme close-up focusing on textures and details.
-    Sharp focus on specific product features (stitching, materials, logos, craftsmanship).
-    Shows quality and attention to detail. Partially visible product creating intrigue.
-    Technical precision, showcasing build quality and premium materials.`,
-
-    infographic: `Product infographic style photography. Clean product image with text overlays showing product features.
-    Add callouts, arrows, and feature descriptions directly on the image. Clear, organized layout.
-    Multiple angles or features highlighted. Educational and informative approach.
-    IMPORTANT: Any text on the image MUST be in the SAME LANGUAGE as the product name provided by the user.
-    If product name is in Persian/Farsi, all text overlays must be in Persian/Farsi.
-    If product name is in English, all text overlays must be in English.
-    Perfect for Amazon listings, product pages, and advertising banners.`,
-
-    ugc: `User-generated content (UGC) style product photography. Authentic, slightly casual mobile photography feel.
-    Natural, unpolished but appealing. Real person's perspective, relatable setting.
-    Not overly staged or perfect. Social proof aesthetic, trustworthy and genuine.
-    Instagram story quality, casual lifestyle integration.`,
-
-    pinterest: `Pinterest-worthy product photography combining flat lay and lifestyle elements.
-    Highly aesthetic, save-worthy composition. Warm, inviting color palette.
-    Curated props that enhance the mood. Natural light feel, soft shadows.
-    Aspirational yet achievable lifestyle. Perfect for mood boards and inspiration.`
-};
+    High-key lighting, crisp details, professional product isolation.`;
 
 export class GenerateShopProductImageUseCase {
     constructor(
@@ -97,7 +35,8 @@ export class GenerateShopProductImageUseCase {
         private shopRepository: IShopRepository,
         private fileUploadService: IFileUploadService,
         private generatedImageRepository: IGeneratedImageEntityRepository,
-        private errorLogService?: ErrorLogService
+        private errorLogService?: ErrorLogService,
+        private shopStyleRepository?: IShopStyleRepository
     ) { }
 
     async execute(request: GenerateShopProductImageRequest): Promise<GenerateShopProductImageResponse> {
@@ -123,8 +62,14 @@ export class GenerateShopProductImageUseCase {
             referenceImageUrl = uploadResult.url;
         }
 
-        // Build the comprehensive prompt
-        const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.ecommerce;
+        // Build the comprehensive prompt - look up style from DB
+        let stylePrompt = DEFAULT_STYLE_PROMPT;
+        if (this.shopStyleRepository) {
+            const dbStyle = await this.shopStyleRepository.findBySlug(style);
+            if (dbStyle && dbStyle.prompt) {
+                stylePrompt = dbStyle.prompt;
+            }
+        }
 
         // Detect language from product name (Persian/Arabic characters)
         const isPersian = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(productName);

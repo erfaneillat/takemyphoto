@@ -26,6 +26,7 @@ import { createZarinpalRoutes } from '@presentation/routes/zarinpalRoutes';
 import { createShopRoutes } from '@presentation/routes/shopRoutes';
 import { createShopCategoryRoutes } from '@presentation/routes/shopCategoryRoutes';
 import { createShopProductImageRoutes } from '@presentation/routes/shopProductImageRoutes';
+import { createShopStyleRoutes } from '@presentation/routes/shopStyleRoutes';
 import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -175,6 +176,8 @@ export class App {
     this.app.use(`${baseUrl}/shops/product-image`, createShopProductImageRoutes(this.container.shopProductImageController, this.container.shopRepository));
     // Shop category routes
     this.app.use(`${baseUrl}/shop-categories`, createShopCategoryRoutes(this.container.shopCategoryController));
+    // Shop style routes
+    this.app.use(`${baseUrl}/shop-styles`, createShopStyleRoutes(this.container.shopStyleController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');
@@ -193,6 +196,9 @@ export class App {
     // Serve main web frontend static files
     const webPath = path.join(__dirname, '../../dist');
     this.app.use(express.static(webPath));
+    // Also serve public folder directly (for dev — product-styles thumbnails etc.)
+    const publicPath = path.join(__dirname, '../../public');
+    this.app.use(express.static(publicPath));
 
     // Handle web app SPA routing - serve index.html for any non-API routes
     this.app.get('*', (req, res) => {

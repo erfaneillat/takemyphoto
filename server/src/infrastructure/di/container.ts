@@ -16,6 +16,7 @@ import { PaymentRepository } from '@infrastructure/database/repositories/Payment
 import { ErrorLogRepository } from '@infrastructure/database/repositories/ErrorLogRepository';
 import { ShopRepository } from '@infrastructure/database/repositories/ShopRepository';
 import { ShopCategoryRepository } from '@infrastructure/database/repositories/ShopCategoryRepository';
+import { ShopStyleRepository } from '@infrastructure/database/repositories/ShopStyleRepository';
 
 // Services
 import { JwtService } from '@infrastructure/services/JwtService';
@@ -96,6 +97,10 @@ import { CreateShopCategoryUseCase } from '@application/usecases/shop-category/C
 import { GetShopCategoriesUseCase } from '@application/usecases/shop-category/GetShopCategoriesUseCase';
 import { UpdateShopCategoryUseCase } from '@application/usecases/shop-category/UpdateShopCategoryUseCase';
 import { DeleteShopCategoryUseCase } from '@application/usecases/shop-category/DeleteShopCategoryUseCase';
+import { CreateShopStyleUseCase } from '@application/usecases/shop-style/CreateShopStyleUseCase';
+import { GetShopStylesUseCase } from '@application/usecases/shop-style/GetShopStylesUseCase';
+import { UpdateShopStyleUseCase } from '@application/usecases/shop-style/UpdateShopStyleUseCase';
+import { DeleteShopStyleUseCase } from '@application/usecases/shop-style/DeleteShopStyleUseCase';
 
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
@@ -119,6 +124,7 @@ import { ProductImageController } from '@presentation/controllers/ProductImageCo
 import { ShopProductImageController } from '@presentation/controllers/ShopProductImageController';
 import { ShopController } from '@presentation/controllers/ShopController';
 import { ShopCategoryController } from '@presentation/controllers/ShopCategoryController';
+import { ShopStyleController } from '@presentation/controllers/ShopStyleController';
 
 export class Container {
   // Repositories
@@ -139,6 +145,7 @@ export class Container {
   public errorLogRepository: ErrorLogRepository;
   public shopRepository: ShopRepository;
   public shopCategoryRepository: ShopCategoryRepository;
+  public shopStyleRepository: ShopStyleRepository;
 
   // Services
   public jwtService: JwtService;
@@ -218,6 +225,10 @@ export class Container {
   public getShopCategoriesUseCase: GetShopCategoriesUseCase;
   public updateShopCategoryUseCase: UpdateShopCategoryUseCase;
   public deleteShopCategoryUseCase: DeleteShopCategoryUseCase;
+  public createShopStyleUseCase: CreateShopStyleUseCase;
+  public getShopStylesUseCase: GetShopStylesUseCase;
+  public updateShopStyleUseCase: UpdateShopStyleUseCase;
+  public deleteShopStyleUseCase: DeleteShopStyleUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -240,6 +251,7 @@ export class Container {
   public zarinpalController: ZarinpalController;
   public shopController: ShopController;
   public shopCategoryController: ShopCategoryController;
+  public shopStyleController: ShopStyleController;
 
   constructor() {
     // Initialize Repositories
@@ -260,6 +272,7 @@ export class Container {
     this.errorLogRepository = new ErrorLogRepository();
     this.shopRepository = new ShopRepository();
     this.shopCategoryRepository = new ShopCategoryRepository();
+    this.shopStyleRepository = new ShopStyleRepository();
 
     // Initialize Services
     this.jwtService = new JwtService();
@@ -650,12 +663,14 @@ export class Container {
       this.shopRepository,
       this.fileUploadService,
       this.generatedImageEntityRepository,
-      this.errorLogService
+      this.errorLogService,
+      this.shopStyleRepository
     );
 
     this.shopProductImageController = new ShopProductImageController(
       this.generateShopProductImageUseCase,
-      this.generatedImageEntityRepository
+      this.generatedImageEntityRepository,
+      this.shopStyleRepository
     );
 
     // Initialize Zarinpal Payment Use Cases
@@ -725,6 +740,32 @@ export class Container {
       this.deleteShopCategoryUseCase,
       this.fileUploadService,
       this.shopCategoryRepository
+    );
+
+    // Initialize Shop Style Use Cases
+    this.createShopStyleUseCase = new CreateShopStyleUseCase(
+      this.shopStyleRepository
+    );
+
+    this.getShopStylesUseCase = new GetShopStylesUseCase(
+      this.shopStyleRepository
+    );
+
+    this.updateShopStyleUseCase = new UpdateShopStyleUseCase(
+      this.shopStyleRepository
+    );
+
+    this.deleteShopStyleUseCase = new DeleteShopStyleUseCase(
+      this.shopStyleRepository
+    );
+
+    this.shopStyleController = new ShopStyleController(
+      this.createShopStyleUseCase,
+      this.getShopStylesUseCase,
+      this.updateShopStyleUseCase,
+      this.deleteShopStyleUseCase,
+      this.fileUploadService,
+      this.shopStyleRepository
     );
 
     this.zarinpalController = new ZarinpalController(

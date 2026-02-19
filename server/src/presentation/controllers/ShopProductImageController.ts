@@ -1,26 +1,15 @@
 import { Response } from 'express';
 import { LicenseAuthRequest } from '../middleware/licenseAuthMiddleware';
-import { GenerateShopProductImageUseCase, ProductStyle } from '@application/usecases/tools/GenerateShopProductImageUseCase';
+import { GenerateShopProductImageUseCase } from '@application/usecases/tools/GenerateShopProductImageUseCase';
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
+import { IShopStyleRepository } from '@core/domain/repositories/IShopStyleRepository';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
-
-const VALID_STYLES: ProductStyle[] = [
-    'ecommerce',
-    'lifestyle',
-    'flatlay',
-    'minimal',
-    'colorblock',
-    'moody',
-    'macro',
-    'infographic',
-    'ugc',
-    'pinterest'
-];
 
 export class ShopProductImageController {
     constructor(
         private generateShopProductImageUseCase: GenerateShopProductImageUseCase,
-        private generatedImageRepository: IGeneratedImageEntityRepository
+        private generatedImageRepository: IGeneratedImageEntityRepository,
+        private shopStyleRepository: IShopStyleRepository
     ) { }
 
     listImages = asyncHandler(async (req: LicenseAuthRequest, res: Response) => {
@@ -52,8 +41,13 @@ export class ShopProductImageController {
             throw new AppError(400, 'Product name is required');
         }
 
-        if (!style || !VALID_STYLES.includes(style)) {
-            throw new AppError(400, `Invalid style. Must be one of: ${VALID_STYLES.join(', ')}`);
+        // Validate style against database
+        if (!style) {
+            throw new AppError(400, 'Style is required');
+        }
+        const dbStyle = await this.shopStyleRepository.findBySlug(style);
+        if (!dbStyle) {
+            throw new AppError(400, `Invalid style: "${style}"`);
         }
 
         // Get product images (up to 5)
@@ -73,7 +67,7 @@ export class ShopProductImageController {
             shopId,
             productName: productName.trim(),
             productDescription: productDescription?.trim(),
-            style: style as ProductStyle,
+            style: style,
             productImages,
             referenceImage,
             aspectRatio,
@@ -85,3 +79,4 @@ export class ShopProductImageController {
         });
     });
 }
+

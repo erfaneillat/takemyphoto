@@ -19,6 +19,15 @@ const SHOP_TYPE_OPTIONS = [
     { value: 'gold', label: '🥇 Gold', color: 'bg-amber-100 text-amber-800 border-amber-200' },
     { value: 'clothes', label: '👗 Clothes', color: 'bg-purple-100 text-purple-800 border-purple-200' },
     { value: 'watch', label: '⌚ Watch', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+    { value: 'shoes', label: '👟 Shoes', color: 'bg-rose-100 text-rose-800 border-rose-200' },
+    { value: 'bags', label: '👜 Bags', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+    { value: 'cosmetics', label: '💄 Cosmetics', color: 'bg-pink-100 text-pink-800 border-pink-200' },
+    { value: 'food', label: '🍽️ Food', color: 'bg-green-100 text-green-800 border-green-200' },
+    { value: 'electronics', label: '📱 Electronics', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
+    { value: 'furniture', label: '🪑 Furniture', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+    { value: 'accessories', label: '💍 Accessories', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+    { value: 'perfume', label: '🌸 Perfume', color: 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200' },
+    { value: 'other', label: '📦 Other', color: 'bg-gray-100 text-gray-800 border-gray-200' },
 ];
 
 const ShopCategories = () => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { shopProductImageApi, ShopProductStyle, ShopGenerateProductImageResponse } from '@/shared/services/shopProductImageApi';
+import { shopProductImageApi, ShopProductStyle, ShopGenerateProductImageResponse, ShopStyleItem } from '@/shared/services/shopProductImageApi';
 import { useLicenseStore } from '../stores/useLicenseStore';
 import { useReferenceImageStore } from '../stores/useReferenceImageStore';
 import { getErrorMessage } from '@/shared/utils';
@@ -16,33 +16,22 @@ import {
     Check,
 } from 'lucide-react';
 
-// Style options with icons and colors
-const STYLE_OPTIONS: {
-    value: ShopProductStyle;
-    labelKey: string;
-    descriptionKey: string;
-    color: string;
-    image: string;
-}[] = [
-        { value: 'pinterest', labelKey: 'productGenerator.styles.pinterest.label', descriptionKey: 'productGenerator.styles.pinterest.description', color: 'from-red-500 to-rose-600', image: '/product-styles/pinterest.png' },
-        { value: 'ecommerce', labelKey: 'productGenerator.styles.ecommerce.label', descriptionKey: 'productGenerator.styles.ecommerce.description', color: 'from-gray-500 to-gray-600', image: '/product-styles/shop.png' },
-        { value: 'lifestyle', labelKey: 'productGenerator.styles.lifestyle.label', descriptionKey: 'productGenerator.styles.lifestyle.description', color: 'from-green-500 to-emerald-600', image: '/product-styles/lifestyle.png' },
-        { value: 'flatlay', labelKey: 'productGenerator.styles.flatlay.label', descriptionKey: 'productGenerator.styles.flatlay.description', color: 'from-pink-500 to-rose-600', image: '/product-styles/flatli.jpeg' },
-        { value: 'minimal', labelKey: 'productGenerator.styles.minimal.label', descriptionKey: 'productGenerator.styles.minimal.description', color: 'from-slate-400 to-slate-500', image: '/product-styles/minimal.png' },
-        { value: 'colorblock', labelKey: 'productGenerator.styles.colorblock.label', descriptionKey: 'productGenerator.styles.colorblock.description', color: 'from-purple-500 to-fuchsia-600', image: '/product-styles/colored.png' },
-        { value: 'moody', labelKey: 'productGenerator.styles.moody.label', descriptionKey: 'productGenerator.styles.moody.description', color: 'from-gray-700 to-gray-900', image: '/product-styles/moody.png' },
-        { value: 'macro', labelKey: 'productGenerator.styles.macro.label', descriptionKey: 'productGenerator.styles.macro.description', color: 'from-blue-500 to-indigo-600', image: '/product-styles/micro.png' },
-        { value: 'infographic', labelKey: 'productGenerator.styles.infographic.label', descriptionKey: 'productGenerator.styles.infographic.description', color: 'from-cyan-500 to-teal-600', image: '/product-styles/infography.png' },
-        { value: 'ugc', labelKey: 'productGenerator.styles.ugc.label', descriptionKey: 'productGenerator.styles.ugc.description', color: 'from-orange-500 to-amber-600', image: '/product-styles/ugc.png' },
-    ];
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
+const resolveImageUrl = (url: string) => {
+    if (url.startsWith('http')) return url;
+    return `${API_BASE}${url.startsWith('/') ? '' : '/'}${url}`;
+};
 
 export const ZhestGeneratePage = () => {
     const { t } = useTranslation();
-    const { licenseKey, deviceFingerprint, credit, refreshLicenseInfo } = useLicenseStore();
+    const { licenseKey, deviceFingerprint, credit, shopTypes, refreshLicenseInfo } = useLicenseStore();
     const { referenceImageUrl: storeRefUrl, clearReferenceImageUrl } = useReferenceImageStore();
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
-    const [selectedStyle, setSelectedStyle] = useState<ShopProductStyle>('ecommerce');
+    const [selectedStyle, setSelectedStyle] = useState<ShopProductStyle>('');
+    const [styleOptions, setStyleOptions] = useState<ShopStyleItem[]>([]);
+    const [stylesLoading, setStylesLoading] = useState(true);
     const [productImages, setProductImages] = useState<File[]>([]);
     const [referenceImage, setReferenceImage] = useState<File | null>(null);
     const [referenceImageUrl, setReferenceImageUrl] = useState<string | null>(null);
@@ -50,6 +39,25 @@ export const ZhestGeneratePage = () => {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ShopGenerateProductImageResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    // Fetch styles from API
+    useEffect(() => {
+        const fetchStyles = async () => {
+            setStylesLoading(true);
+            try {
+                const styles = await shopProductImageApi.getStyles(shopTypes.length > 0 ? shopTypes : undefined);
+                setStyleOptions(styles);
+                if (styles.length > 0 && !selectedStyle) {
+                    setSelectedStyle(styles[0].slug);
+                }
+            } catch (err) {
+                console.error('Failed to fetch styles:', err);
+            } finally {
+                setStylesLoading(false);
+            }
+        };
+        fetchStyles();
+    }, [shopTypes]);
 
     // Consume reference image URL from store (set by Search page)
     useEffect(() => {
@@ -240,38 +248,50 @@ export const ZhestGeneratePage = () => {
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                 {t('productGenerator.selectStyle')}
                             </label>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                {STYLE_OPTIONS.map((style) => (
-                                    <button
-                                        key={style.value}
-                                        onClick={() => setSelectedStyle(style.value)}
-                                        className={`group relative rounded-xl rtl:text-right ltr:text-left transition-all overflow-hidden aspect-[4/3] ${selectedStyle === style.value
-                                            ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-surface'
-                                            : 'hover:ring-2 hover:ring-primary/50 hover:ring-offset-2 dark:hover:ring-offset-surface'
-                                            }`}
-                                    >
-                                        <img
-                                            src={style.image}
-                                            alt={t(style.labelKey)}
-                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                                        {selectedStyle === style.value && (
-                                            <div className="absolute top-2 rtl:left-2 ltr:right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                                                <Check size={14} className="text-white" />
+                            {stylesLoading ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <Loader2 className="animate-spin text-gray-400" size={24} />
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    {styleOptions.map((style) => (
+                                        <button
+                                            key={style.slug}
+                                            onClick={() => setSelectedStyle(style.slug)}
+                                            className={`group relative rounded-xl rtl:text-right ltr:text-left transition-all overflow-hidden aspect-[4/3] ${selectedStyle === style.slug
+                                                ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-surface'
+                                                : 'hover:ring-2 hover:ring-primary/50 hover:ring-offset-2 dark:hover:ring-offset-surface'
+                                                }`}
+                                        >
+                                            {style.thumbnailUrl ? (
+                                                <img
+                                                    src={resolveImageUrl(style.thumbnailUrl)}
+                                                    alt={style.name}
+                                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-500" />
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                                            {selectedStyle === style.slug && (
+                                                <div className="absolute top-2 rtl:left-2 ltr:right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                                                    <Check size={14} className="text-white" />
+                                                </div>
+                                            )}
+                                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                                                <div className="text-sm font-bold text-white mb-0.5 truncate">
+                                                    {style.name}
+                                                </div>
+                                                {style.description && (
+                                                    <div className="text-[10px] text-gray-300 line-clamp-1">
+                                                        {style.description}
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                        <div className="absolute bottom-0 left-0 right-0 p-3">
-                                            <div className="text-sm font-bold text-white mb-0.5 truncate">
-                                                {t(style.labelKey)}
-                                            </div>
-                                            <div className="text-[10px] text-gray-300 line-clamp-1">
-                                                {t(style.descriptionKey)}
-                                            </div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Reference Image */}

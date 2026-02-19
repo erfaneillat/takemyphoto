@@ -39,6 +39,7 @@ const AdminLayout = () => {
     { path: '/shops', icon: Store, label: 'Shops' },
     { path: '/shops/categories', icon: FolderOpen, label: 'Categories' },
     { path: '/shops/samples', icon: Images, label: 'Sample Images' },
+    { path: '/shops/styles', icon: Palette, label: 'Styles' },
   ]
 
   const isActive = (path: string) => {
