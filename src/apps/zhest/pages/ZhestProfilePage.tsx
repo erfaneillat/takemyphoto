@@ -4,7 +4,7 @@ import { shopProductImageApi, ShopGeneratedImage } from '@/shared/services/shopP
 import { Store, KeyRound, LogOut, Sparkles, Download, Loader2, ImageIcon, Clock } from 'lucide-react';
 
 export const ZhestProfilePage = () => {
-    const { shopName, shopTypes, licenseKey, licenseExpiresAt, reset, remainingDays, refreshLicenseInfo } = useLicenseStore();
+    const { shopName, shopTypes, licenseKey, reset, remainingDays, refreshLicenseInfo } = useLicenseStore();
     const [images, setImages] = useState<ShopGeneratedImage[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
