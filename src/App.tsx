@@ -13,9 +13,11 @@ import { UpscalePage } from '@/features/upscale';
 import { ImageToPromptPage } from '@/features/enhance';
 import { PrivacyPage, TermsPage, AboutPage, ContactPage, CheckoutPage, PaymentSuccessPage, PaymentFailedPage, PaymentCancelledPage } from '@/features/legal';
 import { useAuthStore } from '@/shared/stores';
+import { useRegion } from '@/shared/hooks';
 import { useAuthInit, useAppInit, useFirebaseInit, useCharacterInit } from '@/shared/hooks';
 import { ToastContainer } from '@/shared/components/Toast';
 import { ReactNode } from 'react';
+import { ZhestApp } from '@/apps/zhest/ZhestApp';
 
 // Wrapper component to handle edit mode routing
 function EditModeWrapper() {
@@ -54,9 +56,10 @@ function App() {
   useCharacterInit();
 
   const { isLoading, isAuthenticated } = useAuthStore();
+  const { isIran, isLoading: regionLoading } = useRegion();
 
-  // Show loading screen while checking authentication
-  if (isLoading) {
+  // Show loading screen while checking authentication or region
+  if (isLoading || regionLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
@@ -67,6 +70,17 @@ function App() {
     );
   }
 
+  // Iran mode: render the separate Zhest webapp
+  if (isIran) {
+    return (
+      <BrowserRouter>
+        <ToastContainer />
+        <ZhestApp />
+      </BrowserRouter>
+    );
+  }
+
+  // Global mode: render the existing full app
   return (
     <BrowserRouter>
       <ToastContainer />
@@ -177,3 +191,4 @@ function App() {
 }
 
 export default App;
+

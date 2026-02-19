@@ -14,6 +14,8 @@ import { ContactMessageRepository } from '@infrastructure/database/repositories/
 import { CheckoutOrderRepository } from '@infrastructure/database/repositories/CheckoutOrderRepository';
 import { PaymentRepository } from '@infrastructure/database/repositories/PaymentRepository';
 import { ErrorLogRepository } from '@infrastructure/database/repositories/ErrorLogRepository';
+import { ShopRepository } from '@infrastructure/database/repositories/ShopRepository';
+import { ShopCategoryRepository } from '@infrastructure/database/repositories/ShopCategoryRepository';
 
 // Services
 import { JwtService } from '@infrastructure/services/JwtService';
@@ -82,8 +84,18 @@ import { DeleteErrorLogUseCase } from '@application/usecases/error-log/DeleteErr
 import { DeleteManyErrorLogsUseCase } from '@application/usecases/error-log/DeleteManyErrorLogsUseCase';
 import { GenerateThumbnailUseCase } from '@application/usecases/tools/GenerateThumbnailUseCase';
 import { GenerateProductImageUseCase } from '@application/usecases/tools/GenerateProductImageUseCase';
+import { GenerateShopProductImageUseCase } from '@application/usecases/tools/GenerateShopProductImageUseCase';
 import { InitiateZarinpalPaymentUseCase } from '@application/usecases/payment/InitiateZarinpalPaymentUseCase';
 import { VerifyZarinpalPaymentUseCase } from '@application/usecases/payment/VerifyZarinpalPaymentUseCase';
+import { CreateShopUseCase } from '@application/usecases/shop/CreateShopUseCase';
+import { GetShopsUseCase } from '@application/usecases/shop/GetShopsUseCase';
+import { DeleteShopUseCase } from '@application/usecases/shop/DeleteShopUseCase';
+import { ActivateLicenseUseCase } from '@application/usecases/shop/ActivateLicenseUseCase';
+import { ValidateLicenseUseCase } from '@application/usecases/shop/ValidateLicenseUseCase';
+import { CreateShopCategoryUseCase } from '@application/usecases/shop-category/CreateShopCategoryUseCase';
+import { GetShopCategoriesUseCase } from '@application/usecases/shop-category/GetShopCategoriesUseCase';
+import { UpdateShopCategoryUseCase } from '@application/usecases/shop-category/UpdateShopCategoryUseCase';
+import { DeleteShopCategoryUseCase } from '@application/usecases/shop-category/DeleteShopCategoryUseCase';
 
 // GetTaskStatusUseCase and HandleCallbackUseCase removed - no longer needed with synchronous Google AI API
 
@@ -104,6 +116,9 @@ import { ErrorLogController } from '@presentation/controllers/ErrorLogController
 import { UpscaleController } from '@presentation/controllers/UpscaleController';
 import { ZarinpalController } from '@presentation/controllers/ZarinpalController';
 import { ProductImageController } from '@presentation/controllers/ProductImageController';
+import { ShopProductImageController } from '@presentation/controllers/ShopProductImageController';
+import { ShopController } from '@presentation/controllers/ShopController';
+import { ShopCategoryController } from '@presentation/controllers/ShopCategoryController';
 
 export class Container {
   // Repositories
@@ -122,6 +137,8 @@ export class Container {
   public checkoutOrderRepository: CheckoutOrderRepository;
   public paymentRepository: PaymentRepository;
   public errorLogRepository: ErrorLogRepository;
+  public shopRepository: ShopRepository;
+  public shopCategoryRepository: ShopCategoryRepository;
 
   // Services
   public jwtService: JwtService;
@@ -189,8 +206,18 @@ export class Container {
   public deleteManyErrorLogsUseCase: DeleteManyErrorLogsUseCase;
   public generateThumbnailUseCase: GenerateThumbnailUseCase;
   public generateProductImageUseCase: GenerateProductImageUseCase;
+  public generateShopProductImageUseCase: GenerateShopProductImageUseCase;
   public initiateZarinpalPaymentUseCase: InitiateZarinpalPaymentUseCase;
   public verifyZarinpalPaymentUseCase: VerifyZarinpalPaymentUseCase;
+  public createShopUseCase: CreateShopUseCase;
+  public getShopsUseCase: GetShopsUseCase;
+  public deleteShopUseCase: DeleteShopUseCase;
+  public activateLicenseUseCase: ActivateLicenseUseCase;
+  public validateLicenseUseCase: ValidateLicenseUseCase;
+  public createShopCategoryUseCase: CreateShopCategoryUseCase;
+  public getShopCategoriesUseCase: GetShopCategoriesUseCase;
+  public updateShopCategoryUseCase: UpdateShopCategoryUseCase;
+  public deleteShopCategoryUseCase: DeleteShopCategoryUseCase;
   // Task-based use cases removed - synchronous API
 
   // Controllers
@@ -209,7 +236,10 @@ export class Container {
   public errorLogController: ErrorLogController;
   public upscaleController: UpscaleController;
   public productImageController: ProductImageController;
+  public shopProductImageController: ShopProductImageController;
   public zarinpalController: ZarinpalController;
+  public shopController: ShopController;
+  public shopCategoryController: ShopCategoryController;
 
   constructor() {
     // Initialize Repositories
@@ -228,6 +258,8 @@ export class Container {
     this.checkoutOrderRepository = new CheckoutOrderRepository();
     this.paymentRepository = new PaymentRepository();
     this.errorLogRepository = new ErrorLogRepository();
+    this.shopRepository = new ShopRepository();
+    this.shopCategoryRepository = new ShopCategoryRepository();
 
     // Initialize Services
     this.jwtService = new JwtService();
@@ -613,6 +645,19 @@ export class Container {
       this.generateProductImageUseCase
     );
 
+    this.generateShopProductImageUseCase = new GenerateShopProductImageUseCase(
+      this.googleAIService,
+      this.shopRepository,
+      this.fileUploadService,
+      this.generatedImageEntityRepository,
+      this.errorLogService
+    );
+
+    this.shopProductImageController = new ShopProductImageController(
+      this.generateShopProductImageUseCase,
+      this.generatedImageEntityRepository
+    );
+
     // Initialize Zarinpal Payment Use Cases
     this.initiateZarinpalPaymentUseCase = new InitiateZarinpalPaymentUseCase(
       this.paymentRepository,
@@ -625,6 +670,61 @@ export class Container {
       this.checkoutOrderRepository,
       this.userRepository,
       this.zarinpalService
+    );
+
+    // Initialize Shop Use Cases
+    this.createShopUseCase = new CreateShopUseCase(
+      this.shopRepository
+    );
+
+    this.getShopsUseCase = new GetShopsUseCase(
+      this.shopRepository
+    );
+
+    this.deleteShopUseCase = new DeleteShopUseCase(
+      this.shopRepository
+    );
+
+    this.activateLicenseUseCase = new ActivateLicenseUseCase(
+      this.shopRepository
+    );
+
+    this.validateLicenseUseCase = new ValidateLicenseUseCase(
+      this.shopRepository
+    );
+
+    this.shopController = new ShopController(
+      this.createShopUseCase,
+      this.getShopsUseCase,
+      this.deleteShopUseCase,
+      this.activateLicenseUseCase,
+      this.validateLicenseUseCase
+    );
+
+    // Initialize Shop Category Use Cases
+    this.createShopCategoryUseCase = new CreateShopCategoryUseCase(
+      this.shopCategoryRepository
+    );
+
+    this.getShopCategoriesUseCase = new GetShopCategoriesUseCase(
+      this.shopCategoryRepository
+    );
+
+    this.updateShopCategoryUseCase = new UpdateShopCategoryUseCase(
+      this.shopCategoryRepository
+    );
+
+    this.deleteShopCategoryUseCase = new DeleteShopCategoryUseCase(
+      this.shopCategoryRepository
+    );
+
+    this.shopCategoryController = new ShopCategoryController(
+      this.createShopCategoryUseCase,
+      this.getShopCategoriesUseCase,
+      this.updateShopCategoryUseCase,
+      this.deleteShopCategoryUseCase,
+      this.fileUploadService,
+      this.shopCategoryRepository
     );
 
     this.zarinpalController = new ZarinpalController(

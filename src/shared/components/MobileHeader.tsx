@@ -15,8 +15,8 @@ export const MobileHeader = () => {
     <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-black backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors">
       <div className="flex justify-between items-center px-4 py-3">
         {/* Logo */}
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="flex items-center gap-2"
         >
           <div className="relative">
@@ -36,21 +36,19 @@ export const MobileHeader = () => {
             aria-label="Toggle theme"
           >
             <div className="relative w-5 h-5">
-              <Sun 
-                size={20} 
-                className={`absolute inset-0 transition-all duration-300 ${
-                  theme === 'light' 
-                    ? 'rotate-0 scale-100 opacity-100' 
+              <Sun
+                size={20}
+                className={`absolute inset-0 transition-all duration-300 ${theme === 'light'
+                    ? 'rotate-0 scale-100 opacity-100'
                     : 'rotate-90 scale-0 opacity-0'
-                }`}
+                  }`}
               />
-              <Moon 
-                size={20} 
-                className={`absolute inset-0 transition-all duration-300 ${
-                  theme === 'dark' 
-                    ? 'rotate-0 scale-100 opacity-100' 
+              <Moon
+                size={20}
+                className={`absolute inset-0 transition-all duration-300 ${theme === 'dark'
+                    ? 'rotate-0 scale-100 opacity-100'
                     : '-rotate-90 scale-0 opacity-0'
-                }`}
+                  }`}
               />
             </div>
           </button>

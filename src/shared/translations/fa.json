@@ -46,7 +46,9 @@
   "bottomNav": {
     "explore": "اکسپلور",
     "edit": "ویرایش",
-    "profile": "پروفایل"
+    "profile": "پروفایل",
+    "generate": "ساخت تصویر",
+    "search": "جستجو"
   },
   "footer": {
     "about": "درباره ما",
@@ -54,6 +56,16 @@
     "privacy": "حریم خصوصی",
     "contact": "تماس",
     "copyright": "© ژست ۲۰۲۵"
+  },
+  "home": {
+    "searchGenerate": {
+      "title": "جستجو و ساخت تصویر",
+      "description": "تصاویر خیره‌کننده با هوش مصنوعی بسازید. به زودی."
+    },
+    "profile": {
+      "title": "پروفایل",
+      "description": "حساب کاربری و تنظیمات شما. به زودی."
+    }
   },
   "about": {
     "title": "درباره ژست",
@@ -419,7 +431,8 @@
     "like": "پسندیدن",
     "save": "ذخیره",
     "share": "اشتراک‌گذاری",
-    "views": "بازدید"
+    "views": "بازدید",
+    "useAsReference": "استفاده به عنوان مرجع"
   },
   "generate": {
     "title": "تولید تصویر",

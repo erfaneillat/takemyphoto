@@ -92,3 +92,27 @@ export const categoryApi = {
     return categories.find(cat => cat.slug === slug);
   },
 };
+
+export interface ShopCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  types: string[];
+  sampleImages: { url: string; publicId: string }[];
+  order: number;
+  isActive: boolean;
+}
+
+export const shopCategoryApi = {
+  // Get shop categories, optionally filtered by shop types
+  getShopCategories: async (types?: string[]) => {
+    const params: Record<string, string> = { isActive: 'true' };
+    if (types && types.length > 0) {
+      params.types = types.join(',');
+    }
+    const response = await apiClient.get<{ status: string; data: { categories: ShopCategory[] } }>('/shop-categories', { params });
+    return response.data.data.categories;
+  },
+};

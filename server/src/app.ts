@@ -23,6 +23,9 @@ import { createThumbnailRoutes } from '@presentation/routes/thumbnailRoutes';
 import { createUpscaleRoutes } from '@presentation/routes/upscaleRoutes';
 import { createProductImageRoutes } from '@presentation/routes/productImageRoutes';
 import { createZarinpalRoutes } from '@presentation/routes/zarinpalRoutes';
+import { createShopRoutes } from '@presentation/routes/shopRoutes';
+import { createShopCategoryRoutes } from '@presentation/routes/shopCategoryRoutes';
+import { createShopProductImageRoutes } from '@presentation/routes/shopProductImageRoutes';
 import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -166,6 +169,12 @@ export class App {
     this.app.use(`${baseUrl}/tools/product-image`, createProductImageRoutes(this.container.productImageController));
     // Zarinpal payment routes (Iran region)
     this.app.use(`${baseUrl}/zarinpal`, createZarinpalRoutes(this.container.zarinpalController));
+    // Shop license routes
+    this.app.use(`${baseUrl}/shops`, createShopRoutes(this.container.shopController));
+    // Shop product image generation (license-based auth)
+    this.app.use(`${baseUrl}/shops/product-image`, createShopProductImageRoutes(this.container.shopProductImageController, this.container.shopRepository));
+    // Shop category routes
+    this.app.use(`${baseUrl}/shop-categories`, createShopCategoryRoutes(this.container.shopCategoryController));
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');

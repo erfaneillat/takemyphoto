@@ -46,7 +46,9 @@
   "bottomNav": {
     "explore": "Explore",
     "edit": "Edit",
-    "profile": "Profile"
+    "profile": "Profile",
+    "generate": "Generate",
+    "search": "Search"
   },
   "footer": {
     "about": "About",
@@ -54,6 +56,16 @@
     "privacy": "Privacy",
     "contact": "Contact",
     "copyright": "© Take My Photo 2025"
+  },
+  "home": {
+    "searchGenerate": {
+      "title": "Search & Generate",
+      "description": "Create stunning AI-generated images. Coming soon."
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "Your account and settings. Coming soon."
+    }
   },
   "about": {
     "title": "About Take My Photo",
@@ -419,7 +431,8 @@
     "like": "Like",
     "save": "Save",
     "share": "Share",
-    "views": "views"
+    "views": "views",
+    "useAsReference": "Use as Reference"
   },
   "generate": {
     "title": "Generate Image",

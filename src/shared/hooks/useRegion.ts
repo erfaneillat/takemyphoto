@@ -23,8 +23,10 @@ export function useRegion() {
 
             // 2. Check real domain
             const hostname = window.location.hostname;
-            // Check if domain ends with .ir
-            if (hostname.endsWith('.ir')) {
+            // localhost defaults to IR for local development
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                setRegion('IR');
+            } else if (hostname.endsWith('.ir')) {
                 setRegion('IR');
             } else {
                 setRegion('GLOBAL');

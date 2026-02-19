@@ -7,6 +7,9 @@ import Styles from './pages/Styles'
 import GeneratedImages from './pages/GeneratedImages'
 import Contacts from './pages/Contacts'
 import ErrorLogs from './pages/ErrorLogs'
+import Shops from './pages/Shops'
+import ShopCategories from './pages/ShopCategories'
+import ShopCategorySamples from './pages/ShopCategorySamples'
 import Users from './pages/Users'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthDebugWidget } from './components/AuthDebugWidget'
@@ -32,6 +35,9 @@ function App() {
           <Route path="users" element={<Users />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="error-logs" element={<ErrorLogs />} />
+          <Route path="shops" element={<Shops />} />
+          <Route path="shops/categories" element={<ShopCategories />} />
+          <Route path="shops/samples" element={<ShopCategorySamples />} />
         </Route>
       </Routes>
     </Router>

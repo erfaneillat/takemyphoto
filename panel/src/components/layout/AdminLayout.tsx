@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/useAuthStore'
-import { 
-  LayoutDashboard, 
-  Menu, 
+import {
+  LayoutDashboard,
+  Menu,
   X,
   LogOut,
   Tag,
@@ -11,11 +11,16 @@ import {
   Images,
   Users,
   Mail,
-  AlertCircle
+  AlertCircle,
+  Store,
+  ChevronDown,
+  ChevronRight,
+  FolderOpen
 } from 'lucide-react'
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [shopSubmenuOpen, setShopSubmenuOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
@@ -30,20 +35,32 @@ const AdminLayout = () => {
     { path: '/error-logs', icon: AlertCircle, label: 'Error Logs' },
   ]
 
+  const shopSubItems = [
+    { path: '/shops', icon: Store, label: 'Shops' },
+    { path: '/shops/categories', icon: FolderOpen, label: 'Categories' },
+    { path: '/shops/samples', icon: Images, label: 'Sample Images' },
+  ]
+
   const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/'
     }
-    return location.pathname.startsWith(path)
+    return location.pathname === path
   }
+
+  const isShopSectionActive = () => {
+    return location.pathname.startsWith('/shops')
+  }
+
+  // Auto-open submenu if a shop route is active
+  const isShopOpen = shopSubmenuOpen || isShopSectionActive()
 
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <aside
-        className={`${
-          sidebarOpen ? 'w-72' : 'w-20'
-        } bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shadow-sm`}
+        className={`${sidebarOpen ? 'w-72' : 'w-20'
+          } bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shadow-sm`}
       >
         {/* Logo */}
         <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100">
@@ -59,24 +76,70 @@ const AdminLayout = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1.5">
+        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
-                  isActive(item.path)
-                    ? 'bg-black text-white shadow-lg shadow-black/20'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-black'
-                }`}
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group ${isActive(item.path)
+                  ? 'bg-black text-white shadow-lg shadow-black/20'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-black'
+                  }`}
               >
                 <Icon size={22} className="transition-transform group-hover:scale-110" />
                 {sidebarOpen && <span className="font-semibold text-[15px]">{item.label}</span>}
               </Link>
             )
           })}
+
+          {/* Shop Section with Submenu */}
+          <div>
+            <button
+              onClick={() => {
+                if (sidebarOpen) {
+                  setShopSubmenuOpen(!isShopOpen)
+                } else {
+                  navigate('/shops')
+                }
+              }}
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 group w-full ${isShopSectionActive() && !isShopOpen
+                ? 'bg-black text-white shadow-lg shadow-black/20'
+                : 'text-gray-700 hover:bg-gray-100 hover:text-black'
+                }`}
+            >
+              <Store size={22} className="transition-transform group-hover:scale-110" />
+              {sidebarOpen && (
+                <>
+                  <span className="font-semibold text-[15px] flex-1 text-left">Shops</span>
+                  {isShopOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                </>
+              )}
+            </button>
+
+            {/* Submenu */}
+            {sidebarOpen && isShopOpen && (
+              <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-100 pl-4">
+                {shopSubItems.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group text-sm ${isActive(item.path)
+                        ? 'bg-black text-white shadow-md shadow-black/20'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-black'
+                        }`}
+                    >
+                      <Icon size={18} className="transition-transform group-hover:scale-110" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Logout */}
@@ -100,7 +163,11 @@ const AdminLayout = () => {
         <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {menuItems.find((item) => isActive(item.path))?.label || 'Dashboard'}
+              {(() => {
+                const allItems = [...menuItems, ...shopSubItems]
+                const active = allItems.find((item) => isActive(item.path))
+                return active?.label || 'Dashboard'
+              })()}
             </h2>
             <p className="text-sm text-gray-500 mt-0.5">Welcome back, Admin</p>
           </div>
