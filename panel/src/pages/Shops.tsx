@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Plus, Trash2, Store, Copy, Check, KeyRound, ShieldCheck, ShieldX, Clock, AlertTriangle, Pencil, Coins } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Trash2, Store, Copy, Check, KeyRound, ShieldCheck, ShieldX, Clock, AlertTriangle, Pencil, Coins, QrCode, Download, X } from 'lucide-react';
 import { apiClient } from '../services/apiClient';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface Shop {
     id: string;
@@ -58,6 +59,8 @@ const Shops = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingShop, setEditingShop] = useState<Shop | null>(null);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+    const [qrShop, setQrShop] = useState<Shop | null>(null);
+    const qrRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -151,6 +154,28 @@ const Shops = () => {
         navigator.clipboard.writeText(key);
         setCopiedId(shopId);
         setTimeout(() => setCopiedId(null), 2000);
+    };
+
+    const downloadQrCode = () => {
+        if (!qrRef.current || !qrShop) return;
+        const svg = qrRef.current.querySelector('svg');
+        if (!svg) return;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = 512;
+            canvas.height = 512;
+            ctx!.fillStyle = 'white';
+            ctx!.fillRect(0, 0, 512, 512);
+            ctx!.drawImage(img, 0, 0, 512, 512);
+            const link = document.createElement('a');
+            link.download = `license-qr-${qrShop.licenseKey}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        };
+        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
     };
 
     const formatDate = (dateStr: string) => {
@@ -285,17 +310,26 @@ const Shops = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => copyLicenseKey(shop.licenseKey, shop.id)}
-                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors font-mono text-sm font-bold text-gray-800 group"
-                                        >
-                                            {shop.licenseKey}
-                                            {copiedId === shop.id ? (
-                                                <Check size={14} className="text-green-600" />
-                                            ) : (
-                                                <Copy size={14} className="text-gray-400 group-hover:text-gray-600" />
-                                            )}
-                                        </button>
+                                        <div className="flex items-center gap-1.5">
+                                            <button
+                                                onClick={() => copyLicenseKey(shop.licenseKey, shop.id)}
+                                                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors font-mono text-sm font-bold text-gray-800 group"
+                                            >
+                                                {shop.licenseKey}
+                                                {copiedId === shop.id ? (
+                                                    <Check size={14} className="text-green-600" />
+                                                ) : (
+                                                    <Copy size={14} className="text-gray-400 group-hover:text-gray-600" />
+                                                )}
+                                            </button>
+                                            <button
+                                                onClick={() => setQrShop(shop)}
+                                                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+                                                title="Show QR Code"
+                                            >
+                                                <QrCode size={16} />
+                                            </button>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-bold ${shop.credit > 5 ? 'bg-green-50 text-green-700 border border-green-200' :
@@ -486,6 +520,58 @@ const Shops = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* QR Code Modal */}
+            {qrShop && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 relative">
+                        <button
+                            onClick={() => setQrShop(null)}
+                            className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="text-center">
+                            <div className="flex items-center justify-center gap-2 mb-1">
+                                <QrCode size={20} className="text-gray-600" />
+                                <h3 className="text-lg font-bold text-gray-900">License QR Code</h3>
+                            </div>
+                            <p className="text-sm text-gray-500 mb-6">{qrShop.name}</p>
+
+                            <div ref={qrRef} className="inline-flex p-6 bg-white rounded-2xl border border-gray-100 shadow-sm mb-4">
+                                <QRCodeSVG
+                                    value={qrShop.licenseKey}
+                                    size={220}
+                                    level="H"
+                                    includeMargin={false}
+                                />
+                            </div>
+
+                            <p className="font-mono text-lg font-bold text-gray-900 tracking-widest mb-6">
+                                {qrShop.licenseKey}
+                            </p>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => { copyLicenseKey(qrShop.licenseKey, qrShop.id); }}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all font-medium text-sm"
+                                >
+                                    {copiedId === qrShop.id ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+                                    {copiedId === qrShop.id ? 'Copied!' : 'Copy Key'}
+                                </button>
+                                <button
+                                    onClick={downloadQrCode}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-black text-white hover:bg-gray-800 transition-all font-medium text-sm shadow-lg"
+                                >
+                                    <Download size={16} />
+                                    Download
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

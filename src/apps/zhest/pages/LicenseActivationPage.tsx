@@ -1,13 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useLicenseStore } from '../stores/useLicenseStore';
-import { KeyRound, ShieldCheck, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { KeyRound, ShieldCheck, Loader2, AlertCircle, Sparkles, ScanLine, X } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
 
 export const LicenseActivationPage = () => {
     const { activate, isLoading, error, clearError } = useLicenseStore();
     const [inputValues, setInputValues] = useState<string[]>(Array(8).fill(''));
     const [shake, setShake] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [showScanner, setShowScanner] = useState(false);
+    const [scannerError, setScannerError] = useState<string | null>(null);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    const scannerRef = useRef<Html5Qrcode | null>(null);
+    const scannerContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         inputRefs.current[0]?.focus();
@@ -60,6 +65,70 @@ export const LicenseActivationPage = () => {
             setTimeout(() => setShake(false), 600);
         }
     };
+
+    const stopScanner = useCallback(async () => {
+        if (scannerRef.current) {
+            try {
+                await scannerRef.current.stop();
+                scannerRef.current.clear();
+            } catch { /* ignore */ }
+            scannerRef.current = null;
+        }
+        setShowScanner(false);
+    }, []);
+
+    const handleScanSuccess = useCallback(async (decodedText: string) => {
+        const cleaned = decodedText.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 8);
+        if (cleaned.length !== 8) return;
+
+        // Stop scanner first
+        await stopScanner();
+
+        // Fill input values
+        const newValues = cleaned.split('');
+        setInputValues(newValues);
+
+        // Auto-activate
+        try {
+            await activate(cleaned);
+            setSuccess(true);
+        } catch {
+            setShake(true);
+            setTimeout(() => setShake(false), 600);
+        }
+    }, [activate, stopScanner]);
+
+    const startScanner = useCallback(async () => {
+        setScannerError(null);
+        setShowScanner(true);
+
+        // Wait for DOM render
+        await new Promise(r => setTimeout(r, 300));
+
+        try {
+            const html5Qr = new Html5Qrcode('qr-scanner-region');
+            scannerRef.current = html5Qr;
+
+            await html5Qr.start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => { handleScanSuccess(decodedText); },
+                () => { /* ignore scan failures */ }
+            );
+        } catch (err: any) {
+            setScannerError('دسترسی به دوربین ممکن نیست');
+            console.error('QR Scanner error:', err);
+        }
+    }, [handleScanSuccess]);
+
+    // Cleanup scanner on unmount
+    useEffect(() => {
+        return () => {
+            if (scannerRef.current) {
+                scannerRef.current.stop().catch(() => { });
+            }
+        };
+    }, []);
 
     const licenseComplete = inputValues.every(v => v.length === 1);
 
@@ -296,6 +365,33 @@ export const LicenseActivationPage = () => {
                     </p>
                 </div>
 
+                {/* QR Scan Button */}
+                <button
+                    onClick={startScanner}
+                    disabled={isLoading}
+                    style={{
+                        width: '100%',
+                        maxWidth: 400,
+                        marginTop: 16,
+                        padding: '14px 24px',
+                        borderRadius: 16,
+                        fontWeight: 600,
+                        fontSize: 14,
+                        border: '2px dashed rgba(139,92,246,0.3)',
+                        background: 'rgba(139,92,246,0.04)',
+                        color: '#8b5cf6',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                        transition: 'all 0.3s',
+                    }}
+                >
+                    <ScanLine size={20} />
+                    اسکن QR Code
+                </button>
+
                 {/* Footer */}
                 <p style={{
                     textAlign: 'center', fontSize: 11,
@@ -305,6 +401,77 @@ export const LicenseActivationPage = () => {
                 </p>
             </div>
 
+            {/* QR Scanner Overlay */}
+            {showScanner && (
+                <div style={{
+                    position: 'fixed', inset: 0, zIndex: 9999,
+                    background: '#000',
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                }}>
+                    {/* Close button */}
+                    <button
+                        onClick={stopScanner}
+                        style={{
+                            position: 'absolute', top: 16, right: 16, zIndex: 10,
+                            width: 44, height: 44,
+                            borderRadius: '50%',
+                            background: 'rgba(255,255,255,0.15)',
+                            backdropFilter: 'blur(10px)',
+                            border: 'none',
+                            color: 'white',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        <X size={24} />
+                    </button>
+
+                    {/* Scanner title */}
+                    <p style={{
+                        position: 'absolute', top: 24,
+                        color: 'white', fontSize: 16, fontWeight: 600,
+                        textAlign: 'center',
+                    }}>
+                        QR Code را اسکن کنید
+                    </p>
+
+                    {/* Scanner region */}
+                    <div
+                        ref={scannerContainerRef}
+                        id="qr-scanner-region"
+                        style={{ width: 300, height: 300 }}
+                    />
+
+                    {/* Corner decorations */}
+                    <div style={{
+                        position: 'absolute',
+                        width: 260, height: 260,
+                        border: '3px solid rgba(139,92,246,0.6)',
+                        borderRadius: 20,
+                        pointerEvents: 'none',
+                    }} />
+
+                    {scannerError && (
+                        <p style={{
+                            position: 'absolute', bottom: 80,
+                            color: '#ef4444', fontSize: 14,
+                            background: 'rgba(0,0,0,0.7)',
+                            padding: '8px 16px', borderRadius: 12,
+                        }}>
+                            {scannerError}
+                        </p>
+                    )}
+
+                    <p style={{
+                        position: 'absolute', bottom: 40,
+                        color: 'rgba(255,255,255,0.5)', fontSize: 12,
+                    }}>
+                        دوربین را روی QR Code بگیرید
+                    </p>
+                </div>
+            )}
+
             <style>{`
         @keyframes shake {
           0%,100%{transform:translateX(0)}
@@ -312,6 +479,7 @@ export const LicenseActivationPage = () => {
           20%,40%,60%,80%{transform:translateX(4px)}
         }
         @keyframes spin { to{transform:rotate(360deg)} }
+        #qr-scanner-region video { border-radius: 16px; }
       `}</style>
         </div>
     );

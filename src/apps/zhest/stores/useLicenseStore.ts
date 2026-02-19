@@ -27,7 +27,14 @@ interface LicenseStore extends LicenseState {
  * Generate a simple but stable browser fingerprint.
  * Uses canvas, screen, timezone, language, and user-agent to create a hash.
  */
-function generateFingerprint(): string {
+function getOrCreateFingerprint(): string {
+    const STORAGE_KEY = 'zhest_device_fingerprint';
+
+    if (typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return stored;
+    }
+
     const components = [
         navigator.userAgent,
         navigator.language,
@@ -46,10 +53,21 @@ function generateFingerprint(): string {
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
-    return Math.abs(hash).toString(36).toUpperCase().padStart(8, '0');
+
+    // We add a random suffix to ensure strict system-level uniqueness going forward,
+    // while the prefix is somewhat deterministic based on browser.
+    // This strictly prevents hash collisions between identical hardware setups.
+    const baseHash = Math.abs(hash).toString(36).toUpperCase().padStart(8, '0');
+    const newFingerprint = baseHash + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, newFingerprint);
+    }
+
+    return newFingerprint;
 }
 
-const fingerprint = generateFingerprint();
+const fingerprint = getOrCreateFingerprint();
 
 export const useLicenseStore = create<LicenseStore>()(
     persist(
