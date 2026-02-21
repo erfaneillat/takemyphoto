@@ -95,13 +95,16 @@ export class ShopController {
                     logoWithBg: shop.logoWithBg,
                     logoWithoutBg: shop.logoWithoutBg,
                     generationCount: shop.generationCount,
+                    phoneNumber: shop.phoneNumber,
+                    address: shop.address,
+                    ownerName: shop.ownerName,
                 }
             }
         });
     });
 
     createShop = asyncHandler(async (req: Request, res: Response) => {
-        const { name, description, types, licenseDurationMonths, credit } = req.body;
+        const { name, description, types, licenseDurationMonths, credit, phoneNumber, address, ownerName } = req.body;
 
         if (!name || !types || !Array.isArray(types) || types.length === 0) {
             return res.status(400).json({
@@ -118,7 +121,16 @@ export class ShopController {
             });
         }
 
-        const shop = await this.createShopUseCase.execute({ name, description, types, licenseDurationMonths: duration, credit: parseInt(credit) || 0 });
+        const shop = await this.createShopUseCase.execute({
+            name,
+            description,
+            types,
+            licenseDurationMonths: duration,
+            credit: parseInt(credit) || 0,
+            phoneNumber,
+            address,
+            ownerName
+        });
 
         return res.status(201).json({
             status: 'success',
@@ -155,12 +167,15 @@ export class ShopController {
 
     updateShop = asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
-        const { name, description, types, licenseDurationMonths, credit } = req.body;
+        const { name, description, types, licenseDurationMonths, credit, phoneNumber, address, ownerName } = req.body;
 
         const updateData: any = {};
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
         if (types !== undefined) updateData.types = types;
+        if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+        if (address !== undefined) updateData.address = address;
+        if (ownerName !== undefined) updateData.ownerName = ownerName;
         if (credit !== undefined) {
             const c = parseInt(credit);
             if (isNaN(c) || c < 0) {
@@ -274,6 +289,9 @@ export class ShopController {
                         logoWithBg: shop.logoWithBg,
                         logoWithoutBg: shop.logoWithoutBg,
                         generationCount: shop.generationCount,
+                        phoneNumber: shop.phoneNumber,
+                        address: shop.address,
+                        ownerName: shop.ownerName,
                     }
                 }
             });
@@ -316,6 +334,9 @@ export class ShopController {
                         logoWithBg: shop.logoWithBg,
                         logoWithoutBg: shop.logoWithoutBg,
                         generationCount: shop.generationCount,
+                        phoneNumber: shop.phoneNumber,
+                        address: shop.address,
+                        ownerName: shop.ownerName,
                     }
                 }
             });

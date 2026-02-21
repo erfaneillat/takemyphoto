@@ -19,6 +19,18 @@ const ShopSchema = new Schema<IShopDocument>(
             enum: Object.values(ShopType),
             required: true
         }],
+        phoneNumber: {
+            type: String,
+            trim: true
+        },
+        address: {
+            type: String,
+            trim: true
+        },
+        ownerName: {
+            type: String,
+            trim: true
+        },
         licenseDurationMonths: {
             type: Number,
             required: true,

@@ -25,6 +25,9 @@ interface LicenseState {
     logoWithBg: string | null;
     logoWithoutBg: string | null;
     shopTypes: string[];
+    phoneNumber: string | null;
+    address: string | null;
+    ownerName: string | null;
     licenseExpiresAt: string | null;
     credit: number;
     isActivated: boolean;
@@ -96,6 +99,9 @@ export const useLicenseStore = create<LicenseStore>()(
             logoWithBg: null,
             logoWithoutBg: null,
             shopTypes: [],
+            phoneNumber: null,
+            address: null,
+            ownerName: null,
             licenseExpiresAt: null,
             credit: 0,
             isActivated: false,
@@ -119,6 +125,9 @@ export const useLicenseStore = create<LicenseStore>()(
                         logoWithBg: shop.logoWithBg || null,
                         logoWithoutBg: shop.logoWithoutBg || null,
                         shopTypes: shop.types || [],
+                        phoneNumber: shop.phoneNumber || null,
+                        address: shop.address || null,
+                        ownerName: shop.ownerName || null,
                         licenseExpiresAt: shop.licenseExpiresAt || null,
                         credit: shop.credit ?? 0,
                         isActivated: true,
@@ -145,6 +154,9 @@ export const useLicenseStore = create<LicenseStore>()(
                         logoWithBg: shop.logoWithBg || null,
                         logoWithoutBg: shop.logoWithoutBg || null,
                         shopTypes: shop.types || [],
+                        phoneNumber: shop.phoneNumber || null,
+                        address: shop.address || null,
+                        ownerName: shop.ownerName || null,
                         licenseExpiresAt: shop.licenseExpiresAt || null,
                         credit: shop.credit ?? 0,
                     });
@@ -161,6 +173,9 @@ export const useLicenseStore = create<LicenseStore>()(
                     logoWithBg: null,
                     logoWithoutBg: null,
                     shopTypes: [],
+                    phoneNumber: null,
+                    address: null,
+                    ownerName: null,
                     licenseExpiresAt: null,
                     credit: 0,
                     isActivated: false,
@@ -191,6 +206,9 @@ export const useLicenseStore = create<LicenseStore>()(
                 logoWithBg: state.logoWithBg,
                 logoWithoutBg: state.logoWithoutBg,
                 shopTypes: state.shopTypes,
+                phoneNumber: state.phoneNumber,
+                address: state.address,
+                ownerName: state.ownerName,
                 licenseExpiresAt: state.licenseExpiresAt,
                 credit: state.credit,
                 isActivated: state.isActivated,

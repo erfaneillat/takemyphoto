@@ -449,11 +449,6 @@ export const ZhestGeneratePage = () => {
 
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-between">
                                 <span>نتیجه پردازش</span>
-                                {credit !== undefined && (
-                                    <span className="text-xs font-medium px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-                                        اعتبار: <span className="text-gray-900 dark:text-white font-bold ml-1">{credit}</span>
-                                    </span>
-                                )}
                             </h2>
 
                             <div

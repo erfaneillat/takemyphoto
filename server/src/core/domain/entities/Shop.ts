@@ -18,6 +18,9 @@ export interface Shop {
     name: string;
     description?: string;
     types: ShopType[];
+    phoneNumber?: string;
+    address?: string;
+    ownerName?: string;
     licenseKey: string;
     licenseDurationMonths: number;
     licenseExpiresAt?: Date;
@@ -37,6 +40,9 @@ export interface CreateShopDTO {
     name: string;
     description?: string;
     types: ShopType[];
+    phoneNumber?: string;
+    address?: string;
+    ownerName?: string;
     licenseDurationMonths: number;
     credit?: number;
 }

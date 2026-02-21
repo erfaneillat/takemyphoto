@@ -17,6 +17,9 @@ interface Shop {
     isActive: boolean;
     credit: number;
     generationCount: number;
+    phoneNumber?: string;
+    address?: string;
+    ownerName?: string;
     createdAt: string;
 }
 
@@ -67,6 +70,9 @@ const Shops = () => {
         types: [] as string[],
         licenseDurationMonths: 1,
         credit: 0,
+        phoneNumber: '',
+        address: '',
+        ownerName: '',
     });
     const [formError, setFormError] = useState('');
 
@@ -139,6 +145,9 @@ const Shops = () => {
             types: [...shop.types],
             licenseDurationMonths: shop.licenseDurationMonths || 1,
             credit: shop.credit ?? 0,
+            phoneNumber: shop.phoneNumber || '',
+            address: shop.address || '',
+            ownerName: shop.ownerName || '',
         });
         setShowModal(true);
     };
@@ -146,7 +155,7 @@ const Shops = () => {
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingShop(null);
-        setFormData({ name: '', description: '', types: [], licenseDurationMonths: 1, credit: 0 });
+        setFormData({ name: '', description: '', types: [], licenseDurationMonths: 1, credit: 0, phoneNumber: '', address: '', ownerName: '' });
         setFormError('');
     };
 
@@ -425,6 +434,45 @@ const Shops = () => {
                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                                     placeholder="e.g. Golden Palace Jewelry"
                                     autoFocus
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Owner Name
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.ownerName}
+                                    onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                    placeholder="e.g. Ali Rezaei"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Phone Number
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.phoneNumber}
+                                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                    placeholder="e.g. 09123456789"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Address
+                                </label>
+                                <textarea
+                                    value={formData.address}
+                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                    rows={2}
+                                    placeholder="Full address of the shop..."
                                 />
                             </div>
 

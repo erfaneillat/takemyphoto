@@ -1,19 +1,15 @@
 import { useEffect } from 'react';
 import { useLicenseStore } from '../stores/useLicenseStore';
-import { Store, KeyRound, LogOut, Clock } from 'lucide-react';
+import { Store, KeyRound, Clock, MapPin, Phone, User } from 'lucide-react';
 
 export const ZhestProfilePage = () => {
-    const { shopName, shopTypes, licenseKey, reset, remainingDays, refreshLicenseInfo } = useLicenseStore();
+    const { shopName, shopTypes, licenseKey, remainingDays, refreshLicenseInfo, phoneNumber, address, ownerName } = useLicenseStore();
     useEffect(() => {
         // Refresh license info from server (to get latest licenseExpiresAt)
         refreshLicenseInfo();
     }, []);
 
-    const handleDeactivate = () => {
-        if (window.confirm('آیا مطمئن هستید که می‌خواهید لایسنس را غیرفعال کنید؟')) {
-            reset();
-        }
-    };
+
 
     const typeLabels: Record<string, string> = {
         gold: 'طلا و جواهر',
@@ -46,6 +42,30 @@ export const ZhestProfilePage = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Additional Info */}
+                    {(ownerName || phoneNumber || address) && (
+                        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-800/50 space-y-2">
+                            {ownerName && (
+                                <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                    <User size={16} className="text-gray-400" />
+                                    <span>{ownerName}</span>
+                                </div>
+                            )}
+                            {phoneNumber && (
+                                <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                    <Phone size={16} className="text-gray-400" />
+                                    <span dir="ltr">{phoneNumber}</span>
+                                </div>
+                            )}
+                            {address && (
+                                <div className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                    <MapPin size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                                    <span className="leading-relaxed">{address}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
                     {/* License key + status row */}
                     <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-800/50">
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -81,18 +101,7 @@ export const ZhestProfilePage = () => {
 
 
 
-                {/* Deactivate Button */}
-                <button
-                    onClick={handleDeactivate}
-                    className="w-full py-3 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 font-medium text-sm"
-                >
-                    <LogOut size={16} />
-                    غیرفعال‌سازی لایسنس
-                </button>
 
-                <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-3">
-                    با غیرفعال‌سازی، نیاز به وارد کردن مجدد لایسنس خواهید داشت
-                </p>
             </div>
         </div>
     );
