@@ -7,8 +7,9 @@ import { useHomeTabStore } from '@/shared/stores/useHomeTabStore';
 import { CategoryFilter } from '@/features/explore/components';
 import { X, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { resolveApiBase } from '@/shared/services/api';
 
-const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || '';
+const API_BASE = resolveApiBase().replace(/\/api(\/v1)?\/?$/, '');
 
 interface SampleImageItem {
     url: string;

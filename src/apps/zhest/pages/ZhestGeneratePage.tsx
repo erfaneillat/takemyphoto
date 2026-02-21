@@ -7,8 +7,9 @@ import { getErrorMessage } from '@/shared/utils';
 import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
 import { Upload, Wand2, Trash2, X, Download, ImageIcon as ImageIconOutline, Check, Loader2, AlertCircle } from 'lucide-react';
+import { resolveApiBase } from '@/shared/services/api';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = resolveApiBase().replace(/\/api(\/v1)?\/?$/, '');
 
 const resolveImageUrl = (url: string) => {
     if (url.startsWith('http')) return url;

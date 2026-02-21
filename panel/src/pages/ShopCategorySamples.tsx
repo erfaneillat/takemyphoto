@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Upload, Trash2, ImageIcon, ChevronLeft } from 'lucide-react';
 import { apiClient } from '../services/apiClient';
+import { resolveApiBase } from '../utils/api';
 
 interface SampleImage {
     url: string;
@@ -16,7 +17,7 @@ interface ShopCategory {
     sampleImages: SampleImage[];
 }
 
-const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || '';
+const API_BASE = resolveApiBase().replace(/\/api(\/v1)?\/?$/, '');
 
 const ShopCategorySamples = () => {
     const [categories, setCategories] = useState<ShopCategory[]>([]);
@@ -110,8 +111,8 @@ const ShopCategorySamples = () => {
                     <div
                         onClick={() => !uploading && fileInputRef.current?.click()}
                         className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${uploading
-                                ? 'border-gray-200 bg-gray-50'
-                                : 'border-gray-300 hover:border-black hover:bg-gray-50'
+                            ? 'border-gray-200 bg-gray-50'
+                            : 'border-gray-300 hover:border-black hover:bg-gray-50'
                             }`}
                     >
                         <Upload size={32} className="mx-auto text-gray-400 mb-3" />

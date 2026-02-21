@@ -1,10 +1,10 @@
 import axios, { AxiosError } from 'axios';
 
-const resolveApiBase = () => {
+export const resolveApiBase = () => {
   const raw = import.meta.env.VITE_API_BASE_URL as string | undefined
   // If no env set, use same-origin relative path
   if (!raw) return '/api/v1'
-  
+
   // If page is https but env uses http, upgrade to https to avoid mixed content
   if (typeof window !== 'undefined' && window.location.protocol === 'https:' && raw.startsWith('http://')) {
     try {
