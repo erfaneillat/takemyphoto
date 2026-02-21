@@ -4,6 +4,7 @@ import { GetShopsUseCase } from '@application/usecases/shop/GetShopsUseCase';
 import { DeleteShopUseCase } from '@application/usecases/shop/DeleteShopUseCase';
 import { ActivateLicenseUseCase } from '@application/usecases/shop/ActivateLicenseUseCase';
 import { ValidateLicenseUseCase } from '@application/usecases/shop/ValidateLicenseUseCase';
+import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { asyncHandler } from '../middleware/errorHandler';
 
 export class ShopController {
@@ -12,8 +13,53 @@ export class ShopController {
         private getShopsUseCase: GetShopsUseCase,
         private deleteShopUseCase: DeleteShopUseCase,
         private activateLicenseUseCase: ActivateLicenseUseCase,
-        private validateLicenseUseCase: ValidateLicenseUseCase
+        private validateLicenseUseCase: ValidateLicenseUseCase,
+        private fileUploadService: IFileUploadService
     ) { }
+
+    getManifest = asyncHandler(async (req: Request, res: Response) => {
+        const { licenseKey } = req.params;
+
+        if (!licenseKey) {
+            return res.status(400).json({ status: 'error', message: 'License key is required' });
+        }
+
+        const shopRepository = (this.activateLicenseUseCase as any).shopRepository;
+        const shop = await shopRepository.findByLicenseKey(licenseKey.toUpperCase());
+
+        if (!shop) {
+            return res.status(404).json({ status: 'error', message: 'Shop not found' });
+        }
+
+        const logoSrc = shop.logoWithBg || '/logo.png';
+
+        const manifest = {
+            short_name: shop.name || 'Zhest',
+            name: shop.name || 'Zhest',
+            start_url: '/?source=pwa',
+            display: 'standalone',
+            theme_color: '#000000',
+            background_color: '#ffffff',
+            icons: [
+                {
+                    src: logoSrc,
+                    sizes: '192x192',
+                    type: 'image/png',
+                    purpose: 'any maskable'
+                },
+                {
+                    src: logoSrc,
+                    sizes: '512x512',
+                    type: 'image/png',
+                    purpose: 'any maskable'
+                }
+            ]
+        };
+
+        // Important: return application/manifest+json content type
+        res.setHeader('Content-Type', 'application/manifest+json');
+        return res.status(200).send(JSON.stringify(manifest));
+    });
 
     getShopInfo = asyncHandler(async (req: Request, res: Response) => {
         const { licenseKey } = req.query;
@@ -46,6 +92,8 @@ export class ShopController {
                     isActivated: shop.isActivated,
                     licenseExpiresAt: shop.licenseExpiresAt,
                     credit: shop.credit,
+                    logoWithBg: shop.logoWithBg,
+                    logoWithoutBg: shop.logoWithoutBg,
                     generationCount: shop.generationCount,
                 }
             }
@@ -161,6 +209,41 @@ export class ShopController {
         });
     });
 
+    uploadLogos = asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+
+        if (!files) {
+            return res.status(400).json({ status: 'error', message: 'No files uploaded' });
+        }
+
+        const shopRepository = (this.createShopUseCase as any).shopRepository;
+        const shop = await shopRepository.findById(id);
+
+        if (!shop) {
+            return res.status(404).json({ status: 'error', message: 'Shop not found' });
+        }
+
+        const updateData: any = {};
+
+        if (files.logoWithBg?.[0]) {
+            const uploaded = await this.fileUploadService.uploadImage(files.logoWithBg[0], 'shops/logos');
+            updateData.logoWithBg = uploaded.url;
+        }
+
+        if (files.logoWithoutBg?.[0]) {
+            const uploaded = await this.fileUploadService.uploadImage(files.logoWithoutBg[0], 'shops/logos');
+            updateData.logoWithoutBg = uploaded.url;
+        }
+
+        if (Object.keys(updateData).length > 0) {
+            const updated = await shopRepository.update(id, updateData);
+            return res.status(200).json({ status: 'success', data: { shop: updated } });
+        }
+
+        return res.status(400).json({ status: 'error', message: 'No valid logo files provided' });
+    });
+
     activateLicense = asyncHandler(async (req: Request, res: Response) => {
         const { licenseKey, deviceFingerprint } = req.body;
 
@@ -188,6 +271,8 @@ export class ShopController {
                         isActivated: shop.isActivated,
                         licenseExpiresAt: shop.licenseExpiresAt,
                         credit: shop.credit,
+                        logoWithBg: shop.logoWithBg,
+                        logoWithoutBg: shop.logoWithoutBg,
                         generationCount: shop.generationCount,
                     }
                 }
@@ -228,6 +313,8 @@ export class ShopController {
                         isActivated: shop.isActivated,
                         licenseExpiresAt: shop.licenseExpiresAt,
                         credit: shop.credit,
+                        logoWithBg: shop.logoWithBg,
+                        logoWithoutBg: shop.logoWithoutBg,
                         generationCount: shop.generationCount,
                     }
                 }

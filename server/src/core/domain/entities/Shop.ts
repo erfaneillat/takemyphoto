@@ -24,6 +24,8 @@ export interface Shop {
     isActivated: boolean;
     activatedAt?: Date;
     deviceFingerprint?: string;
+    logoWithBg?: string;
+    logoWithoutBg?: string;
     generationCount: number;
     credit: number;
     isActive: boolean;

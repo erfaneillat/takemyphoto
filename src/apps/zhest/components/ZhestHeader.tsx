@@ -3,8 +3,10 @@ import { useThemeStore } from '@/shared/stores';
 import { useHomeTabStore } from '@/shared/stores/useHomeTabStore';
 import { useLicenseStore } from '../stores/useLicenseStore';
 import { Logo } from '@/shared/components/Logo';
-import { Moon, Sun, Search, Sparkles, User, Coins } from 'lucide-react';
+import { resolveApiBase } from '@/shared/services/api';
+import { Moon, Sun, Search, Sparkles, User, Coins, Download } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export const ZhestHeader = () => {
     const { t } = useTranslation();
@@ -12,9 +14,32 @@ export const ZhestHeader = () => {
     const { activeTab, setActiveTab } = useHomeTabStore();
     const location = useLocation();
     const navigate = useNavigate();
-    const { credit, shopName } = useLicenseStore();
+    const { credit, shopName, logoWithBg, logoWithoutBg } = useLicenseStore();
 
     const isHomePage = location.pathname === '/';
+    const API_BASE = resolveApiBase().replace(/\/api(\/v1)?\/?$/, '');
+
+    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+    useEffect(() => {
+        const handler = (e: any) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+        };
+        window.addEventListener('beforeinstallprompt', handler);
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+    }, []);
+
+    const handleInstall = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') setDeferredPrompt(null);
+    };
+
+    // Choose logo based on availability. We prefer withoutBg for the Zhest header
+    const customLogoPath = logoWithoutBg || logoWithBg;
+    const logoSrc = customLogoPath ? `${API_BASE}${customLogoPath}` : undefined;
 
     const tabs = [
         { label: t('bottomNav.search'), icon: Search, tabIndex: 0 as const },
@@ -35,7 +60,7 @@ export const ZhestHeader = () => {
                 {/* Logo & Shop Name */}
                 <Link to="/" className="flex items-center gap-3 group">
                     <div className="relative transition-transform duration-300 group-hover:scale-105 group-active:scale-95">
-                        <Logo size="md" />
+                        <Logo size="md" src={logoSrc} />
                     </div>
                     {shopName && (
                         <div className="flex flex-col justify-center">
@@ -87,6 +112,18 @@ export const ZhestHeader = () => {
                         <span className="tracking-wide">{credit.toLocaleString()}</span>
                         <Coins size={16} strokeWidth={2.5} className={credit > 0 ? "animate-pulse" : ""} />
                     </div>
+
+                    {/* Install App Button */}
+                    {deferredPrompt && (
+                        <button
+                            onClick={handleInstall}
+                            className="flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm font-bold shadow-md transition-all duration-300"
+                            aria-label="Install App"
+                        >
+                            <Download size={16} strokeWidth={2.5} />
+                            <span className="hidden md:inline">Install App</span>
+                        </button>
+                    )}
 
                     {/* Theme Toggle */}
                     <button

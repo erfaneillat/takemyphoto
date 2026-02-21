@@ -40,6 +40,7 @@ const AdminLayout = () => {
     { path: '/shops/categories', icon: FolderOpen, label: 'Categories' },
     { path: '/shops/samples', icon: Images, label: 'Sample Images' },
     { path: '/shops/styles', icon: Palette, label: 'Styles' },
+    { path: '/shops/logos', icon: Images, label: 'Logos' },
   ]
 
   const isActive = (path: string) => {

@@ -2,9 +2,28 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { apiClient } from '@/shared/services/api';
 
+const updateManifest = (licenseKey: string | null) => {
+    if (typeof window === 'undefined') return;
+
+    let link: HTMLLinkElement | null = document.querySelector('link[rel="manifest"]');
+
+    if (licenseKey) {
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'manifest';
+            document.head.appendChild(link);
+        }
+        link.href = `/api/v1/shops/manifest/${licenseKey}`;
+    } else if (link) {
+        link.remove();
+    }
+};
+
 interface LicenseState {
     licenseKey: string | null;
     shopName: string | null;
+    logoWithBg: string | null;
+    logoWithoutBg: string | null;
     shopTypes: string[];
     licenseExpiresAt: string | null;
     credit: number;
@@ -74,6 +93,8 @@ export const useLicenseStore = create<LicenseStore>()(
         (set, get) => ({
             licenseKey: null,
             shopName: null,
+            logoWithBg: null,
+            logoWithoutBg: null,
             shopTypes: [],
             licenseExpiresAt: null,
             credit: 0,
@@ -91,9 +112,12 @@ export const useLicenseStore = create<LicenseStore>()(
                     });
 
                     const shop = response.data.data.shop;
+                    updateManifest(key.toUpperCase());
                     set({
                         licenseKey: key.toUpperCase(),
                         shopName: shop.name,
+                        logoWithBg: shop.logoWithBg || null,
+                        logoWithoutBg: shop.logoWithoutBg || null,
                         shopTypes: shop.types || [],
                         licenseExpiresAt: shop.licenseExpiresAt || null,
                         credit: shop.credit ?? 0,
@@ -118,6 +142,8 @@ export const useLicenseStore = create<LicenseStore>()(
                     const shop = response.data.data.shop;
                     set({
                         shopName: shop.name,
+                        logoWithBg: shop.logoWithBg || null,
+                        logoWithoutBg: shop.logoWithoutBg || null,
                         shopTypes: shop.types || [],
                         licenseExpiresAt: shop.licenseExpiresAt || null,
                         credit: shop.credit ?? 0,
@@ -127,16 +153,21 @@ export const useLicenseStore = create<LicenseStore>()(
                 }
             },
 
-            reset: () => set({
-                licenseKey: null,
-                shopName: null,
-                shopTypes: [],
-                licenseExpiresAt: null,
-                credit: 0,
-                isActivated: false,
-                isLoading: false,
-                error: null,
-            }),
+            reset: () => {
+                updateManifest(null);
+                set({
+                    licenseKey: null,
+                    shopName: null,
+                    logoWithBg: null,
+                    logoWithoutBg: null,
+                    shopTypes: [],
+                    licenseExpiresAt: null,
+                    credit: 0,
+                    isActivated: false,
+                    isLoading: false,
+                    error: null,
+                });
+            },
 
             isExpired: () => {
                 const { licenseExpiresAt } = get();
@@ -157,11 +188,19 @@ export const useLicenseStore = create<LicenseStore>()(
             partialize: (state) => ({
                 licenseKey: state.licenseKey,
                 shopName: state.shopName,
+                logoWithBg: state.logoWithBg,
+                logoWithoutBg: state.logoWithoutBg,
                 shopTypes: state.shopTypes,
                 licenseExpiresAt: state.licenseExpiresAt,
                 credit: state.credit,
                 isActivated: state.isActivated,
             }),
+            // Hook into rehydration to set the manifest if we already have a key
+            onRehydrateStorage: () => (state: any) => {
+                if (state?.licenseKey) {
+                    updateManifest(state.licenseKey);
+                }
+            }
         }
     )
 );

@@ -713,7 +713,8 @@ export class Container {
       this.getShopsUseCase,
       this.deleteShopUseCase,
       this.activateLicenseUseCase,
-      this.validateLicenseUseCase
+      this.validateLicenseUseCase,
+      this.fileUploadService
     );
 
     // Initialize Shop Category Use Cases

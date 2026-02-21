@@ -1,9 +1,10 @@
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  src?: string;
 }
 
-export const Logo = ({ size = 'md', className = '' }: LogoProps) => {
+export const Logo = ({ size = 'md', className = '', src = '/logo.png' }: LogoProps) => {
   const sizeMap = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
@@ -12,7 +13,7 @@ export const Logo = ({ size = 'md', className = '' }: LogoProps) => {
 
   return (
     <img
-      src="/logo.png"
+      src={src}
       alt="Take My Photo Logo"
       className={`${sizeMap[size]} ${className}`}
     />

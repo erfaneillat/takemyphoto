@@ -45,6 +45,14 @@ const ShopSchema = new Schema<IShopDocument>(
             type: String,
             trim: true
         },
+        logoWithBg: {
+            type: String,
+            trim: true
+        },
+        logoWithoutBg: {
+            type: String,
+            trim: true
+        },
         generationCount: {
             type: Number,
             default: 0
