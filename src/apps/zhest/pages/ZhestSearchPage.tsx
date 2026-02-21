@@ -170,7 +170,7 @@ export const ZhestSearchPage = () => {
                                         layoutId={`img-${img.publicId}`}
                                         src={`${API_BASE}${img.url}`}
                                         alt={img.categoryName}
-                                        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="w-full h-auto transition-transform duration-500 group-hover:scale-105"
                                         loading="lazy"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex flex-col justify-end p-4">
@@ -214,18 +214,18 @@ export const ZhestSearchPage = () => {
                         {/* Image Container */}
                         <motion.div
                             layoutId={`img-container-${selectedImage.publicId}`}
-                            className="relative flex flex-col items-center justify-center max-w-full max-h-[70vh] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10"
+                            className="relative flex flex-col items-center justify-center max-w-full max-h-[75vh] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <motion.img
                                 layoutId={`img-${selectedImage.publicId}`}
                                 src={`${API_BASE}${selectedImage.url}`}
                                 alt={selectedImage.categoryName}
-                                className="max-w-full max-h-[70vh] object-contain bg-black/50"
+                                className="max-w-full max-h-[75vh] rounded-2xl"
                             />
 
                             {/* Overlay gradient inside image for text readability */}
-                            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/90 to-transparent pointer-events-none" />
+                            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/90 to-transparent pointer-events-none rounded-b-2xl" />
 
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
