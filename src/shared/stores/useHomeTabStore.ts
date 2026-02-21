@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
 interface HomeTabState {
-    activeTab: 0 | 1 | 2;
-    setActiveTab: (tab: 0 | 1 | 2) => void;
+    activeTab: 0 | 1 | 2 | 3;
+    setActiveTab: (tab: 0 | 1 | 2 | 3) => void;
 }
 
 export const useHomeTabStore = create<HomeTabState>((set) => ({

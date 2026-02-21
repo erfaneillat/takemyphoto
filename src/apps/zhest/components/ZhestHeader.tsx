@@ -4,7 +4,7 @@ import { useHomeTabStore } from '@/shared/stores/useHomeTabStore';
 import { useLicenseStore } from '../stores/useLicenseStore';
 import { Logo } from '@/shared/components/Logo';
 import { resolveApiBase } from '@/shared/services/api';
-import { Moon, Sun, Search, Sparkles, User, Coins, Download } from 'lucide-react';
+import { Moon, Sun, Search, Sparkles, User, Coins, Download, ImageIcon } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -44,10 +44,11 @@ export const ZhestHeader = () => {
     const tabs = [
         { label: t('bottomNav.search'), icon: Search, tabIndex: 0 as const },
         { label: t('bottomNav.generate'), icon: Sparkles, tabIndex: 1 as const },
-        { label: t('bottomNav.profile'), icon: User, tabIndex: 2 as const },
+        { label: t('bottomNav.gallery'), icon: ImageIcon, tabIndex: 2 as const },
+        { label: t('bottomNav.profile'), icon: User, tabIndex: 3 as const },
     ];
 
-    const handleTabClick = (tabIndex: 0 | 1 | 2) => {
+    const handleTabClick = (tabIndex: 0 | 1 | 2 | 3) => {
         if (!isHomePage) {
             navigate('/');
         }

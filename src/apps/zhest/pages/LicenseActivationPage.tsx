@@ -307,7 +307,7 @@ export const LicenseActivationPage = () => {
 
             {/* Footer */}
             <p className="relative z-10 text-center text-xs text-gray-400 mt-12 mb-4 tracking-wide font-medium">
-                ژست © {new Date().getFullYear()} • قدرت گرفته از هوش مصنوعی
+                ژست © {new Date().getFullYear()}
             </p>
 
             {/* QR Scanner Overlay */}

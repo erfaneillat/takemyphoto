@@ -57,15 +57,14 @@ export const AspectRatioSelector = ({ value, onChange, className = '' }: AspectR
               className={`
                 relative flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-xl border-2 transition-all duration-200 cursor-pointer
                 ${isSelected
-                  ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-sm shadow-primary/10'
-                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-hover hover:border-primary/50 dark:hover:border-primary/50 hover:bg-gray-100 dark:hover:bg-surface'
+                  ? 'border-gray-900 dark:border-white bg-gray-900/5 dark:bg-white/5 shadow-sm shadow-gray-900/10 dark:shadow-white/10'
+                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-hover hover:border-gray-900/50 dark:hover:border-white/50 hover:bg-gray-100 dark:hover:bg-surface'
                 }
               `}
             >
-              {/* Checkmark badge */}
               {isSelected && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md">
-                  <Check size={11} className="text-white" strokeWidth={3} />
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center shadow-md">
+                  <Check size={11} className="text-white dark:text-gray-900" strokeWidth={3} />
                 </div>
               )}
 
@@ -74,7 +73,7 @@ export const AspectRatioSelector = ({ value, onChange, className = '' }: AspectR
                 className={`
                   rounded-sm transition-colors duration-200 flex-shrink-0
                   ${isSelected
-                    ? 'bg-primary/30 dark:bg-primary/40 border border-primary/50'
+                    ? 'bg-gray-900/30 dark:bg-white/40 border border-gray-900/50 dark:border-white/50'
                     : 'bg-gray-300 dark:bg-gray-600 border border-gray-300 dark:border-gray-500'
                   }
                 `}
@@ -82,7 +81,7 @@ export const AspectRatioSelector = ({ value, onChange, className = '' }: AspectR
               />
 
               {/* Label */}
-              <span className={`text-[11px] font-semibold leading-tight text-center truncate w-full ${isSelected ? 'text-primary dark:text-primary' : 'text-gray-700 dark:text-gray-300'}`}>
+              <span className={`text-[11px] font-semibold leading-tight text-center truncate w-full ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                 {option.value}
               </span>
             </button>

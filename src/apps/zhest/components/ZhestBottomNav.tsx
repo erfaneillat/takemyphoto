@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { useHomeTabStore } from '@/shared/stores/useHomeTabStore';
-import { Search, Sparkles, User } from 'lucide-react';
+import { Search, Sparkles, User, ImageIcon } from 'lucide-react';
 
 export const ZhestBottomNav = () => {
     const location = useLocation();
@@ -14,10 +14,11 @@ export const ZhestBottomNav = () => {
     const tabs = [
         { label: t('bottomNav.search'), icon: Search, tabIndex: 0 as const },
         { label: t('bottomNav.generate'), icon: Sparkles, tabIndex: 1 as const },
-        { label: t('bottomNav.profile'), icon: User, tabIndex: 2 as const },
+        { label: t('bottomNav.gallery'), icon: ImageIcon, tabIndex: 2 as const },
+        { label: t('bottomNav.profile'), icon: User, tabIndex: 3 as const },
     ];
 
-    const handleTabClick = (tabIndex: 0 | 1 | 2) => {
+    const handleTabClick = (tabIndex: 0 | 1 | 2 | 3) => {
         if (!isHomePage) {
             navigate('/');
         }
