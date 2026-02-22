@@ -1,11 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { Upload, Trash2, ImageIcon, ChevronLeft } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 import { apiClient } from '../services/apiClient';
 import { resolveApiBase } from '../utils/api';
 
 interface SampleImage {
     url: string;
     publicId: string;
+}
+
+interface StagedFile {
+    file: File;
+    id: string;
+    previewUrl: string;
 }
 
 interface ShopCategory {
@@ -24,6 +31,8 @@ const ShopCategorySamples = () => {
     const [selectedCategory, setSelectedCategory] = useState<ShopCategory | null>(null);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [selectedFiles, setSelectedFiles] = useState<StagedFile[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -41,27 +50,84 @@ const ShopCategorySamples = () => {
         }
     };
 
-    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!selectedCategory || !e.target.files?.length) return;
+    const compressImage = async (file: File): Promise<File> => {
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            fileType: file.type as string,
+        };
+        try {
+            const compressed = await imageCompression(file, options);
+            return new File([compressed], file.name, { type: compressed.type });
+        } catch {
+            return file; // fallback to original if compression fails
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files?.length) return;
+        const newFiles = Array.from(e.target.files);
+        if (selectedFiles.length + newFiles.length > 40) {
+            alert('You can only upload up to 40 images at once.');
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
+        }
+
+        const staged: StagedFile[] = newFiles.map(file => ({
+            file,
+            id: Math.random().toString(36).substring(7),
+            previewUrl: URL.createObjectURL(file)
+        }));
+
+        setSelectedFiles(prev => [...prev, ...staged]);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleRemoveFile = (id: string) => {
+        setSelectedFiles(prev => {
+            const item = prev.find(p => p.id === id);
+            if (item) URL.revokeObjectURL(item.previewUrl);
+            return prev.filter(p => p.id !== id);
+        });
+    };
+
+    const handleUpload = async () => {
+        if (!selectedCategory || selectedFiles.length === 0) return;
 
         setUploading(true);
+        setUploadProgress(0);
         try {
+            // Compress all images in parallel
+            const rawFiles = selectedFiles.map(sf => sf.file);
+            const compressedFiles = await Promise.all(rawFiles.map(compressImage));
+
             const formData = new FormData();
-            Array.from(e.target.files).forEach(file => {
+            compressedFiles.forEach(file => {
                 formData.append('images', file);
             });
 
             const response = await apiClient.post(`/shop-categories/${selectedCategory.id}/images`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (progressEvent) => {
+                    if (progressEvent.total) {
+                        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        setUploadProgress(percent);
+                    }
+                },
             });
 
             setSelectedCategory(response.data.data.category);
+
+            // Cleanup object URLs
+            selectedFiles.forEach(sf => URL.revokeObjectURL(sf.previewUrl));
+            setSelectedFiles([]);
             fetchCategories();
         } catch (error) {
             console.error('Error uploading images:', error);
         } finally {
             setUploading(false);
-            if (fileInputRef.current) fileInputRef.current.value = '';
+            setUploadProgress(0);
         }
     };
 
@@ -107,7 +173,7 @@ const ShopCategorySamples = () => {
                 </div>
 
                 {/* Upload area */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
                     <div
                         onClick={() => !uploading && fileInputRef.current?.click()}
                         className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${uploading
@@ -115,20 +181,73 @@ const ShopCategorySamples = () => {
                             : 'border-gray-300 hover:border-black hover:bg-gray-50'
                             }`}
                     >
-                        <Upload size={32} className="mx-auto text-gray-400 mb-3" />
-                        <p className="font-semibold text-gray-700">
-                            {uploading ? 'Uploading...' : 'Click to upload images'}
-                        </p>
-                        <p className="text-sm text-gray-500 mt-1">PNG, JPG up to 10MB each</p>
+                        {uploading ? (
+                            <div className="space-y-3">
+                                <div className="w-10 h-10 mx-auto border-4 border-gray-200 border-t-gray-800 rounded-full animate-spin" />
+                                <p className="font-semibold text-gray-700">Uploading... {uploadProgress}%</p>
+                                <div className="w-full max-w-xs mx-auto bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                                    <div
+                                        className="bg-gray-800 h-2.5 rounded-full transition-all duration-300 ease-out"
+                                        style={{ width: `${uploadProgress}%` }}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-400">Compressing & uploading…</p>
+                            </div>
+                        ) : (
+                            <>
+                                <Upload size={32} className="mx-auto text-gray-400 mb-3" />
+                                <p className="font-semibold text-gray-700">Click to select images</p>
+                                <p className="text-sm text-gray-500 mt-1">PNG, JPG up to 10MB each (max 40)</p>
+                            </>
+                        )}
                     </div>
                     <input
                         ref={fileInputRef}
                         type="file"
                         multiple
                         accept="image/*"
-                        onChange={handleUpload}
+                        onChange={handleFileChange}
                         className="hidden"
                     />
+
+                    {/* Staging Area */}
+                    {!uploading && selectedFiles.length > 0 && (
+                        <div className="mt-8 pt-6 border-t border-gray-100">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="font-semibold text-gray-900">Selected files</h3>
+                                    <p className="text-sm text-gray-500">{selectedFiles.length} / 40 images ready to upload</p>
+                                </div>
+                                <button
+                                    onClick={handleUpload}
+                                    className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-black transition-all shadow-sm flex items-center gap-2"
+                                >
+                                    <Upload size={16} />
+                                    Upload {selectedFiles.length} {selectedFiles.length === 1 ? 'Image' : 'Images'}
+                                </button>
+                            </div>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                                {selectedFiles.map((sf) => (
+                                    <div key={sf.id} className="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-square shadow-sm">
+                                        <img
+                                            src={sf.previewUrl}
+                                            alt={sf.file.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
+                                            <button
+                                                onClick={() => handleRemoveFile(sf.id)}
+                                                className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white/90 text-red-600 p-2 rounded-lg hover:bg-white shadow-sm"
+                                                title="Remove file"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Image grid */}

@@ -15,7 +15,7 @@ export const createShopCategoryRoutes = (shopCategoryController: ShopCategoryCon
     router.delete('/:id', authMiddleware, shopCategoryController.deleteShopCategory);
 
     // Sample image management
-    router.post('/:id/images', authMiddleware, upload.array('images', 10), shopCategoryController.uploadSampleImages);
+    router.post('/:id/images', authMiddleware, upload.array('images', 40), shopCategoryController.uploadSampleImages);
     router.delete('/:id/images/:publicId', authMiddleware, shopCategoryController.deleteSampleImage);
 
     return router;
