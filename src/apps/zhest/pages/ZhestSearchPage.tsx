@@ -5,6 +5,7 @@ import { useLicenseStore } from '@/apps/zhest/stores/useLicenseStore';
 import { useReferenceImageStore } from '@/apps/zhest/stores/useReferenceImageStore';
 import { useHomeTabStore } from '@/shared/stores/useHomeTabStore';
 import { CategoryFilter } from '@/features/explore/components';
+import { ComingSoonSection } from '../components/ComingSoonSection';
 import { X, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { resolveApiBase } from '@/shared/services/api';
@@ -99,6 +100,9 @@ export const ZhestSearchPage = () => {
 
     return (
         <div className="flex flex-col w-full">
+            {/* Coming Soon Features */}
+            <ComingSoonSection />
+
             {/* Categories */}
             <CategoryFilter
                 categories={categories}
