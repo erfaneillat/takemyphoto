@@ -3,17 +3,17 @@ import { Sparkles } from 'lucide-react';
 
 const AnimatedCaptionIcon = ({ className }: { className?: string }) => (
     <motion.svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <motion.path 
+        <motion.path
             d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
             animate={{ y: [0, -2, 0], rotate: [0, -3, 3, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.path 
+        <motion.path
             d="M15 5l4 4"
             animate={{ y: [0, -2, 0], rotate: [0, -3, 3, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.path 
+        <motion.path
             d="M3 21h18"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: [0, 1, 0] }}
@@ -24,13 +24,13 @@ const AnimatedCaptionIcon = ({ className }: { className?: string }) => (
 
 const AnimatedCoverIcon = ({ className }: { className?: string }) => (
     <motion.svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-        <motion.rect 
+        <motion.rect
             width="18" height="18" x="3" y="3" rx="2" ry="2"
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
         <circle cx="9" cy="9" r="2" />
-        <motion.path 
+        <motion.path
             d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"
             animate={{ y: [0, -1, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -47,21 +47,21 @@ const AnimatedReelsIcon = ({ className }: { className?: string }) => (
         <rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18" />
         <line x1="7" x2="7" y1="2" y2="22" />
         <line x1="17" x2="17" y1="2" y2="22" />
-        
+
         <motion.g animate={{ y: [-4, 4] }} transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse", ease: "linear" }}>
             <line x1="2" x2="7" y1="4" y2="4" />
             <line x1="2" x2="7" y1="10" y2="10" />
             <line x1="2" x2="7" y1="16" y2="16" />
             <line x1="2" x2="7" y1="22" y2="22" />
-            
+
             <line x1="17" x2="22" y1="4" y2="4" />
             <line x1="17" x2="22" y1="10" y2="10" />
             <line x1="17" x2="22" y1="16" y2="16" />
             <line x1="17" x2="22" y1="22" y2="22" />
         </motion.g>
 
-        <motion.polygon 
-            points="10 9 15 12 10 15 10 9" 
+        <motion.polygon
+            points="10 9 15 12 10 15 10 9"
             animate={{ scale: [1, 1.15, 1] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -71,8 +71,8 @@ const AnimatedReelsIcon = ({ className }: { className?: string }) => (
 const AnimatedModelIcon = ({ className }: { className?: string }) => (
     <motion.svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <motion.g animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: "linear" }} style={{ transformOrigin: '12px 12px' }}>
-            <motion.path 
-                d="M12 2v2M12 20v2M22 12h-2M4 12H2M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41M19.07 19.07l-1.41-1.41M6.34 6.34L4.93 4.93" 
+            <motion.path
+                d="M12 2v2M12 20v2M22 12h-2M4 12H2M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41M19.07 19.07l-1.41-1.41M6.34 6.34L4.93 4.93"
                 strokeWidth="1.5"
                 animate={{ opacity: [0.3, 1, 0.3], scale: [0.9, 1.1, 0.9] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -118,7 +118,7 @@ const COMING_SOON_TOOLS = [
 export const ComingSoonSection = () => {
     return (
         <div className="w-full py-6">
-            <div className="px-5 mb-5 flex items-center justify-between">
+            <div className="px-5 mb-5 flex items-center gap-3">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
                         <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
@@ -147,7 +147,7 @@ export const ComingSoonSection = () => {
                         <div className="w-[42px] h-[42px] rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm shrink-0 ml-3">
                             <tool.icon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                         </div>
-                        
+
                         {/* Text Content */}
                         <div className="flex flex-col justify-center h-full w-full overflow-hidden text-right">
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-white truncate">

@@ -411,6 +411,8 @@
     "featuredStyles": "Featured Styles",
     "results": "results",
     "noResults": "No styles found",
+    "noResultsTitle": "No results found",
+    "noResultsDesc": "We couldn't find any styles matching this category. Try selecting another one.",
     "sortBy": "Sort by",
     "sort": {
       "trending": "Trending",
