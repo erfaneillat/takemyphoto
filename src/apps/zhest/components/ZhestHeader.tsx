@@ -119,10 +119,10 @@ export const ZhestHeader = () => {
                         <button
                             onClick={handleInstall}
                             className="flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm font-bold shadow-md transition-all duration-300"
-                            aria-label="Install App"
+                            aria-label={t('header.installApp')}
                         >
                             <Download size={16} strokeWidth={2.5} />
-                            <span className="hidden md:inline">Install App</span>
+                            <span className="hidden md:inline">{t('header.installApp')}</span>
                         </button>
                     )}
 

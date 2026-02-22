@@ -41,7 +41,8 @@
     "stars": "Stars",
     "viewStars": "View Stars",
     "login": "Login",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "installApp": "Install App"
   },
   "bottomNav": {
     "explore": "Explore",
