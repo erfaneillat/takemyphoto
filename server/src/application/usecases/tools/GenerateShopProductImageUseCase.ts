@@ -251,7 +251,7 @@ Generate a beautiful, commercial-quality product photograph that would make cust
         const imageFile: Express.Multer.File = {
             buffer: imageBuffer,
             mimetype: mimeType,
-            originalname: `shop - product - ${Date.now()}.${ext} `,
+            originalname: `shop-product-${Date.now()}.${ext}`,
             fieldname: 'image',
             encoding: '7bit',
             size: imageBuffer.length,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLicenseStore } from '../stores/useLicenseStore';
 import { shopProductImageApi, ShopGeneratedImage } from '@/shared/services/shopProductImageApi';
 import { Sparkles, Download, Loader2, ImageIcon } from 'lucide-react';
@@ -8,6 +8,7 @@ export const ZhestGalleryPage = () => {
     const [images, setImages] = useState<ShopGeneratedImage[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [columnCount, setColumnCount] = useState(2);
 
     useEffect(() => {
         if (!licenseKey) return;
@@ -20,6 +21,30 @@ export const ZhestGalleryPage = () => {
             })
             .finally(() => setLoading(false));
     }, [licenseKey]);
+
+    useEffect(() => {
+        const computeCols = () => {
+            if (typeof window === 'undefined') return 2;
+            const w = window.innerWidth;
+            if (w >= 1024) return 4;
+            if (w >= 768) return 3;
+            return 2;
+        };
+        const onResize = () => setColumnCount(computeCols());
+        setColumnCount(computeCols());
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
+
+    const completedImages = useMemo(() => images.filter(img => img.status === 'completed'), [images]);
+
+    const distributedColumns = useMemo(() => {
+        const cols: ShopGeneratedImage[][] = Array.from({ length: columnCount }, () => []);
+        completedImages.forEach((img, i) => {
+            cols[i % columnCount].push(img);
+        });
+        return cols;
+    }, [completedImages, columnCount]);
 
     const handleDownload = async (imageUrl: string, index: number) => {
         try {
@@ -72,32 +97,39 @@ export const ZhestGalleryPage = () => {
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                            {images.filter(img => img.status === 'completed').map((image, index) => (
-                                <div
-                                    key={image.id}
-                                    className="group relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 aspect-square shadow-sm hover:shadow-md transition-shadow"
-                                >
-                                    <img
-                                        src={image.imageUrl}
-                                        alt={`Generated ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                        loading="lazy"
-                                    />
-                                    {/* Hover overlay with download */}
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
-                                        <button
-                                            onClick={() => handleDownload(image.imageUrl, index)}
-                                            className="px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95"
-                                        >
-                                            <Download size={16} />
-                                            دانلود
-                                        </button>
-                                    </div>
-                                    {/* Date badge */}
-                                    <div className="absolute top-2 left-2 px-2.5 py-1 bg-black/60 text-white text-[11px] font-medium rounded-lg backdrop-blur-md">
-                                        {new Date(image.createdAt).toLocaleDateString('fa-IR')}
-                                    </div>
+                        <div className="flex gap-4">
+                            {distributedColumns.map((col, ci) => (
+                                <div key={ci} className="flex flex-col gap-4 flex-1">
+                                    {col.map((image) => {
+                                        const index = completedImages.indexOf(image);
+                                        return (
+                                            <div
+                                                key={image.id}
+                                                className="group relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+                                            >
+                                                <img
+                                                    src={image.imageUrl}
+                                                    alt={`Generated ${index + 1}`}
+                                                    className="w-full h-auto block"
+                                                    loading="lazy"
+                                                />
+                                                {/* Hover overlay with download */}
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
+                                                    <button
+                                                        onClick={() => handleDownload(image.imageUrl, index)}
+                                                        className="px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95"
+                                                    >
+                                                        <Download size={16} />
+                                                        دانلود
+                                                    </button>
+                                                </div>
+                                                {/* Date badge */}
+                                                <div className="absolute top-2 left-2 px-2.5 py-1 bg-black/60 text-white text-[11px] font-medium rounded-lg backdrop-blur-md">
+                                                    {new Date(image.createdAt).toLocaleDateString('fa-IR')}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             ))}
                         </div>
