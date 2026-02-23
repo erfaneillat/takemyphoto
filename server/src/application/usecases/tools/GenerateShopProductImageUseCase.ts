@@ -145,18 +145,18 @@ Generate a beautiful, commercial-quality product photograph that would make cust
         let aiResponse;
         try {
             // Per official Gemini docs:
-            // - gemini-2.5-flash-image: does NOT support imageConfig (no aspectRatio, no resolution/imageSize)
+            // - gemini-2.5-flash-image: needs responseModalities but does NOT support imageConfig
             // - gemini-3-pro-image-preview: supports imageConfig (aspectRatio, imageSize) and responseModalities
             const requestPayload: any = {
                 prompt: fullPrompt,
                 referenceImages: googleImages,
-                model: apiModel
+                model: apiModel,
+                responseModalities: ['Text', 'Image']
             };
 
             if (apiModel === 'gemini-3-pro-image-preview') {
                 requestPayload.aspectRatio = (aspectRatio as any) || '1:1';
                 requestPayload.resolution = '1K';
-                requestPayload.responseModalities = ['Text', 'Image'];
             }
 
             aiResponse = await this.googleAIService.generateImage(requestPayload);
