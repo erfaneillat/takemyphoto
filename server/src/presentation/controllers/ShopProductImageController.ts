@@ -29,7 +29,7 @@ export class ShopProductImageController {
     });
 
     generate = asyncHandler(async (req: LicenseAuthRequest, res: Response) => {
-        const { productName, productDescription, style, aspectRatio } = req.body;
+        const { productName, productDescription, style, aspectRatio, modelType } = req.body;
         const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
 
         if (!req.shop || !req.shop.id) {
@@ -71,6 +71,7 @@ export class ShopProductImageController {
             productImages,
             referenceImage,
             aspectRatio,
+            modelType: modelType as 'normal' | 'pro' || undefined,
         });
 
         res.status(200).json({

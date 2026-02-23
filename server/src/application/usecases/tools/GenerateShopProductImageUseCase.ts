@@ -13,6 +13,7 @@ export interface GenerateShopProductImageRequest {
     productImages: Express.Multer.File[];
     referenceImage?: Express.Multer.File;
     aspectRatio?: string;
+    modelType?: 'normal' | 'pro';
 }
 
 export interface GenerateShopProductImageResponse {
@@ -40,12 +41,16 @@ export class GenerateShopProductImageUseCase {
     ) { }
 
     async execute(request: GenerateShopProductImageRequest): Promise<GenerateShopProductImageResponse> {
-        const { shopId, productName, productDescription, style, productImages, referenceImage, aspectRatio } = request;
+        const { shopId, productName, productDescription, style, productImages, referenceImage, aspectRatio, modelType } = request;
+
+        const currentModelType = modelType || 'pro';
+        const creditCost = currentModelType === 'pro' ? 15 : 5;
+        const apiModel = currentModelType === 'pro' ? 'gemini-3-pro-image-preview' : 'gemini-2.5-flash';
 
         // Check shop credit
         const shop = await this.shopRepository.findById(shopId);
-        if (!shop || shop.credit <= 0) {
-            throw new Error('اعتبار شما به پایان رسیده است. لطفاً برای شارژ مجدد با پشتیبانی تماس بگیرید.');
+        if (!shop || shop.credit < creditCost) {
+            throw new Error(`اعتبار شما کافی نیست. تولید این تصویر نیاز به ${creditCost} اعتبار دارد.`);
         }
 
         // Upload product images for reference tracking
@@ -77,6 +82,25 @@ export class GenerateShopProductImageUseCase {
             ? `\nLANGUAGE REQUIREMENT: All text overlays on the image MUST be in ${isPersian ? 'Persian/Farsi (فارسی)' : 'English'}. Match the language of the product name exactly.`
             : '';
 
+        // Build dynamic instructions based on whether a reference image is provided
+        const baseInstructions = `
+- The provided product image must be the MAIN FOCUS of the generated image
+- Preserve the product's exact appearance, colors, shape, and proportions from the original product image
+- Create a professional, high-quality product photograph
+- The product should look premium and desirable
+- Lighting should enhance the product's features and textures
+- Output should be suitable for e-commerce, marketing, or social media use
+- Ensure the product is clearly visible and well-lit
+- Make the image look professionally shot with proper depth of field`.trim();
+
+        const referenceImageInstructions = referenceImage ? `
+- IMPORTANT: You have received a REFERENCE IMAGE in addition to the product images.
+- Use the REFERENCE IMAGE as the MAIN BACKGROUND, SCENE, and ENVIRONMENT.
+- Keep the exact overall vibe, colors, props, and setting of the reference image.
+- PLACE the product naturally into the reference image's scene.
+- REPLACE whatever main subject was naturally in the reference image with the provided product.
+- Ensure the lighting on the product matches the lighting of the reference scene.`.trim() : '\n- Composition should draw the eye to the product';
+
         const fullPrompt = `
 Create a stunning product photograph for: "${productName}"
 ${productDescription ? `Product details: ${productDescription}` : ''}
@@ -86,15 +110,8 @@ ${stylePrompt}
 ${languageInstruction}
 
 IMPORTANT INSTRUCTIONS:
-- The provided product image must be the MAIN FOCUS of the generated image
-- Preserve the product's exact appearance, colors, shape, and proportions from the reference
-- Create a professional, high-quality product photograph
-- The product should look premium and desirable
-- Lighting should enhance the product's features and textures
-- Composition should draw the eye to the product
-- Output should be suitable for e-commerce, marketing, or social media use
-- Ensure the product is clearly visible and well-lit
-- Make the image look professionally shot with proper depth of field
+${baseInstructions}
+${referenceImageInstructions}
 
 Generate a beautiful, commercial-quality product photograph that would make customers want to buy this product.
 `.trim();
@@ -131,7 +148,8 @@ Generate a beautiful, commercial-quality product photograph that would make cust
                 prompt: fullPrompt,
                 referenceImages: googleImages,
                 aspectRatio: (aspectRatio as any) || '1:1',
-                resolution: '1K'
+                resolution: '1K',
+                model: apiModel
             });
         } catch (error: any) {
             if (this.errorLogService) {
@@ -176,7 +194,7 @@ Generate a beautiful, commercial-quality product photograph that would make cust
         const imageFile: Express.Multer.File = {
             buffer: imageBuffer,
             mimetype: mimeType,
-            originalname: `shop-product-${Date.now()}.${ext}`,
+            originalname: `shop - product - ${Date.now()}.${ext} `,
             fieldname: 'image',
             encoding: '7bit',
             size: imageBuffer.length,
@@ -210,8 +228,8 @@ Generate a beautiful, commercial-quality product photograph that would make cust
 
         // Increment shop generation count & decrement credit
         await this.shopRepository.incrementGenerationCount(shopId);
-        await this.shopRepository.decrementCredit(shopId);
-        console.log(`🏪 Shop ${shopId} generation count incremented, credit decremented`);
+        await this.shopRepository.decrementCredit(shopId, creditCost);
+        console.log(`🏪 Shop ${shopId} generation count incremented, credit decremented by ${creditCost} `);
 
         return {
             image: imageResult.data,

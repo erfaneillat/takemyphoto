@@ -6,7 +6,7 @@ import { useReferenceImageStore } from '../stores/useReferenceImageStore';
 import { getErrorMessage } from '@/shared/utils';
 import { AspectRatioSelector } from '@/shared/components/AspectRatioSelector';
 import type { AspectRatioValue } from '@/shared/components/AspectRatioSelector';
-import { Upload, Wand2, Trash2, X, Download, ImageIcon as ImageIconOutline, Check, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, Wand2, Trash2, X, Download, ImageIcon as ImageIconOutline, Check, Loader2, AlertCircle, Sparkles } from 'lucide-react';
 import { resolveApiBase } from '@/shared/services/api';
 
 const API_BASE = resolveApiBase().replace(/\/api(\/v1)?\/?$/, '');
@@ -29,9 +29,12 @@ export const ZhestGeneratePage = () => {
     const [referenceImage, setReferenceImage] = useState<File | null>(null);
     const [referenceImageUrl, setReferenceImageUrl] = useState<string | null>(null);
     const [aspectRatio, setAspectRatio] = useState<AspectRatioValue>('1:1');
+    const [modelType, setModelType] = useState<'normal' | 'pro'>('pro');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ShopGenerateProductImageResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    const requiredCredit = modelType === 'pro' ? 15 : 5;
 
     // Fetch styles from API
     useEffect(() => {
@@ -105,8 +108,8 @@ export const ZhestGeneratePage = () => {
             return;
         }
 
-        if (credit <= 0) {
-            setError('اعتبار شما به پایان رسیده است. لطفاً برای شارژ مجدد با پشتیبانی تماس بگیرید.');
+        if (credit < requiredCredit) {
+            setError(`اعتبار شما کافی نیست. تولید این تصویر نیاز به ${requiredCredit} اعتبار دارد.`);
             return;
         }
 
@@ -135,6 +138,7 @@ export const ZhestGeneratePage = () => {
                 productDescription || undefined,
                 refFile || undefined,
                 aspectRatio,
+                modelType
             );
             setResult(data);
             // Refresh credit from server after successful generation
@@ -202,6 +206,49 @@ export const ZhestGeneratePage = () => {
                                         className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:border-gray-900 dark:focus:border-white outline-none transition-all resize-none min-h-[120px] text-gray-900 dark:text-white text-base shadow-inner"
                                         placeholder={t('productGenerator.productDescriptionPlaceholder')}
                                     />
+                                </div>
+
+                                {/* Model Type Selection */}
+                                <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-4">
+                                        کیفیت پردازش (مدل هوش مصنوعی)
+                                    </label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <button
+                                            onClick={() => setModelType('normal')}
+                                            className={`relative p-4 rounded-2xl border-2 text-start transition-all overflow-hidden ${modelType === 'normal'
+                                                ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20'
+                                                : 'border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/50 hover:border-gray-300 dark:hover:border-gray-700'
+                                                }`}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <span className={`font-bold ${modelType === 'normal' ? 'text-blue-700 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}>سریع (Normal)</span>
+                                                <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${modelType === 'normal' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' : 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>۵ اعتبار</div>
+                                            </div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">سرعت بالا در تولید تصویر با کیفیت مطلوب (مدل Gemini Flash).</p>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setModelType('pro')}
+                                            className={`relative p-4 rounded-2xl border-2 text-start transition-all overflow-hidden ${modelType === 'pro'
+                                                ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/20'
+                                                : 'border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/50 hover:border-gray-300 dark:hover:border-gray-700'
+                                                }`}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <span className={`font-bold flex items-center gap-1 ${modelType === 'pro' ? 'text-purple-700 dark:text-purple-400' : 'text-gray-900 dark:text-white'}`}>
+                                                    حرفه‌ای (Pro)
+                                                    <Sparkles size={14} className={modelType === 'pro' ? 'text-purple-500' : 'text-gray-400'} />
+                                                </span>
+                                                <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${modelType === 'pro' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' : 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>۱۵ اعتبار</div>
+                                            </div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">بالاترین کیفیت، جزئیات دقیق و درک بهتر درخواست (مدل Gemini Pro).</p>
+
+                                            {modelType === 'pro' && (
+                                                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-purple-400/20 to-transparent rounded-bl-full -z-10" />
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -524,14 +571,14 @@ export const ZhestGeneratePage = () => {
                             {/* Generate Action Button */}
                             <button
                                 onClick={handleGenerate}
-                                disabled={loading || !productName.trim() || productImages.length === 0 || credit <= 0}
-                                className={`mt-6 w-full py-4 px-6 rounded-2xl flex items-center justify-center gap-3 text-lg font-bold transition-all duration-300 overflow-hidden relative group ${loading || !productName.trim() || productImages.length === 0 || credit <= 0
+                                disabled={loading || !productName.trim() || productImages.length === 0 || credit < requiredCredit}
+                                className={`mt-6 w-full py-4 px-6 rounded-2xl flex items-center justify-center gap-3 text-lg font-bold transition-all duration-300 overflow-hidden relative group ${loading || !productName.trim() || productImages.length === 0 || credit < requiredCredit
                                     ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700'
                                     : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.16)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.12)] dark:hover:shadow-[0_8px_40px_rgba(255,255,255,0.16)] transform hover:-translate-y-1 my-2'
                                     }`}
                             >
                                 {/* Shine effect for enabled button */}
-                                {!(loading || !productName.trim() || productImages.length === 0 || credit <= 0) && (
+                                {!(loading || !productName.trim() || productImages.length === 0 || credit < requiredCredit) && (
                                     <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
                                 )}
 
@@ -542,7 +589,7 @@ export const ZhestGeneratePage = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <Wand2 size={24} className={!(loading || !productName.trim() || productImages.length === 0 || credit <= 0) ? "animate-pulse" : ""} />
+                                        <Wand2 size={24} className={!(loading || !productName.trim() || productImages.length === 0 || credit < requiredCredit) ? "animate-pulse" : ""} />
                                         <span>{t('productGenerator.generateButton')}</span>
                                     </>
                                 )}

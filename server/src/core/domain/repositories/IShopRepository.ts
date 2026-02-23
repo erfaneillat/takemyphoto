@@ -8,5 +8,5 @@ export interface IShopRepository {
     update(id: string, data: Partial<Shop>): Promise<Shop | null>;
     delete(id: string): Promise<boolean>;
     incrementGenerationCount(id: string): Promise<void>;
-    decrementCredit(id: string): Promise<void>;
+    decrementCredit(id: string, amount?: number): Promise<void>;
 }

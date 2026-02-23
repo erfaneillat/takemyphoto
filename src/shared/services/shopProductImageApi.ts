@@ -73,6 +73,7 @@ export const shopProductImageApi = {
         productDescription?: string,
         referenceImage?: File,
         aspectRatio?: string,
+        modelType?: 'normal' | 'pro',
     ): Promise<ShopGenerateProductImageResponse> => {
         const formData = new FormData();
         formData.append('productName', productName);
@@ -89,6 +90,10 @@ export const shopProductImageApi = {
 
         if (aspectRatio) {
             formData.append('aspectRatio', aspectRatio);
+        }
+
+        if (modelType) {
+            formData.append('modelType', modelType);
         }
 
         // Add reference image if provided (only 1)

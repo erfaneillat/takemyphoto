@@ -6,6 +6,7 @@ export interface GoogleAIGenerateRequest {
   aspectRatio?: '1:1' | '9:16' | '16:9' | '3:4' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '21:9' | '2.39:1';
   responseModalities?: ('Text' | 'Image')[];
   resolution?: string;
+  model?: string;
 }
 
 export interface GoogleAIGenerateResponse {
@@ -136,8 +137,10 @@ export class GoogleAIService {
           }
         }
 
+        const requestModel = request.model || this.model;
+
         console.log('🚀 Calling Google AI API:', {
-          model: this.model,
+          model: requestModel,
           prompt: request.prompt.substring(0, 100) + '...',
           hasImages: request.referenceImages && request.referenceImages.length > 0,
           aspectRatio: request.aspectRatio,
@@ -145,7 +148,7 @@ export class GoogleAIService {
         });
 
         const response = await axios.post<GoogleAIGenerateResponse>(
-          `${this.baseUrl}/models/${this.model}:generateContent`,
+          `${this.baseUrl}/models/${requestModel}:generateContent`,
           requestBody,
           {
             headers: {
@@ -188,7 +191,7 @@ export class GoogleAIService {
           }
 
           const fallbackResponse = await axios.post<GoogleAIGenerateResponse>(
-            `${this.baseUrl}/models/${this.model}:generateContent`,
+            `${this.baseUrl}/models/${requestModel}:generateContent`,
             fallbackBody,
             {
               headers: {
@@ -227,7 +230,7 @@ export class GoogleAIService {
             }
 
             const secondResponse = await axios.post<GoogleAIGenerateResponse>(
-              `${this.baseUrl}/models/${this.model}:generateContent`,
+              `${this.baseUrl}/models/${requestModel}:generateContent`,
               secondBody,
               {
                 headers: {

@@ -145,6 +145,25 @@ export class GenerateProductImageUseCase {
             ? `\nLANGUAGE REQUIREMENT: All text overlays on the image MUST be in ${isPersian ? 'Persian/Farsi (فارسی)' : 'English'}. Match the language of the product name exactly.`
             : '';
 
+        // Build dynamic instructions based on whether a reference image is provided
+        const baseInstructions = `
+- The provided product image must be the MAIN FOCUS of the generated image
+- Preserve the product's exact appearance, colors, shape, and proportions from the original product image
+- Create a professional, high-quality product photograph
+- The product should look premium and desirable
+- Lighting should enhance the product's features and textures
+- Output should be suitable for e-commerce, marketing, or social media use
+- Ensure the product is clearly visible and well-lit
+- Make the image look professionally shot with proper depth of field`.trim();
+
+        const referenceImageInstructions = referenceImage ? `
+- IMPORTANT: You have received a REFERENCE IMAGE in addition to the product images.
+- Use the REFERENCE IMAGE as the MAIN BACKGROUND, SCENE, and ENVIRONMENT.
+- Keep the exact overall vibe, colors, props, and setting of the reference image.
+- PLACE the product naturally into the reference image's scene.
+- REPLACE whatever main subject was naturally in the reference image with the provided product.
+- Ensure the lighting on the product matches the lighting of the reference scene.`.trim() : '\n- Composition should draw the eye to the product';
+
         const fullPrompt = `
 Create a stunning product photograph for: "${productName}"
 ${productDescription ? `Product details: ${productDescription}` : ''}
@@ -154,15 +173,8 @@ ${stylePrompt}
 ${languageInstruction}
 
 IMPORTANT INSTRUCTIONS:
-- The provided product image must be the MAIN FOCUS of the generated image
-- Preserve the product's exact appearance, colors, shape, and proportions from the reference
-- Create a professional, high-quality product photograph
-- The product should look premium and desirable
-- Lighting should enhance the product's features and textures
-- Composition should draw the eye to the product
-- Output should be suitable for e-commerce, marketing, or social media use
-- Ensure the product is clearly visible and well-lit
-- Make the image look professionally shot with proper depth of field
+${baseInstructions}
+${referenceImageInstructions}
 
 Generate a beautiful, commercial-quality product photograph that would make customers want to buy this product.
 `.trim();
@@ -244,7 +256,7 @@ Generate a beautiful, commercial-quality product photograph that would make cust
         const imageFile: Express.Multer.File = {
             buffer: imageBuffer,
             mimetype: mimeType,
-            originalname: `product-${Date.now()}.${ext}`,
+            originalname: `product - ${Date.now()}.${ext} `,
             fieldname: 'image',
             encoding: '7bit',
             size: imageBuffer.length,
@@ -278,7 +290,7 @@ Generate a beautiful, commercial-quality product photograph that would make cust
 
         // Deduct stars AFTER successful generation
         await this.userRepository.decrementStars(userId, starCost);
-        console.log(`⭐ User ${userId} consumed ${starCost} stars for ${resolutionValue} product image generation. Remaining: ${user.stars - starCost}`);
+        console.log(`⭐ User ${userId} consumed ${starCost} stars for ${resolutionValue} product image generation.Remaining: ${user.stars - starCost} `);
 
         return {
             image: imageResult.data,

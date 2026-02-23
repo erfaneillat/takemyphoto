@@ -43,7 +43,7 @@ export class ShopRepository implements IShopRepository {
         await ShopModel.findByIdAndUpdate(id, { $inc: { generationCount: 1 } });
     }
 
-    async decrementCredit(id: string): Promise<void> {
-        await ShopModel.findByIdAndUpdate(id, { $inc: { credit: -1 } });
+    async decrementCredit(id: string, amount: number = 1): Promise<void> {
+        await ShopModel.findByIdAndUpdate(id, { $inc: { credit: -amount } });
     }
 }

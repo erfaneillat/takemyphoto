@@ -104,14 +104,14 @@ export const ZhestHeader = () => {
 
                 <div className="flex items-center gap-3 md:gap-4">
                     {/* Credit Badge */}
-                    <div className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-2xl text-xs md:text-sm font-bold transition-all duration-300 shadow-sm border ${credit > 5
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-2xl text-xs md:text-sm font-bold transition-all duration-300 shadow-sm border ${credit >= 50
                         ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200/50 dark:border-gray-700/50 ring-1 ring-gray-200 dark:ring-gray-800'
-                        : credit > 0
+                        : credit >= 15
                             ? 'bg-gray-50 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-200/50 dark:border-gray-700/50 ring-1 ring-gray-200 dark:ring-gray-800'
                             : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-500 border-gray-200/50 dark:border-gray-800/50 ring-1 ring-gray-100 dark:ring-gray-900'
                         }`}>
                         <span className="tracking-wide">{credit.toLocaleString()}</span>
-                        <Coins size={16} strokeWidth={2.5} className={credit > 0 ? "animate-pulse" : ""} />
+                        <Coins size={16} strokeWidth={2.5} className={credit >= 15 ? "animate-pulse" : ""} />
                     </div>
 
                     {/* Install App Button */}
