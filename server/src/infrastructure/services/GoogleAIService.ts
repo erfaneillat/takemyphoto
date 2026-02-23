@@ -9,6 +9,12 @@ export interface GoogleAIGenerateRequest {
   model?: string;
 }
 
+export interface GoogleAIGenerateTextRequest {
+  prompt: string;
+  images?: { mimeType: string; data: string }[];
+  model?: string;
+}
+
 export interface GoogleAIGenerateResponse {
   candidates: Array<{
     content?: {
@@ -340,5 +346,80 @@ export class GoogleAIService {
       }
     }
     return null;
+  }
+
+  /**
+   * Generates text content based on a prompt and optional images.
+   * Useful for image understanding tasks.
+   */
+  async generateText(request: GoogleAIGenerateTextRequest): Promise<{ text: string } | null> {
+    if (!this.apiKey) {
+      throw new Error('Google AI API key is not configured');
+    }
+
+    try {
+      const parts: any[] = [];
+
+      // Add text prompt
+      if (request.prompt) {
+        parts.push({ text: request.prompt });
+      }
+
+      // Add images if any
+      if (request.images && request.images.length > 0) {
+        for (const image of request.images) {
+          parts.push({
+            inline_data: {
+              mime_type: image.mimeType,
+              data: image.data
+            }
+          });
+        }
+      }
+
+      const requestBody = {
+        contents: [{
+          role: 'user',
+          parts
+        }]
+      };
+
+      const requestModel = request.model || 'gemini-2.5-flash';
+
+      const response = await axios.post<GoogleAIGenerateResponse>(
+        `${this.baseUrl}/models/${requestModel}:generateContent`,
+        requestBody,
+        {
+          headers: {
+            'x-goog-api-key': this.apiKey,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (
+        response.data &&
+        response.data.candidates &&
+        response.data.candidates.length > 0
+      ) {
+        const candidate = response.data.candidates[0];
+        if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+          // Find the first text part
+          for (const part of candidate.content.parts) {
+            if (part.text) {
+              return { text: part.text };
+            }
+          }
+        }
+      }
+
+      return null;
+    } catch (error: any) {
+      console.error('❌ Error generating text from Google AI:', {
+        message: error.message,
+        response: error.response?.data
+      });
+      throw error;
+    }
   }
 }

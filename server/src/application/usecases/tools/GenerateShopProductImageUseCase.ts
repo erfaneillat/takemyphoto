@@ -1,5 +1,4 @@
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
-import sharp from 'sharp';
 import { IShopRepository } from '@core/domain/repositories/IShopRepository';
 import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
@@ -106,11 +105,8 @@ export class GenerateShopProductImageUseCase {
 - Ensure the lighting on the product matches the lighting of the reference scene.`.trim();
             } else if (apiModel === 'gemini-2.5-flash-image') {
                 referenceImageInstructions = `
-- IMPORTANT: You have received a SINGLE COMPOSITE IMAGE. 
-- The LEFT side of the image contains the product. The RIGHT side of the image is the REFERENCE BACKGROUND. 
-- Do NOT generate a side-by-side split image. 
-- Generate a single, cohesive, unified image where the product from the left is placed naturally into the reference scene from the right.
-- Keep the exact overall vibe, colors, props, and setting of the reference scene, but replace its original subject with the product.`.trim();
+- IMPORTANT: Note the detailed background instructions provided at the end of the prompt.
+- Generate a single, cohesive, unified image where the product is placed naturally into the described background scene.`.trim();
             }
         } else {
             referenceImageInstructions = '\n- Composition should draw the eye to the product';
@@ -139,55 +135,41 @@ Generate a beautiful, commercial-quality product photograph that would make cust
             aspectRatio: aspectRatio || '1:1',
         });
 
+        let finalPrompt = fullPrompt;
+
         // Prepare product images for Google AI
         let googleImages: { mimeType: string; data: string }[] = [];
 
         if (referenceImage && apiModel === 'gemini-2.5-flash-image') {
+            // Flash Image model consistently throws IMAGE_OTHER when given spliced images.
+            // Solution: Use standard Flash to describe the reference image, then use that text for the background.
             try {
-                // Flash model officially supports only a single image for editing.
-                // We splice the product image and reference image side-by-side.
-                const productBuffer = productImages[0].buffer;
-                const refBuffer = referenceImage.buffer;
+                const refDescriptionPrompt = "Describe the background, setting, lighting, vibe, and props of this image in extreme detail. Do NOT describe the main subject/person, focus purely on the environment to be used as a backdrop for a product photoshoot.";
 
-                const metadataProduct = await sharp(productBuffer).metadata();
-                const metadataRef = await sharp(refBuffer).metadata();
-
-                // Keep size reasonable to avoid IMAGE_OTHER limits
-                const height = Math.min(Math.max(metadataProduct.height || 0, metadataRef.height || 0) || 1024, 1024);
-
-                const productResized = await sharp(productBuffer).resize({ height, withoutEnlargement: true }).toBuffer();
-                const refResized = await sharp(refBuffer).resize({ height, withoutEnlargement: true }).toBuffer();
-
-                const productMeta = await sharp(productResized).metadata();
-                const refMeta = await sharp(refResized).metadata();
-
-                const width = (productMeta.width || 0) + (refMeta.width || 0);
-
-                const splicedBuffer = await sharp({
-                    create: {
-                        width,
-                        height,
-                        channels: 3, // Use 3 channels (RGB) to avoid transparency issues
-                        background: { r: 255, g: 255, b: 255 }
-                    }
-                })
-                    .composite([
-                        { input: productResized, left: 0, top: 0 },
-                        { input: refResized, left: productMeta.width || 0, top: 0 }
-                    ])
-                    .jpeg({ quality: 90 }) // JPEG is safer than PNG for stability
-                    .toBuffer();
-
-                googleImages.push({
-                    mimeType: 'image/jpeg',
-                    data: splicedBuffer.toString('base64')
+                const descriptionResponse = await this.googleAIService.generateText({
+                    prompt: refDescriptionPrompt,
+                    images: [{
+                        mimeType: referenceImage.mimetype,
+                        data: referenceImage.buffer.toString('base64')
+                    }],
+                    model: 'gemini-2.5-flash'
                 });
+
+                const refDescription = descriptionResponse?.text || '';
+
+                if (refDescription) {
+                    finalPrompt += `\n\n### CRITICAL BACKGROUND INSTRUCTIONS:\nGenerate the product sitting naturally in this exact environment: ${refDescription}`;
+                    console.log('📝 Extracted reference background details for Flash:', refDescription);
+                }
             } catch (err) {
-                console.error("Error splicing images for flash model:", err);
-                // Fallback to sending just the product image if splicing fails
+                console.error("Error analyzing reference image for flash model:", err);
+            }
+
+            // Only pass the product image to the Flash Image generator
+            for (const file of productImages) {
                 googleImages.push({
-                    mimeType: productImages[0].mimetype,
-                    data: productImages[0].buffer.toString('base64')
+                    mimeType: file.mimetype,
+                    data: file.buffer.toString('base64')
                 });
             }
         } else {
@@ -214,7 +196,7 @@ Generate a beautiful, commercial-quality product photograph that would make cust
             // - gemini-2.5-flash-image: needs responseModalities but does NOT support imageConfig
             // - gemini-3-pro-image-preview: supports imageConfig (aspectRatio, imageSize) and responseModalities
             const requestPayload: any = {
-                prompt: fullPrompt,
+                prompt: finalPrompt,
                 referenceImages: googleImages,
                 model: apiModel
             };
