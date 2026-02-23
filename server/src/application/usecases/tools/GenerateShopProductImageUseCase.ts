@@ -1,4 +1,5 @@
 import { GoogleAIService } from '@infrastructure/services/GoogleAIService';
+import sharp from 'sharp';
 import { IShopRepository } from '@core/domain/repositories/IShopRepository';
 import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { IGeneratedImageEntityRepository } from '@core/domain/repositories/IGeneratedImageEntityRepository';
@@ -93,13 +94,27 @@ export class GenerateShopProductImageUseCase {
 - Ensure the product is clearly visible and well-lit
 - Make the image look professionally shot with proper depth of field`.trim();
 
-        const referenceImageInstructions = referenceImage ? `
+        let referenceImageInstructions = '';
+        if (referenceImage) {
+            if (apiModel === 'gemini-3-pro-image-preview') {
+                referenceImageInstructions = `
 - IMPORTANT: You have received a REFERENCE IMAGE in addition to the product images.
 - Use the REFERENCE IMAGE as the MAIN BACKGROUND, SCENE, and ENVIRONMENT.
 - Keep the exact overall vibe, colors, props, and setting of the reference image.
 - PLACE the product naturally into the reference image's scene.
 - REPLACE whatever main subject was naturally in the reference image with the provided product.
-- Ensure the lighting on the product matches the lighting of the reference scene.`.trim() : '\n- Composition should draw the eye to the product';
+- Ensure the lighting on the product matches the lighting of the reference scene.`.trim();
+            } else if (apiModel === 'gemini-2.5-flash-image') {
+                referenceImageInstructions = `
+- IMPORTANT: You have received a SINGLE COMPOSITE IMAGE. 
+- The LEFT side of the image contains the product. The RIGHT side of the image is the REFERENCE BACKGROUND. 
+- Do NOT generate a side-by-side split image. 
+- Generate a single, cohesive, unified image where the product from the left is placed naturally into the reference scene from the right.
+- Keep the exact overall vibe, colors, props, and setting of the reference scene, but replace its original subject with the product.`.trim();
+            }
+        } else {
+            referenceImageInstructions = '\n- Composition should draw the eye to the product';
+        }
 
         const fullPrompt = `
 Create a stunning product photograph for: "${productName}"
@@ -125,22 +140,70 @@ Generate a beautiful, commercial-quality product photograph that would make cust
         });
 
         // Prepare product images for Google AI
-        const googleImages: { mimeType: string; data: string }[] = [];
-        for (const file of productImages) {
-            googleImages.push({
-                mimeType: file.mimetype,
-                data: file.buffer.toString('base64')
-            });
-        }
+        let googleImages: { mimeType: string; data: string }[] = [];
 
-        // Add reference image if provided, but ONLY for the Pro model.
-        // The gemini-2.5-flash-image model supports a single image for basic editing, 
-        // while the gemini-3-pro-image-preview model officially supports up to 14 reference images for subject insertion.
-        if (referenceImage && apiModel === 'gemini-3-pro-image-preview') {
-            googleImages.push({
-                mimeType: referenceImage.mimetype,
-                data: referenceImage.buffer.toString('base64')
-            });
+        if (referenceImage && apiModel === 'gemini-2.5-flash-image') {
+            try {
+                // Flash model officially supports only a single image for editing.
+                // We splice the product image and reference image side-by-side.
+                const productBuffer = productImages[0].buffer;
+                const refBuffer = referenceImage.buffer;
+
+                const metadataProduct = await sharp(productBuffer).metadata();
+                const metadataRef = await sharp(refBuffer).metadata();
+
+                const height = Math.min(Math.max(metadataProduct.height || 0, metadataRef.height || 0) || 1024, 2048);
+
+                const productResized = await sharp(productBuffer).resize({ height, withoutEnlargement: true }).toBuffer();
+                const refResized = await sharp(refBuffer).resize({ height, withoutEnlargement: true }).toBuffer();
+
+                const productMeta = await sharp(productResized).metadata();
+                const refMeta = await sharp(refResized).metadata();
+
+                const width = (productMeta.width || 0) + (refMeta.width || 0);
+
+                const splicedBuffer = await sharp({
+                    create: {
+                        width,
+                        height,
+                        channels: 4,
+                        background: { r: 255, g: 255, b: 255, alpha: 1 }
+                    }
+                })
+                    .composite([
+                        { input: productResized, left: 0, top: 0 },
+                        { input: refResized, left: productMeta.width || 0, top: 0 }
+                    ])
+                    .png()
+                    .toBuffer();
+
+                googleImages.push({
+                    mimeType: 'image/png',
+                    data: splicedBuffer.toString('base64')
+                });
+            } catch (err) {
+                console.error("Error splicing images for flash model:", err);
+                // Fallback to sending just the product image if splicing fails
+                googleImages.push({
+                    mimeType: productImages[0].mimetype,
+                    data: productImages[0].buffer.toString('base64')
+                });
+            }
+        } else {
+            for (const file of productImages) {
+                googleImages.push({
+                    mimeType: file.mimetype,
+                    data: file.buffer.toString('base64')
+                });
+            }
+
+            // Add reference image if provided, but ONLY for the Pro model
+            if (referenceImage && apiModel === 'gemini-3-pro-image-preview') {
+                googleImages.push({
+                    mimeType: referenceImage.mimetype,
+                    data: referenceImage.buffer.toString('base64')
+                });
+            }
         }
 
         // Generate image using Google AI
