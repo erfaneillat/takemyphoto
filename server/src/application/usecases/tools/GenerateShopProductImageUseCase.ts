@@ -101,19 +101,7 @@ export class GenerateShopProductImageUseCase {
 - REPLACE whatever main subject was naturally in the reference image with the provided product.
 - Ensure the lighting on the product matches the lighting of the reference scene.`.trim() : '\n- Composition should draw the eye to the product';
 
-        // Build prompt based on model type
-        // Flash model: simpler, English-only prompt (Persian not officially supported, complex prompts cause IMAGE_OTHER)
-        // Pro model: full rich prompt with all instructions
-        let fullPrompt: string;
-        if (currentModelType === 'normal') {
-            // Simplified prompt for gemini-2.5-flash-image
-            const refNote = referenceImage
-                ? ' Place the product naturally into the scene shown in the reference image, matching its lighting and environment.'
-                : '';
-            fullPrompt = `Create a professional e-commerce product photograph of the product shown in the provided image.${refNote} ${stylePrompt} The product must be the main focus, well-lit, and look premium.`;
-        } else {
-            // Full detailed prompt for gemini-3-pro-image-preview
-            fullPrompt = `
+        const fullPrompt = `
 Create a stunning product photograph for: "${productName}"
 ${productDescription ? `Product details: ${productDescription}` : ''}
 
@@ -127,7 +115,6 @@ ${referenceImageInstructions}
 
 Generate a beautiful, commercial-quality product photograph that would make customers want to buy this product.
 `.trim();
-        }
 
         console.log('🛍️ [Shop] Generating product image:', {
             shopId,
@@ -146,8 +133,10 @@ Generate a beautiful, commercial-quality product photograph that would make cust
             });
         }
 
-        // Add reference image if provided
-        if (referenceImage) {
+        // Add reference image if provided, but ONLY for the Pro model.
+        // The gemini-2.5-flash-image model supports a single image for basic editing, 
+        // while the gemini-3-pro-image-preview model officially supports up to 14 reference images for subject insertion.
+        if (referenceImage && apiModel === 'gemini-3-pro-image-preview') {
             googleImages.push({
                 mimeType: referenceImage.mimetype,
                 data: referenceImage.buffer.toString('base64')
