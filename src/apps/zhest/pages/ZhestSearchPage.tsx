@@ -65,13 +65,15 @@ export const ZhestSearchPage = () => {
     // Collect all sample images based on the active tab
     const images = useMemo<SampleImageItem[]>(() => {
         if (activeTab === 'all') {
-            return categories.flatMap(cat =>
+            const allImages = categories.flatMap(cat =>
                 (cat.sampleImages || []).map(img => ({
                     ...img,
                     categoryName: cat.name,
                     categoryIcon: cat.icon,
                 }))
             );
+            // Shuffle images randomly
+            return allImages.sort(() => Math.random() - 0.5);
         }
         const cat = categories.find(c => c.slug === activeTab);
         if (!cat) return [];

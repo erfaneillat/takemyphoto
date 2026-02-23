@@ -49,6 +49,9 @@ const ShopStyles = () => {
     });
     const [formError, setFormError] = useState('');
     const [uploadingThumbnail, setUploadingThumbnail] = useState<string | null>(null);
+    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+    const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(null);
+    const [isThumbnailDeleted, setIsThumbnailDeleted] = useState(false);
 
     const filteredStyles = filterTypes.length === 0
         ? styles
@@ -87,11 +90,25 @@ const ShopStyles = () => {
         }
 
         try {
+            let styleId = editingStyle?.id;
+
             if (editingStyle) {
-                await apiClient.put(`/shop-styles/${editingStyle.id}`, formData);
+                await apiClient.put(`/shop-styles/${styleId}`, formData);
             } else {
-                await apiClient.post('/shop-styles', formData);
+                const response = await apiClient.post('/shop-styles', formData);
+                styleId = response.data.data.style.id;
             }
+
+            if (isThumbnailDeleted && editingStyle && !thumbnailFile) {
+                await apiClient.delete(`/shop-styles/${styleId}/thumbnail`);
+            } else if (thumbnailFile && styleId) {
+                const fd = new FormData();
+                fd.append('thumbnail', thumbnailFile);
+                await apiClient.post(`/shop-styles/${styleId}/thumbnail`, fd, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+            }
+
             fetchStyles();
             handleCloseModal();
         } catch (error: any) {
@@ -122,6 +139,9 @@ const ShopStyles = () => {
             types: style.types,
             order: style.order,
         });
+        setThumbnailFile(null);
+        setThumbnailPreviewUrl(style.thumbnailUrl ? resolveImageUrl(style.thumbnailUrl) : null);
+        setIsThumbnailDeleted(false);
         setShowModal(true);
     };
 
@@ -137,6 +157,9 @@ const ShopStyles = () => {
             order: 0,
         });
         setFormError('');
+        setThumbnailFile(null);
+        setThumbnailPreviewUrl(null);
+        setIsThumbnailDeleted(false);
     };
 
     const handleSlugGeneration = (name: string) => {
@@ -249,8 +272,8 @@ const ShopStyles = () => {
                                 : [...prev, option.value]
                         )}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200 ${filterTypes.includes(option.value)
-                                ? 'bg-black text-white border-black shadow-sm'
-                                : `${option.color} hover:opacity-80`
+                            ? 'bg-black text-white border-black shadow-sm'
+                            : `${option.color} hover:opacity-80`
                             }`}
                     >
                         {option.label}
@@ -406,6 +429,60 @@ const ShopStyles = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Thumbnail Image
+                                </label>
+                                <div className="flex items-center gap-4 border border-gray-200 rounded-xl p-3">
+                                    <div className="relative w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-200">
+                                        {(thumbnailPreviewUrl && !isThumbnailDeleted) ? (
+                                            <>
+                                                <img src={thumbnailPreviewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setThumbnailFile(null);
+                                                        setThumbnailPreviewUrl(null);
+                                                        setIsThumbnailDeleted(true);
+                                                    }}
+                                                    className="absolute top-1 right-1 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white transition-opacity"
+                                                >
+                                                    <X size={12} />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <Upload className="text-gray-400" size={24} />
+                                        )}
+                                    </div>
+                                    <div className="flex-1">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            id="thumbnail-upload"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setThumbnailFile(file);
+                                                    setThumbnailPreviewUrl(URL.createObjectURL(file));
+                                                    setIsThumbnailDeleted(false);
+                                                }
+                                            }}
+                                        />
+                                        <label
+                                            htmlFor="thumbnail-upload"
+                                            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                                        >
+                                            <Upload size={16} />
+                                            Choose Image
+                                        </label>
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            Optional but recommended for visual identity.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Name *

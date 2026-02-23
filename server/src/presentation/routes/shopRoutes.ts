@@ -10,6 +10,7 @@ export const createShopRoutes = (shopController: ShopController): Router => {
     router.get('/', shopController.getShops);
     router.put('/:id', shopController.updateShop);
     router.delete('/:id', shopController.deleteShop);
+    router.post('/:id/regenerate-license', shopController.regenerateLicense);
     router.post(
         '/:id/logos',
         upload.fields([

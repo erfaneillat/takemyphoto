@@ -93,6 +93,7 @@ import { GetShopsUseCase } from '@application/usecases/shop/GetShopsUseCase';
 import { DeleteShopUseCase } from '@application/usecases/shop/DeleteShopUseCase';
 import { ActivateLicenseUseCase } from '@application/usecases/shop/ActivateLicenseUseCase';
 import { ValidateLicenseUseCase } from '@application/usecases/shop/ValidateLicenseUseCase';
+import { RegenerateShopLicenseUseCase } from '@application/usecases/shop/RegenerateShopLicenseUseCase';
 import { CreateShopCategoryUseCase } from '@application/usecases/shop-category/CreateShopCategoryUseCase';
 import { GetShopCategoriesUseCase } from '@application/usecases/shop-category/GetShopCategoriesUseCase';
 import { UpdateShopCategoryUseCase } from '@application/usecases/shop-category/UpdateShopCategoryUseCase';
@@ -221,6 +222,7 @@ export class Container {
   public deleteShopUseCase: DeleteShopUseCase;
   public activateLicenseUseCase: ActivateLicenseUseCase;
   public validateLicenseUseCase: ValidateLicenseUseCase;
+  public regenerateShopLicenseUseCase: RegenerateShopLicenseUseCase;
   public createShopCategoryUseCase: CreateShopCategoryUseCase;
   public getShopCategoriesUseCase: GetShopCategoriesUseCase;
   public updateShopCategoryUseCase: UpdateShopCategoryUseCase;
@@ -708,12 +710,17 @@ export class Container {
       this.shopRepository
     );
 
+    this.regenerateShopLicenseUseCase = new RegenerateShopLicenseUseCase(
+      this.shopRepository
+    );
+
     this.shopController = new ShopController(
       this.createShopUseCase,
       this.getShopsUseCase,
       this.deleteShopUseCase,
       this.activateLicenseUseCase,
       this.validateLicenseUseCase,
+      this.regenerateShopLicenseUseCase,
       this.fileUploadService
     );
 

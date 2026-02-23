@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Store, Copy, Check, KeyRound, ShieldCheck, ShieldX, Clock, AlertTriangle, Pencil, Coins, QrCode, Download, X } from 'lucide-react';
+import { Plus, Trash2, Store, Copy, Check, KeyRound, ShieldCheck, ShieldX, Clock, AlertTriangle, Pencil, Coins, QrCode, Download, X, RefreshCw } from 'lucide-react';
 import { apiClient } from '../services/apiClient';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -125,6 +125,17 @@ const Shops = () => {
             fetchShops();
         } catch (error) {
             console.error('Error deleting shop:', error);
+        }
+    };
+
+    const handleRegenerateLicense = async (id: string) => {
+        if (!confirm('Are you sure you want to regenerate the license key? The old key will immediately expire and be permanently invalid.')) return;
+        try {
+            await apiClient.post(`/shops/${id}/regenerate-license`);
+            fetchShops();
+        } catch (error) {
+            console.error('Error regenerating license:', error);
+            alert('Failed to regenerate license');
         }
     };
 
@@ -385,6 +396,13 @@ const Shops = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1">
+                                            <button
+                                                onClick={() => handleRegenerateLicense(shop.id)}
+                                                className="p-2 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                                title="Regenerate license key"
+                                            >
+                                                <RefreshCw size={18} />
+                                            </button>
                                             <button
                                                 onClick={() => handleEdit(shop)}
                                                 className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"

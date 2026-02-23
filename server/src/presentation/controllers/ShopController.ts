@@ -4,6 +4,7 @@ import { GetShopsUseCase } from '@application/usecases/shop/GetShopsUseCase';
 import { DeleteShopUseCase } from '@application/usecases/shop/DeleteShopUseCase';
 import { ActivateLicenseUseCase } from '@application/usecases/shop/ActivateLicenseUseCase';
 import { ValidateLicenseUseCase } from '@application/usecases/shop/ValidateLicenseUseCase';
+import { RegenerateShopLicenseUseCase } from '@application/usecases/shop/RegenerateShopLicenseUseCase';
 import { IFileUploadService } from '@infrastructure/services/LocalFileUploadService';
 import { asyncHandler } from '../middleware/errorHandler';
 
@@ -14,6 +15,7 @@ export class ShopController {
         private deleteShopUseCase: DeleteShopUseCase,
         private activateLicenseUseCase: ActivateLicenseUseCase,
         private validateLicenseUseCase: ValidateLicenseUseCase,
+        private regenerateShopLicenseUseCase: RegenerateShopLicenseUseCase,
         private fileUploadService: IFileUploadService
     ) { }
 
@@ -342,6 +344,31 @@ export class ShopController {
             });
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Validation failed';
+            return res.status(400).json({
+                status: 'error',
+                message
+            });
+        }
+    });
+
+    regenerateLicense = asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        try {
+            const shop = await this.regenerateShopLicenseUseCase.execute(id);
+            if (!shop) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'Shop not found'
+                });
+            }
+
+            return res.status(200).json({
+                status: 'success',
+                data: { shop }
+            });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Regeneration failed';
             return res.status(400).json({
                 status: 'error',
                 message
