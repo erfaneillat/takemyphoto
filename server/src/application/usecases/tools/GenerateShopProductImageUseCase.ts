@@ -152,7 +152,8 @@ Generate a beautiful, commercial-quality product photograph that would make cust
                 const metadataProduct = await sharp(productBuffer).metadata();
                 const metadataRef = await sharp(refBuffer).metadata();
 
-                const height = Math.min(Math.max(metadataProduct.height || 0, metadataRef.height || 0) || 1024, 2048);
+                // Keep size reasonable to avoid IMAGE_OTHER limits
+                const height = Math.min(Math.max(metadataProduct.height || 0, metadataRef.height || 0) || 1024, 1024);
 
                 const productResized = await sharp(productBuffer).resize({ height, withoutEnlargement: true }).toBuffer();
                 const refResized = await sharp(refBuffer).resize({ height, withoutEnlargement: true }).toBuffer();
@@ -166,19 +167,19 @@ Generate a beautiful, commercial-quality product photograph that would make cust
                     create: {
                         width,
                         height,
-                        channels: 4,
-                        background: { r: 255, g: 255, b: 255, alpha: 1 }
+                        channels: 3, // Use 3 channels (RGB) to avoid transparency issues
+                        background: { r: 255, g: 255, b: 255 }
                     }
                 })
                     .composite([
                         { input: productResized, left: 0, top: 0 },
                         { input: refResized, left: productMeta.width || 0, top: 0 }
                     ])
-                    .png()
+                    .jpeg({ quality: 90 }) // JPEG is safer than PNG for stability
                     .toBuffer();
 
                 googleImages.push({
-                    mimeType: 'image/png',
+                    mimeType: 'image/jpeg',
                     data: splicedBuffer.toString('base64')
                 });
             } catch (err) {
@@ -215,13 +216,13 @@ Generate a beautiful, commercial-quality product photograph that would make cust
             const requestPayload: any = {
                 prompt: fullPrompt,
                 referenceImages: googleImages,
-                model: apiModel,
-                responseModalities: ['Text', 'Image']
+                model: apiModel
             };
 
             if (apiModel === 'gemini-3-pro-image-preview') {
                 requestPayload.aspectRatio = (aspectRatio as any) || '1:1';
                 requestPayload.resolution = '1K';
+                requestPayload.responseModalities = ['Text', 'Image'];
             }
 
             aiResponse = await this.googleAIService.generateImage(requestPayload);
