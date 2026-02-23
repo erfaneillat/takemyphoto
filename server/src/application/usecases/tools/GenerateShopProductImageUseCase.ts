@@ -101,7 +101,19 @@ export class GenerateShopProductImageUseCase {
 - REPLACE whatever main subject was naturally in the reference image with the provided product.
 - Ensure the lighting on the product matches the lighting of the reference scene.`.trim() : '\n- Composition should draw the eye to the product';
 
-        const fullPrompt = `
+        // Build prompt based on model type
+        // Flash model: simpler, English-only prompt (Persian not officially supported, complex prompts cause IMAGE_OTHER)
+        // Pro model: full rich prompt with all instructions
+        let fullPrompt: string;
+        if (currentModelType === 'normal') {
+            // Simplified prompt for gemini-2.5-flash-image
+            const refNote = referenceImage
+                ? ' Place the product naturally into the scene shown in the reference image, matching its lighting and environment.'
+                : '';
+            fullPrompt = `Create a professional e-commerce product photograph of the product shown in the provided image.${refNote} ${stylePrompt} The product must be the main focus, well-lit, and look premium.`;
+        } else {
+            // Full detailed prompt for gemini-3-pro-image-preview
+            fullPrompt = `
 Create a stunning product photograph for: "${productName}"
 ${productDescription ? `Product details: ${productDescription}` : ''}
 
@@ -115,6 +127,7 @@ ${referenceImageInstructions}
 
 Generate a beautiful, commercial-quality product photograph that would make customers want to buy this product.
 `.trim();
+        }
 
         console.log('🛍️ [Shop] Generating product image:', {
             shopId,
