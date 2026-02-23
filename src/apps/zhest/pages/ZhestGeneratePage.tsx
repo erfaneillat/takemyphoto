@@ -211,7 +211,7 @@ export const ZhestGeneratePage = () => {
                                 {/* Model Type Selection */}
                                 <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
                                     <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-4">
-                                        کیفیت پردازش (مدل هوش مصنوعی)
+                                        کیفیت پردازش
                                     </label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <button
@@ -225,7 +225,7 @@ export const ZhestGeneratePage = () => {
                                                 <span className={`font-bold ${modelType === 'normal' ? 'text-blue-700 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}>سریع (Normal)</span>
                                                 <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${modelType === 'normal' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' : 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>۵ اعتبار</div>
                                             </div>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">سرعت بالا در تولید تصویر با کیفیت مطلوب (مدل Gemini Flash).</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">سرعت بالا در تولید تصویر با کیفیت مطلوب.</p>
                                         </button>
 
                                         <button
@@ -242,7 +242,7 @@ export const ZhestGeneratePage = () => {
                                                 </span>
                                                 <div className={`px-2 py-0.5 rounded-full text-xs font-bold ${modelType === 'pro' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' : 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>۱۵ اعتبار</div>
                                             </div>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">بالاترین کیفیت، جزئیات دقیق و درک بهتر درخواست (مدل Gemini Pro).</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">بالاترین کیفیت، جزئیات دقیق و درک بهتر درخواست.</p>
 
                                             {modelType === 'pro' && (
                                                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-purple-400/20 to-transparent rounded-bl-full -z-10" />
