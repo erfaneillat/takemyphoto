@@ -144,7 +144,7 @@ Generate a beautiful, commercial-quality product photograph that would make cust
             // Flash Image model consistently throws IMAGE_OTHER when given spliced images.
             // Solution: Use standard Flash to describe the reference image, then use that text for the background.
             try {
-                const refDescriptionPrompt = "Describe the background, setting, lighting, vibe, and props of this image in extreme detail. Do NOT describe the main subject/person, focus purely on the environment to be used as a backdrop for a product photoshoot.";
+                const refDescriptionPrompt = "Analyze this image and write a concise, highly visual, comma-separated image generation prompt (max 3 sentences) describing ONLY the background, setting, lighting, vibe, and props. DO NOT describe the main subject or person. Use descriptive visual keywords. Example format: 'dark moody studio lighting, smooth black leather surface, delicate gold chains draped in background, luxurious elegant vibe'";
 
                 const descriptionResponse = await this.googleAIService.generateText({
                     prompt: refDescriptionPrompt,
@@ -158,7 +158,7 @@ Generate a beautiful, commercial-quality product photograph that would make cust
                 const refDescription = descriptionResponse?.text || '';
 
                 if (refDescription) {
-                    finalPrompt += `\n\n### CRITICAL BACKGROUND INSTRUCTIONS:\nGenerate the product sitting naturally in this exact environment: ${refDescription}`;
+                    finalPrompt += `\n\n### CRITICAL BACKGROUND INSTRUCTIONS:\nGenerate the product sitting naturally in this exact environment: ${refDescription}\nEnsure the background perfectly matches these descriptive keywords.`;
                     console.log('📝 Extracted reference background details for Flash:', refDescription);
                 }
             } catch (err) {

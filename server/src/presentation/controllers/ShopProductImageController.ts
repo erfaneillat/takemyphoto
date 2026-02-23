@@ -22,9 +22,20 @@ export class ShopProductImageController {
 
         const images = await this.generatedImageRepository.findByUserId(req.shop.id, limit, skip);
 
+        // Ensure imageUrl has the correct base URL
+        const apiBaseUrl = process.env.API_BASE_URL || 'https://api.zhest.erfaneillat.com';
+        const formattedImages = images.map(img => {
+            const currentUrl = img.imageUrl || '';
+            const isAbsolute = currentUrl.startsWith('http://') || currentUrl.startsWith('https://');
+            return {
+                ...img,
+                imageUrl: isAbsolute ? currentUrl : `${apiBaseUrl}${currentUrl.startsWith('/') ? '' : '/'}${currentUrl}`
+            };
+        });
+
         res.status(200).json({
             status: 'success',
-            data: { images }
+            data: { images: formattedImages }
         });
     });
 
