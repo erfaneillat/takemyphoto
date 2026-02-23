@@ -207,19 +207,15 @@ Generate a beautiful, commercial-quality product photograph that would make cust
         // Generate image using Google AI
         let aiResponse;
         try {
-            // Default model is gemini-3-pro-image-preview so it supports aspect ratio.
-            // If in the future it is dynamically changed like in Shop product, we need the logic.
-            // Currently GenerateProductImageUseCase doesn't accept a model argument, 
-            // but for safety we will construct the payload carefully.
+            // This use case always uses gemini-3-pro-image-preview (the default in GoogleAIService).
+            // Per official Gemini docs, this model supports imageConfig and responseModalities.
             const requestPayload: any = {
                 prompt: fullPrompt,
                 referenceImages: googleImages,
-                resolution: resolution || '1K'
+                aspectRatio: (aspectRatio as any) || '1:1',
+                resolution: resolution || '1K',
+                responseModalities: ['Text', 'Image']
             };
-
-            // GenerateProductImageUseCase doesn't pick a model currently, it uses the default in GoogleAIService.
-            // If we add model selection later, we should check `model !== 'gemini-2.5-flash-image'` here.
-            requestPayload.aspectRatio = (aspectRatio as any) || '1:1';
 
             aiResponse = await this.googleAIService.generateImage(requestPayload);
         } catch (error: any) {

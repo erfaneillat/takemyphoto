@@ -141,19 +141,22 @@ Generate a beautiful, commercial-quality product photograph that would make cust
             });
         }
 
-        // Generate image using Google AI (always 1K for shop — no resolution selection)
+        // Generate image using Google AI
         let aiResponse;
         try {
-            // gemini-2.5-flash does not support the aspectRatio parameter
+            // Per official Gemini docs:
+            // - gemini-2.5-flash-image: does NOT support imageConfig (no aspectRatio, no resolution/imageSize)
+            // - gemini-3-pro-image-preview: supports imageConfig (aspectRatio, imageSize) and responseModalities
             const requestPayload: any = {
                 prompt: fullPrompt,
                 referenceImages: googleImages,
-                resolution: '1K',
                 model: apiModel
             };
 
-            if (apiModel !== 'gemini-2.5-flash-image') {
+            if (apiModel === 'gemini-3-pro-image-preview') {
                 requestPayload.aspectRatio = (aspectRatio as any) || '1:1';
+                requestPayload.resolution = '1K';
+                requestPayload.responseModalities = ['Text', 'Image'];
             }
 
             aiResponse = await this.googleAIService.generateImage(requestPayload);
