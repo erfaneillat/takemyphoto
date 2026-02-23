@@ -45,7 +45,7 @@ export class GenerateShopProductImageUseCase {
 
         const currentModelType = modelType || 'pro';
         const creditCost = currentModelType === 'pro' ? 15 : 5;
-        const apiModel = currentModelType === 'pro' ? 'gemini-3-pro-image-preview' : 'gemini-2.5-flash';
+        const apiModel = currentModelType === 'pro' ? 'gemini-3-pro-image-preview' : 'gemini-2.5-flash-image';
 
         // Check shop credit
         const shop = await this.shopRepository.findById(shopId);
@@ -144,13 +144,19 @@ Generate a beautiful, commercial-quality product photograph that would make cust
         // Generate image using Google AI (always 1K for shop — no resolution selection)
         let aiResponse;
         try {
-            aiResponse = await this.googleAIService.generateImage({
+            // gemini-2.5-flash does not support the aspectRatio parameter
+            const requestPayload: any = {
                 prompt: fullPrompt,
                 referenceImages: googleImages,
-                aspectRatio: (aspectRatio as any) || '1:1',
                 resolution: '1K',
                 model: apiModel
-            });
+            };
+
+            if (apiModel !== 'gemini-2.5-flash-image') {
+                requestPayload.aspectRatio = (aspectRatio as any) || '1:1';
+            }
+
+            aiResponse = await this.googleAIService.generateImage(requestPayload);
         } catch (error: any) {
             if (this.errorLogService) {
                 await this.errorLogService.logGenerationError(
