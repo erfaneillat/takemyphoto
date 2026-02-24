@@ -2,14 +2,21 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/shared/hooks';
 import { useHomeTabStore } from '@/shared/stores/useHomeTabStore';
 import { Search, Sparkles, User, ImageIcon } from 'lucide-react';
+import { useInvoiceAlertStore } from '../stores/useInvoiceAlertStore';
+import { useEffect } from 'react';
 
 export const ZhestBottomNav = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { activeTab, setActiveTab } = useHomeTabStore();
     const { t } = useTranslation();
+    const { pendingCount, fetched, fetch: fetchAlerts } = useInvoiceAlertStore();
 
-    const isHomePage = location.pathname === '/';
+    useEffect(() => {
+        if (!fetched) fetchAlerts();
+    }, [fetched]);
+
+    const isHomePage = location.pathname === '/app' || location.pathname === '/app/';
 
     const tabs = [
         { label: t('bottomNav.search'), icon: Search, tabIndex: 0 as const },
@@ -20,7 +27,7 @@ export const ZhestBottomNav = () => {
 
     const handleTabClick = (tabIndex: 0 | 1 | 2 | 3) => {
         if (!isHomePage) {
-            navigate('/');
+            navigate('/app');
         }
         setActiveTab(tabIndex);
     };
@@ -54,6 +61,9 @@ export const ZhestBottomNav = () => {
                                     strokeWidth={isActive ? 2.5 : 1.8}
                                     className={`transition-all duration-300 ${isActive ? 'scale-110' : ''}`}
                                 />
+                                {tab.tabIndex === 3 && pendingCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-black" />
+                                )}
                             </div>
                             <span className={`relative z-10 text-[11px] transition-all duration-300 ${isActive ? 'font-semibold' : 'font-medium'}`}>
                                 {tab.label}

@@ -12,6 +12,7 @@ import ShopCategories from './pages/ShopCategories'
 import ShopCategorySamples from './pages/ShopCategorySamples'
 import ShopStyles from './pages/ShopStyles'
 import ShopLogos from './pages/ShopLogos'
+import PreInvoices from './pages/PreInvoices'
 import Users from './pages/Users'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthDebugWidget } from './components/AuthDebugWidget'
@@ -42,6 +43,7 @@ function App() {
           <Route path="shops/samples" element={<ShopCategorySamples />} />
           <Route path="shops/styles" element={<ShopStyles />} />
           <Route path="shops/logos" element={<ShopLogos />} />
+          <Route path="shops/pre-invoices" element={<PreInvoices />} />
         </Route>
       </Routes>
     </Router>

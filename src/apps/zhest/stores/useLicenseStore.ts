@@ -21,6 +21,7 @@ const updateManifest = (licenseKey: string | null) => {
 
 interface LicenseState {
     licenseKey: string | null;
+    shopId: string | null;
     shopName: string | null;
     logoWithBg: string | null;
     logoWithoutBg: string | null;
@@ -95,6 +96,7 @@ export const useLicenseStore = create<LicenseStore>()(
     persist(
         (set, get) => ({
             licenseKey: null,
+            shopId: null,
             shopName: null,
             logoWithBg: null,
             logoWithoutBg: null,
@@ -121,6 +123,7 @@ export const useLicenseStore = create<LicenseStore>()(
                     updateManifest(key.toUpperCase());
                     set({
                         licenseKey: key.toUpperCase(),
+                        shopId: shop.id || shop._id || null,
                         shopName: shop.name,
                         logoWithBg: shop.logoWithBg || null,
                         logoWithoutBg: shop.logoWithoutBg || null,
@@ -150,6 +153,7 @@ export const useLicenseStore = create<LicenseStore>()(
                     const response = await apiClient.get(`/shops/info?licenseKey=${licenseKey}`);
                     const shop = response.data.data.shop;
                     set({
+                        shopId: shop.id || shop._id || null,
                         shopName: shop.name,
                         logoWithBg: shop.logoWithBg || null,
                         logoWithoutBg: shop.logoWithoutBg || null,
@@ -169,6 +173,7 @@ export const useLicenseStore = create<LicenseStore>()(
                 updateManifest(null);
                 set({
                     licenseKey: null,
+                    shopId: null,
                     shopName: null,
                     logoWithBg: null,
                     logoWithoutBg: null,
@@ -202,6 +207,7 @@ export const useLicenseStore = create<LicenseStore>()(
             name: 'zhest-license-storage',
             partialize: (state) => ({
                 licenseKey: state.licenseKey,
+                shopId: state.shopId,
                 shopName: state.shopName,
                 logoWithBg: state.logoWithBg,
                 logoWithoutBg: state.logoWithoutBg,

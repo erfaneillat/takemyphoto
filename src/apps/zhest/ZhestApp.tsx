@@ -2,9 +2,11 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ZhestLayout } from './layouts/ZhestLayout';
 import { ZhestHomePage } from './pages/ZhestHomePage';
 import { ZhestLandingPage } from './pages/ZhestLandingPage';
+import { ZhestInvoicesPage } from './pages/ZhestInvoicesPage';
 import { LicenseActivationPage } from './pages/LicenseActivationPage';
 import { useLicenseStore } from './stores/useLicenseStore';
 import { LicenseExpiredPage } from './pages/LicenseExpiredPage';
+import { PaymentResultOverlay } from './components/PaymentResultOverlay';
 import { AboutPage } from '@/features/legal/pages/AboutPage';
 import { TermsPage } from '@/features/legal/pages/TermsPage';
 import { PrivacyPage } from '@/features/legal/pages/PrivacyPage';
@@ -32,13 +34,17 @@ const ProtectedZhestApp = () => {
     }
 
     return (
-        <Routes>
-            <Route element={<ZhestLayout />}>
-                <Route path="/" element={<ZhestHomePage />} />
-                {/* Future zhest-specific routes go here */}
-                <Route path="*" element={<ZhestHomePage />} />
-            </Route>
-        </Routes>
+        <>
+            <PaymentResultOverlay />
+            <Routes>
+                <Route element={<ZhestLayout />}>
+                    <Route path="/" element={<ZhestHomePage />} />
+                    <Route path="/invoices" element={<ZhestInvoicesPage />} />
+                    {/* Future zhest-specific routes go here */}
+                    <Route path="*" element={<ZhestHomePage />} />
+                </Route>
+            </Routes>
+        </>
     );
 };
 

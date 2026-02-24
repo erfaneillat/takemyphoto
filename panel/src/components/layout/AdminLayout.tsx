@@ -15,7 +15,8 @@ import {
   Store,
   ChevronDown,
   ChevronRight,
-  FolderOpen
+  FolderOpen,
+  FileText
 } from 'lucide-react'
 
 const AdminLayout = () => {
@@ -41,6 +42,7 @@ const AdminLayout = () => {
     { path: '/shops/samples', icon: Images, label: 'Sample Images' },
     { path: '/shops/styles', icon: Palette, label: 'Styles' },
     { path: '/shops/logos', icon: Images, label: 'Logos' },
+    { path: '/shops/pre-invoices', icon: FileText, label: 'Pre-invoices' },
   ]
 
   const isActive = (path: string) => {

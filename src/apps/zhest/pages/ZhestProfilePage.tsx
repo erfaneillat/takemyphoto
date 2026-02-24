@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { useLicenseStore } from '../stores/useLicenseStore';
-import { Store, KeyRound, Clock, MapPin, Phone, User } from 'lucide-react';
+import { useInvoiceAlertStore } from '../stores/useInvoiceAlertStore';
+import { Store, KeyRound, Clock, MapPin, Phone, User, FileText, ChevronLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const ZhestProfilePage = () => {
     const { shopName, shopTypes, licenseKey, remainingDays, refreshLicenseInfo, phoneNumber, address, ownerName } = useLicenseStore();
+    const { pendingCount, fetch: fetchAlerts } = useInvoiceAlertStore();
     useEffect(() => {
-        // Refresh license info from server (to get latest licenseExpiresAt)
         refreshLicenseInfo();
+        fetchAlerts();
     }, []);
 
 
@@ -99,9 +102,31 @@ export const ZhestProfilePage = () => {
                     })()}
                 </div>
 
-
-
-
+                {/* Navigation Links */}
+                <div className="bg-white dark:bg-gray-900/40 rounded-2xl border border-gray-200 dark:border-gray-800/50 overflow-hidden shadow-sm">
+                    <Link
+                        to="/app/invoices"
+                        className="flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-100 dark:bg-gray-800/20 dark:hover:bg-gray-800/50 transition-colors group"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="relative w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                                <FileText size={20} className="text-purple-600 dark:text-purple-400" />
+                                {pendingCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1">
+                                        {pendingCount}
+                                    </span>
+                                )}
+                            </div>
+                            <div>
+                                <span className="font-bold text-gray-900 dark:text-white block">فاکتورهای من</span>
+                                {pendingCount > 0 && (
+                                    <span className="text-xs text-red-500 dark:text-red-400">{pendingCount} فاکتور در انتظار پرداخت</span>
+                                )}
+                            </div>
+                        </div>
+                        <ChevronLeft size={20} className="text-gray-400 group-hover:text-gray-600 dark:text-gray-600 dark:group-hover:text-gray-400 transition-colors" />
+                    </Link>
+                </div>
             </div>
         </div>
     );

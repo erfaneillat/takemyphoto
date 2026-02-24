@@ -9,18 +9,12 @@ interface ThemeState {
   setTheme: (theme: Theme) => void;
 }
 
-// Detect system theme preference
-function getSystemTheme(): Theme {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark';
-  }
-  return 'light';
-}
+
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
-      theme: getSystemTheme(), // Use system theme as default
+      theme: 'light' as Theme, // Default to light theme
       toggleTheme: () =>
         set((state) => {
           const newTheme = state.theme === 'light' ? 'dark' : 'light';

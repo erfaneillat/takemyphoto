@@ -2,9 +2,10 @@ import { useTranslation } from '@/shared/hooks';
 import { useThemeStore } from '@/shared/stores';
 import { useHomeTabStore } from '@/shared/stores/useHomeTabStore';
 import { useLicenseStore } from '../stores/useLicenseStore';
+import { useInvoiceAlertStore } from '../stores/useInvoiceAlertStore';
 import { Logo } from '@/shared/components/Logo';
 import { resolveApiBase } from '@/shared/services/api';
-import { Moon, Sun, Search, Sparkles, User, Coins, Download, ImageIcon } from 'lucide-react';
+import { Moon, Sun, Search, Sparkles, User, Coins, Download, ImageIcon, FileText } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -15,8 +16,13 @@ export const ZhestHeader = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { credit, shopName, logoWithBg, logoWithoutBg } = useLicenseStore();
+    const { pendingCount, fetch: fetchAlerts } = useInvoiceAlertStore();
 
-    const isHomePage = location.pathname === '/';
+    useEffect(() => {
+        fetchAlerts();
+    }, []);
+
+    const isHomePage = location.pathname === '/app' || location.pathname === '/app/';
     const API_BASE = resolveApiBase().replace(/\/api(\/v1)?\/?$/, '');
 
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -50,7 +56,7 @@ export const ZhestHeader = () => {
 
     const handleTabClick = (tabIndex: 0 | 1 | 2 | 3) => {
         if (!isHomePage) {
-            navigate('/');
+            navigate('/app');
         }
         setActiveTab(tabIndex);
     };
@@ -59,7 +65,7 @@ export const ZhestHeader = () => {
         <header className="sticky top-0 z-40 bg-white/70 dark:bg-black/70 backdrop-blur-2xl border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm transition-all duration-300">
             <div className="flex justify-between items-center px-4 md:px-6 py-3 max-w-7xl mx-auto">
                 {/* Logo & Shop Name */}
-                <Link to="/" className="flex items-center gap-3 group">
+                <Link to="/app" className="flex items-center gap-3 group">
                     <div className="relative transition-transform duration-300 group-hover:scale-105 group-active:scale-95">
                         <Logo size="md" src={logoSrc} />
                     </div>
@@ -103,6 +109,22 @@ export const ZhestHeader = () => {
                 </nav>
 
                 <div className="flex items-center gap-3 md:gap-4">
+                    {/* Invoice Alert Badge – desktop only */}
+                    {pendingCount > 0 && (
+                        <Link
+                            to="/app/invoices"
+                            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm border bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200/60 dark:border-amber-700/40 ring-1 ring-amber-200/50 dark:ring-amber-800/50 hover:bg-amber-100 dark:hover:bg-amber-900/40 group"
+                        >
+                            <div className="relative">
+                                <FileText size={16} strokeWidth={2.5} />
+                                <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] flex items-center justify-center bg-red-500 text-white text-[9px] font-black rounded-full px-0.5 ring-2 ring-amber-50 dark:ring-amber-900/20">
+                                    {pendingCount}
+                                </span>
+                            </div>
+                            <span>فاکتور</span>
+                        </Link>
+                    )}
+
                     {/* Credit Badge */}
                     <div className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-2xl text-xs md:text-sm font-bold transition-all duration-300 shadow-sm border ${credit >= 50
                         ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200/50 dark:border-gray-700/50 ring-1 ring-gray-200 dark:ring-gray-800'

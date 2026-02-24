@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Store, Copy, Check, KeyRound, ShieldCheck, ShieldX, Clock, AlertTriangle, Pencil, Coins, QrCode, Download, X, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Store, Copy, Check, KeyRound, ShieldCheck, ShieldX, Clock, AlertTriangle, Pencil, Coins, QrCode, Download, X, RefreshCw, FileText } from 'lucide-react';
 import { apiClient } from '../services/apiClient';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -60,6 +60,8 @@ const Shops = () => {
     const [shops, setShops] = useState<Shop[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [selectedShopForInvoice, setSelectedShopForInvoice] = useState<Shop | null>(null);
     const [editingShop, setEditingShop] = useState<Shop | null>(null);
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [qrShop, setQrShop] = useState<Shop | null>(null);
@@ -73,6 +75,14 @@ const Shops = () => {
         phoneNumber: '',
         address: '',
         ownerName: '',
+    });
+    const [invoiceFormData, setInvoiceFormData] = useState({
+        basePrice: 12000000,
+        discountPercentage: 40,
+        finalPrice: 6900000,
+        creditCount: 700,
+        durationMonths: 12,
+        accountDetails: 'کارت 4496-1886-8619-6219 به نام مهدی ولی پور',
     });
     const [formError, setFormError] = useState('');
 
@@ -137,6 +147,40 @@ const Shops = () => {
             console.error('Error regenerating license:', error);
             alert('Failed to regenerate license');
         }
+    };
+
+    const handleCreateInvoice = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setFormError('');
+
+        if (!selectedShopForInvoice) return;
+
+        try {
+            await apiClient.post('/admin/pre-invoices', {
+                shopId: selectedShopForInvoice.id,
+                ...invoiceFormData
+            });
+            alert('Pre-invoice created successfully');
+            setShowInvoiceModal(false);
+            setSelectedShopForInvoice(null);
+        } catch (error) {
+            console.error('Error creating invoice:', error);
+            setFormError('Failed to create pre-invoice');
+        }
+    };
+
+    const openInvoiceModal = (shop: Shop) => {
+        setSelectedShopForInvoice(shop);
+        setInvoiceFormData({
+            basePrice: 12000000,
+            discountPercentage: 40,
+            finalPrice: 6900000,
+            creditCount: 700,
+            durationMonths: 12,
+            accountDetails: 'کارت 4496-1886-8619-6219 به نام مهدی ولی پور',
+        });
+        setFormError('');
+        setShowInvoiceModal(true);
     };
 
     const toggleType = (type: string) => {
@@ -397,6 +441,13 @@ const Shops = () => {
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1">
                                             <button
+                                                onClick={() => openInvoiceModal(shop)}
+                                                className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                                                title="Create Pre-invoice"
+                                            >
+                                                <FileText size={18} />
+                                            </button>
+                                            <button
                                                 onClick={() => handleRegenerateLicense(shop.id)}
                                                 className="p-2 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                                                 title="Regenerate license key"
@@ -638,6 +689,107 @@ const Shops = () => {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Create Invoice Modal */}
+            {showInvoiceModal && selectedShopForInvoice && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+                                <FileText className="text-white" size={24} />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900">Create Pre-invoice</h2>
+                                <p className="text-sm text-gray-500">For {selectedShopForInvoice.name}</p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleCreateInvoice} className="space-y-5">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Base Price (Toman)</label>
+                                <input
+                                    type="number"
+                                    value={invoiceFormData.basePrice}
+                                    onChange={(e) => setInvoiceFormData({ ...invoiceFormData, basePrice: Number(e.target.value) })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Discount (%)</label>
+                                    <input
+                                        type="number"
+                                        value={invoiceFormData.discountPercentage}
+                                        onChange={(e) => setInvoiceFormData({ ...invoiceFormData, discountPercentage: Number(e.target.value) })}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Final Price (Toman)</label>
+                                    <input
+                                        type="number"
+                                        value={invoiceFormData.finalPrice}
+                                        onChange={(e) => setInvoiceFormData({ ...invoiceFormData, finalPrice: Number(e.target.value) })}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Credit Count</label>
+                                    <input
+                                        type="number"
+                                        value={invoiceFormData.creditCount}
+                                        onChange={(e) => setInvoiceFormData({ ...invoiceFormData, creditCount: Number(e.target.value) })}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Duration (Months)</label>
+                                    <input
+                                        type="number"
+                                        value={invoiceFormData.durationMonths}
+                                        onChange={(e) => setInvoiceFormData({ ...invoiceFormData, durationMonths: Number(e.target.value) })}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Account Details</label>
+                                <textarea
+                                    value={invoiceFormData.accountDetails}
+                                    onChange={(e) => setInvoiceFormData({ ...invoiceFormData, accountDetails: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl font-mono text-sm text-right"
+                                    dir="rtl"
+                                    rows={2}
+                                />
+                            </div>
+
+                            {formError && (
+                                <div className="p-3 rounded-xl bg-red-50 text-red-600 text-sm border border-red-100">
+                                    {formError}
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowInvoiceModal(false)}
+                                    className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all duration-200 font-semibold shadow-lg"
+                                >
+                                    Create Invoice
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

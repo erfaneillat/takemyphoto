@@ -27,6 +27,7 @@ import { createShopRoutes } from '@presentation/routes/shopRoutes';
 import { createShopCategoryRoutes } from '@presentation/routes/shopCategoryRoutes';
 import { createShopProductImageRoutes } from '@presentation/routes/shopProductImageRoutes';
 import { createShopStyleRoutes } from '@presentation/routes/shopStyleRoutes';
+import { createPreInvoiceRoutes } from '@presentation/routes/preInvoiceRoutes';
 import { errorHandler, setErrorLogService } from '@presentation/middleware/errorHandler';
 
 export class App {
@@ -138,6 +139,14 @@ export class App {
         res.setHeader('Access-Control-Allow-Origin', '*');
       },
     }));
+    // dist/uploads (receipts from pre-invoice uploads)
+    const uploadsDistDir = path.resolve(process.cwd(), 'dist/uploads');
+    this.app.use('/uploads', setStaticHeaders, express.static(uploadsDistDir, {
+      setHeaders: (res) => {
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+      },
+    }));
 
     // Health check
     this.app.get('/health', (_req, res) => {
@@ -178,6 +187,8 @@ export class App {
     this.app.use(`${baseUrl}/shop-categories`, createShopCategoryRoutes(this.container.shopCategoryController));
     // Shop style routes
     this.app.use(`${baseUrl}/shop-styles`, createShopStyleRoutes(this.container.shopStyleController));
+    // Pre-invoice routes
+    this.app.use(`${baseUrl}`, createPreInvoiceRoutes());
 
     // Serve panel static files at /panel
     const panelPath = path.join(__dirname, '../../panel/dist');
