@@ -33,27 +33,42 @@ export class ShopController {
             return res.status(404).json({ status: 'error', message: 'Shop not found' });
         }
 
-        const logoSrc = shop.logoWithBg || '/logo.png';
+        // Icon with background (for maskable/install icon) — padded for safe zone
+        const logoWithBg = shop.logoWithBg || '/defaults/installicon_maskable.png';
+        // Icon without background (for regular/web icon)
+        const logoWithoutBg = shop.logoWithoutBg || '/defaults/webicon.png';
 
         const manifest = {
             short_name: shop.name || 'Zhest',
             name: shop.name || 'Zhest',
-            start_url: '/?source=pwa',
+            start_url: '/app?source=pwa',
             display: 'standalone',
             theme_color: '#000000',
             background_color: '#ffffff',
             icons: [
                 {
-                    src: logoSrc,
+                    src: logoWithBg,
                     sizes: '192x192',
                     type: 'image/png',
-                    purpose: 'any maskable'
+                    purpose: 'maskable'
                 },
                 {
-                    src: logoSrc,
+                    src: logoWithBg,
                     sizes: '512x512',
                     type: 'image/png',
-                    purpose: 'any maskable'
+                    purpose: 'maskable'
+                },
+                {
+                    src: logoWithoutBg,
+                    sizes: '192x192',
+                    type: 'image/png',
+                    purpose: 'any'
+                },
+                {
+                    src: logoWithoutBg,
+                    sizes: '512x512',
+                    type: 'image/png',
+                    purpose: 'any'
                 }
             ]
         };
