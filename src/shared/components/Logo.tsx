@@ -4,7 +4,7 @@ interface LogoProps {
   src?: string;
 }
 
-export const Logo = ({ size = 'md', className = '', src = '/logo.png' }: LogoProps) => {
+export const Logo = ({ size = 'md', className = '', src = '/defaults/webicon.png' }: LogoProps) => {
   const sizeMap = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',

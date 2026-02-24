@@ -47,6 +47,17 @@ export const ZhestHeader = () => {
     const customLogoPath = logoWithoutBg || logoWithBg;
     const logoSrc = customLogoPath ? `${API_BASE}${customLogoPath}` : undefined;
 
+    // Dynamically update the favicon to match the shop logo
+    useEffect(() => {
+        const link: HTMLLinkElement = document.querySelector("link[rel~='icon']") || document.createElement('link');
+        link.rel = 'icon';
+        link.type = 'image/png';
+        link.href = logoSrc || '/defaults/webicon.png';
+        if (!document.querySelector("link[rel~='icon']")) {
+            document.head.appendChild(link);
+        }
+    }, [logoSrc]);
+
     const tabs = [
         { label: t('bottomNav.search'), icon: Search, tabIndex: 0 as const },
         { label: t('bottomNav.generate'), icon: Sparkles, tabIndex: 1 as const },
